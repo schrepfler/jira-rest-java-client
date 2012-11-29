@@ -17,6 +17,7 @@
 package com.atlassian.jira.rest.client;
 
 import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.BasicIssues;
 import com.atlassian.jira.rest.client.domain.CimProject;
 import com.atlassian.jira.rest.client.domain.Comment;
 import com.atlassian.jira.rest.client.domain.Issue;
@@ -30,10 +31,11 @@ import com.atlassian.jira.rest.client.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.domain.input.WorklogInput;
 import com.google.common.annotations.Beta;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collection;
+import javax.annotation.Nullable;
 
 /**
  * The client handling issue resources.
@@ -51,6 +53,18 @@ public interface IssueRestClient {
 	 * @since client 1.0, server 5.0
 	 */
 	BasicIssue createIssue(IssueInput issue, ProgressMonitor progressMonitor);
+
+    /**
+     * Creates new issues in batch.
+     *
+     * @param issues		   populated with data to create new issue
+     * @param progressMonitor progress monitor
+     * @return basicIssues with generated <code>issueKey</code>
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since client 1.1, server 6.0
+     */
+
+    BasicIssues createIssues(Collection<IssueInput> issues, ProgressMonitor progressMonitor);
 
 	/**
 	 * Retrieves CreateIssueMetadata with specified filters.

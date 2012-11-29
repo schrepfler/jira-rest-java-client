@@ -24,6 +24,7 @@ import com.atlassian.jira.rest.client.IssueRestClient;
 import com.atlassian.jira.rest.client.RestClientException;
 import com.atlassian.jira.rest.client.domain.BasicComponent;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.BasicIssues;
 import com.atlassian.jira.rest.client.domain.BasicPriority;
 import com.atlassian.jira.rest.client.domain.BasicUser;
 import com.atlassian.jira.rest.client.domain.CimFieldInfo;
@@ -50,6 +51,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +64,11 @@ import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_
 import static com.google.common.collect.Iterables.toArray;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 // Ignore "May produce NPE" warnings, as we know what we are doing in tests
 @SuppressWarnings("ConstantConditions")
@@ -70,12 +76,14 @@ import static org.junit.Assert.*;
 @RestoreOnce("jira3-export-for-creating-issue-tests.xml")
 public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClientTest {
 
+	private static final Integer BATCH_ISSUE_COUNT = 10;
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
-	public void testCreateIssue() {
+	public void testCreateIssue() throws NoSuchFieldException, IllegalAccessException {
 		// collect CreateIssueMetadata for project with key TST
 		final IssueRestClient issueClient = client.getIssueClient();
 		final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
@@ -153,6 +161,290 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 	}
 
 	@JiraBuildNumberDependent(BN_JIRA_5)
+	@Test
+	public void testCreateSubtask() {
+		// collect CreateIssueMetadata for project with key TST
+		final IssueRestClient issueClient = client.getIssueClient();
+		final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
+				new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build(), pm);
+
+		// select project and issue
+		assertEquals(1, Iterables.size(metadataProjects));
+		final CimProject project = metadataProjects.iterator().next();
+		final CimIssueType issueType = EntityHelper.findEntityByName(project.getIssueTypes(), "Sub-task");
+
+		// grab the first component
+		final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+		assertNotNull(allowedValuesForComponents);
+		assertTrue(allowedValuesForComponents.iterator().hasNext());
+		final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
+
+		// grab the first priority
+		final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+		assertNotNull(allowedValuesForPriority);
+		assertTrue(allowedValuesForPriority.iterator().hasNext());
+		final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
+
+		// build issue input
+		final String summary = "My first substask!";
+		final String description = "Some description for substask";
+		final BasicUser assignee = IntegrationTestUtil.USER1;
+		final List<String> affectedVersionsNames = Collections.emptyList();
+		final DateTime dueDate = new DateTime(new Date().getTime());
+		final ArrayList<String> fixVersionsNames = Lists.newArrayList("1.1");
+
+		// prepare IssueInput
+		final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(project, issueType, summary)
+				.setDescription(description)
+				.setAssignee(assignee)
+				.setAffectedVersionsNames(affectedVersionsNames)
+				.setFixVersionsNames(fixVersionsNames)
+				.setComponents(component)
+				.setDueDate(dueDate)
+				.setPriority(priority)
+				.setFieldValue("parent", ComplexIssueInputFieldValue.with("key", "TST-1"));
+
+		// create
+		final BasicIssue basicCreatedIssue = issueClient.createIssue(issueInputBuilder.build(), pm);
+		assertNotNull(basicCreatedIssue.getKey());
+
+		// get issue and check if everything was set as we expected
+		final Issue createdIssue = issueClient.getIssue(basicCreatedIssue.getKey(), pm);
+		assertNotNull(createdIssue);
+
+		assertEquals(basicCreatedIssue.getKey(), createdIssue.getKey());
+		assertEquals(project.getKey(), createdIssue.getProject().getKey());
+		assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+		assertEquals(summary, createdIssue.getSummary());
+		assertEquals(description, createdIssue.getDescription());
+
+		final BasicUser actualAssignee = createdIssue.getAssignee();
+		assertNotNull(actualAssignee);
+		assertEquals(assignee.getSelf(), actualAssignee.getSelf());
+
+		final Iterable<String> actualAffectedVersionsNames = EntityHelper.toNamesList(createdIssue.getAffectedVersions());
+		assertThat(affectedVersionsNames, containsInAnyOrder(toArray(actualAffectedVersionsNames, String.class)));
+
+		final Iterable<String> actualFixVersionsNames = EntityHelper.toNamesList(createdIssue.getFixVersions());
+		assertThat(fixVersionsNames, containsInAnyOrder(toArray(actualFixVersionsNames, String.class)));
+
+		assertTrue(createdIssue.getComponents().iterator().hasNext());
+		assertEquals(component.getId(), createdIssue.getComponents().iterator().next().getId());
+
+		// strip time from dueDate
+		final DateTime expectedDueDate = JsonParseUtil.parseDate(JsonParseUtil.formatDate(dueDate));
+		assertEquals(expectedDueDate, createdIssue.getDueDate());
+
+		final BasicPriority actualPriority = createdIssue.getPriority();
+		assertNotNull(actualPriority);
+		assertEquals(priority.getId(), actualPriority.getId());
+	}
+
+	@JiraBuildNumberDependent(BN_JIRA_5)
+	@Test
+	public void testCreateManySubtasksInGivenOrder() throws NoSuchFieldException, IllegalAccessException {
+		// collect CreateIssueMetadata for project with key TST
+		final IssueRestClient issueClient = client.getIssueClient();
+		final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
+				new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build(), pm);
+
+		// select project and issue
+		assertEquals(1, Iterables.size(metadataProjects));
+		final CimProject project = metadataProjects.iterator().next();
+		final CimIssueType issueType = EntityHelper.findEntityByName(project.getIssueTypes(), "Sub-task");
+
+		// grab the first component
+		final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+		assertNotNull(allowedValuesForComponents);
+		assertTrue(allowedValuesForComponents.iterator().hasNext());
+		final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
+
+		// grab the first priority
+		final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+		assertNotNull(allowedValuesForPriority);
+		assertTrue(allowedValuesForPriority.iterator().hasNext());
+		final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
+
+		// build issue input
+		final String description = "Some description for substask";
+		final BasicUser assignee = IntegrationTestUtil.USER1;
+		final List<String> affectedVersionsNames = Collections.emptyList();
+		final DateTime dueDate = new DateTime(new Date().getTime());
+		final ArrayList<String> fixVersionsNames = Lists.newArrayList("1.1");
+
+		final List<IssueInput> issuesToCreate = Lists.newArrayList();
+
+		int createIssueCounter = 1;
+		// prepare IssueInput
+		while(createIssueCounter <= BATCH_ISSUE_COUNT) {
+
+            final IssueInputBuilder issueInputBuilder =
+					new IssueInputBuilder(project, issueType, getSummaryForBatchIssue((BATCH_ISSUE_COUNT - createIssueCounter)))
+					.setDescription(description)
+					.setAssignee(assignee)
+					.setAffectedVersionsNames(affectedVersionsNames)
+					.setFixVersionsNames(fixVersionsNames)
+					.setComponents(component)
+					.setDueDate(dueDate)
+					.setPriority(priority)
+					.setFieldValue("parent", ComplexIssueInputFieldValue.with("key", "TST-1"));		// prepare IssueInput
+
+			issuesToCreate.add(issueInputBuilder.build());
+			createIssueCounter++;
+		}
+		assertEquals(BATCH_ISSUE_COUNT.intValue(), issuesToCreate.size());
+
+		// create
+		final BasicIssues createdIsses = issueClient.createIssues(issuesToCreate, pm);
+		assertNotNull(createdIsses);
+      	assertEquals(createdIsses.getIssues().size(), BATCH_ISSUE_COUNT.intValue());
+
+		int checkCreateIssueCounter = 1;
+		for (final BasicIssue basicIssue : createdIsses.getIssues()) {
+
+			// get issue and check if everything was set as we expected
+			final Issue createdIssue = issueClient.getIssue(basicIssue.getKey(), pm);
+			assertNotNull(createdIssue);
+
+			assertEquals(basicIssue.getKey(), createdIssue.getKey());
+			assertEquals(project.getKey(), createdIssue.getProject().getKey());
+			assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+			assertEquals(getSummaryForBatchIssue((BATCH_ISSUE_COUNT - checkCreateIssueCounter)), createdIssue.getSummary());
+			assertEquals(description, createdIssue.getDescription());
+
+			final BasicUser actualAssignee = createdIssue.getAssignee();
+			assertNotNull(actualAssignee);
+			assertEquals(assignee.getSelf(), actualAssignee.getSelf());
+
+			final Iterable<String> actualAffectedVersionsNames = EntityHelper.toNamesList(createdIssue.getAffectedVersions());
+			assertThat(affectedVersionsNames, containsInAnyOrder(toArray(actualAffectedVersionsNames, String.class)));
+
+			final Iterable<String> actualFixVersionsNames = EntityHelper.toNamesList(createdIssue.getFixVersions());
+			assertThat(fixVersionsNames, containsInAnyOrder(toArray(actualFixVersionsNames, String.class)));
+
+			assertTrue(createdIssue.getComponents().iterator().hasNext());
+			assertEquals(component.getId(), createdIssue.getComponents().iterator().next().getId());
+
+			// strip time from dueDate
+			final DateTime expectedDueDate = JsonParseUtil.parseDate(JsonParseUtil.formatDate(dueDate));
+			assertEquals(expectedDueDate, createdIssue.getDueDate());
+
+			final BasicPriority actualPriority = createdIssue.getPriority();
+			assertNotNull(actualPriority);
+			assertEquals(priority.getId(), actualPriority.getId());
+
+			checkCreateIssueCounter++;
+		}
+	}
+
+    @JiraBuildNumberDependent(BN_JIRA_5)
+    @Test
+    public void testCreateManySubtasksInGivenOrderWithLastFailing() throws NoSuchFieldException, IllegalAccessException {
+        // collect CreateIssueMetadata for project with key TST
+        final IssueRestClient issueClient = client.getIssueClient();
+        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
+                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build(), pm);
+
+        // select project and issue
+        assertEquals(1, Iterables.size(metadataProjects));
+        final CimProject project = metadataProjects.iterator().next();
+        final CimIssueType issueType = EntityHelper.findEntityByName(project.getIssueTypes(), "Sub-task");
+
+        // grab the first component
+        final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+        assertNotNull(allowedValuesForComponents);
+        assertTrue(allowedValuesForComponents.iterator().hasNext());
+        final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
+
+        // grab the first priority
+        final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+        assertNotNull(allowedValuesForPriority);
+        assertTrue(allowedValuesForPriority.iterator().hasNext());
+        final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
+
+        // build issue input
+        final String description = "Some description for substask";
+        final BasicUser assignee = IntegrationTestUtil.USER1;
+        final List<String> affectedVersionsNames = Collections.emptyList();
+        final DateTime dueDate = new DateTime(new Date().getTime());
+        final ArrayList<String> fixVersionsNames = Lists.newArrayList("1.1");
+
+        final List<IssueInput> issuesToCreate = Lists.newArrayList();
+
+        int createIssueCounter = 1;
+        // prepare IssueInput
+        while(createIssueCounter <= BATCH_ISSUE_COUNT) {
+
+            //last issue to create will have a non existing project - to simulate creation error
+            if (createIssueCounter == BATCH_ISSUE_COUNT) {
+                setProjectKey(project,"XYZ");
+			}
+
+            final IssueInputBuilder issueInputBuilder =
+                    new IssueInputBuilder(project, issueType, getSummaryForBatchIssue((BATCH_ISSUE_COUNT - createIssueCounter)))
+                            .setDescription(description)
+                            .setAssignee(assignee)
+                            .setAffectedVersionsNames(affectedVersionsNames)
+                            .setFixVersionsNames(fixVersionsNames)
+                            .setComponents(component)
+                            .setDueDate(dueDate)
+                            .setPriority(priority)
+                            .setFieldValue("parent", ComplexIssueInputFieldValue.with("key", "TST-1"));		// prepare IssueInput
+
+            issuesToCreate.add(issueInputBuilder.build());
+            createIssueCounter++;
+        }
+        assertEquals(BATCH_ISSUE_COUNT.intValue(), issuesToCreate.size());
+
+        // create
+        final BasicIssues createdIsses = issueClient.createIssues(issuesToCreate, pm);
+        assertNotNull(createdIsses);
+        assertEquals(BATCH_ISSUE_COUNT - 1, createdIsses.getIssues().size());
+        assertEquals(1, createdIsses.getErrors().size());
+
+        //we need to recreate original project key before running assertions
+        setProjectKey(project,"TST");
+
+        int checkCreateIssueCounter = 1;
+        for (final BasicIssue basicIssue : createdIsses.getIssues()) {
+
+            // get issue and check if everything was set as we expected
+            final Issue createdIssue = issueClient.getIssue(basicIssue.getKey(), pm);
+            assertNotNull(createdIssue);
+
+            assertEquals(basicIssue.getKey(), createdIssue.getKey());
+            assertEquals(project.getKey(), createdIssue.getProject().getKey());
+            assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+            assertEquals(getSummaryForBatchIssue((BATCH_ISSUE_COUNT - checkCreateIssueCounter)), createdIssue.getSummary());
+            assertEquals(description, createdIssue.getDescription());
+
+            final BasicUser actualAssignee = createdIssue.getAssignee();
+            assertNotNull(actualAssignee);
+            assertEquals(assignee.getSelf(), actualAssignee.getSelf());
+
+            final Iterable<String> actualAffectedVersionsNames = EntityHelper.toNamesList(createdIssue.getAffectedVersions());
+            assertThat(affectedVersionsNames, containsInAnyOrder(toArray(actualAffectedVersionsNames, String.class)));
+
+            final Iterable<String> actualFixVersionsNames = EntityHelper.toNamesList(createdIssue.getFixVersions());
+            assertThat(fixVersionsNames, containsInAnyOrder(toArray(actualFixVersionsNames, String.class)));
+
+            assertTrue(createdIssue.getComponents().iterator().hasNext());
+            assertEquals(component.getId(), createdIssue.getComponents().iterator().next().getId());
+
+            // strip time from dueDate
+            final DateTime expectedDueDate = JsonParseUtil.parseDate(JsonParseUtil.formatDate(dueDate));
+            assertEquals(expectedDueDate, createdIssue.getDueDate());
+
+            final BasicPriority actualPriority = createdIssue.getPriority();
+            assertNotNull(actualPriority);
+            assertEquals(priority.getId(), actualPriority.getId());
+
+            checkCreateIssueCounter++;
+        }
+    }
+
+
+    @JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithOnlyRequiredFields() {
 		// collect CreateIssueMetadata for project with key TST
@@ -523,4 +815,16 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 
 		assertThat(expectedValues, hasItems(toArray(actualValues, FieldInput.class)));
 	}
+
+	private String getSummaryForBatchIssue(final int number) {
+		return "Summayry for issue with count: " + number;
+	}
+
+    private CimProject setProjectKey(final CimProject project, final String key) throws NoSuchFieldException, IllegalAccessException
+    {
+        final Field projectKey = project.getClass().getSuperclass().getDeclaredField("key");
+        projectKey.setAccessible(true);
+        projectKey.set(project, key);
+        return project;
+    }
 }

@@ -23,6 +23,7 @@ import com.atlassian.jira.rest.client.ProgressMonitor;
 import com.atlassian.jira.rest.client.RestClientException;
 import com.atlassian.jira.rest.client.SessionRestClient;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.BasicIssues;
 import com.atlassian.jira.rest.client.domain.CimProject;
 import com.atlassian.jira.rest.client.domain.Comment;
 import com.atlassian.jira.rest.client.domain.Issue;
@@ -39,6 +40,7 @@ import com.atlassian.jira.rest.client.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.domain.input.WorklogInput;
 import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.json.BasicIssueJsonParser;
+import com.atlassian.jira.rest.client.internal.json.BasicIssuesJsonParser;
 import com.atlassian.jira.rest.client.internal.json.CreateIssueMetadataJsonParser;
 import com.atlassian.jira.rest.client.internal.json.IssueJsonParser;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
@@ -50,6 +52,7 @@ import com.atlassian.jira.rest.client.internal.json.WatchersJsonParserBuilder;
 import com.atlassian.jira.rest.client.internal.json.gen.CommentJsonGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.ComplexIssueInputFieldValueJsonGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.IssueInputJsonGenerator;
+import com.atlassian.jira.rest.client.internal.json.gen.IssuesInputJsonGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.LinkIssuesInputGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.WorklogInputJsonGenerator;
 import com.google.common.base.Function;
@@ -68,9 +71,6 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import javax.annotation.Nullable;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
@@ -80,6 +80,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * Jersey-based implementation of IssueRestClient
@@ -398,6 +401,16 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 		return postAndParse(uriBuilder.build(),
 				InputGeneratorCallable.create(new IssueInputJsonGenerator(), issue),
 				basicIssueParser, progressMonitor);
+	}
+
+	@Override
+	public BasicIssues createIssues(final Collection<IssueInput> issues, final ProgressMonitor progressMonitor) {
+		final UriBuilder uriBuilder = UriBuilder.fromUri(baseUri);
+		uriBuilder.path("issue/bulk");
+
+		return postAndParse(uriBuilder.build(),
+				InputGeneratorCallable.create(new IssuesInputJsonGenerator(), issues),
+				new BasicIssuesJsonParser(), progressMonitor);
 	}
 
 	@Override
