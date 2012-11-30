@@ -31,12 +31,12 @@ public class BasicIssues
 {
 
     private final Collection<BasicIssue> issues;
-    private final Collection<BatchCreateErrorResult> errors;
+    private final Collection<BulkCreateErrorResult> errors;
 
-    public BasicIssues(final Collection<BasicIssue> issues, final Collection<BatchCreateErrorResult> errors)
+    public BasicIssues(final Collection<BasicIssue> issues, final Collection<BulkCreateErrorResult> errors)
     {
         this.issues = (issues != null) ? issues : Collections.<BasicIssue>emptyList();
-        this.errors = (errors != null) ? errors : Collections.<BatchCreateErrorResult>emptyList();
+        this.errors = (errors != null) ? errors : Collections.<BulkCreateErrorResult>emptyList();
     }
 
     public Collection<BasicIssue> getIssues()
@@ -44,7 +44,7 @@ public class BasicIssues
         return issues;
     }
 
-    public Collection<BatchCreateErrorResult> getErrors()
+    public Collection<BulkCreateErrorResult> getErrors()
     {
         return errors;
     }

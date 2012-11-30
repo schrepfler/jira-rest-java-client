@@ -1,6 +1,6 @@
 package com.atlassian.jira.rest.client.internal.json;
 
-import com.atlassian.jira.rest.client.domain.BatchCreateErrorResult;
+import com.atlassian.jira.rest.client.domain.BulkCreateErrorResult;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -13,10 +13,10 @@ import java.util.Collection;
  *
  * @since v1.1
  */
-public class IssueErrorJsonParser implements JsonObjectParser<BatchCreateErrorResult> {
+public class IssueErrorJsonParser implements JsonObjectParser<BulkCreateErrorResult> {
 
 	@Override
-	public BatchCreateErrorResult parse(final JSONObject json) throws JSONException {
+	public BulkCreateErrorResult parse(final JSONObject json) throws JSONException {
 		final Collection<String> errorMessages = new ArrayList<String>();
 
 		final Integer status = json.getInt("status");
@@ -29,7 +29,7 @@ public class IssueErrorJsonParser implements JsonObjectParser<BatchCreateErrorRe
 				errorMessages.addAll(JsonParseUtil.toStringCollection(valuesJsonArray));
 			}
 		}
-	   return new BatchCreateErrorResult(status, errorMessages, issueNumber);
+	   return new BulkCreateErrorResult(status, errorMessages, issueNumber);
 	}
 
 }

@@ -12,13 +12,13 @@ import java.util.Collections;
  * @since v1.1
  */
 
-public class BatchCreateErrorResult
+public class BulkCreateErrorResult
 {
     private final Integer status;
     private final Collection<String> errorMessages;
     private final Integer failedElementNumber;
 
-    public BatchCreateErrorResult(final Integer status, final Collection<String> errorMessages, final Integer failedElementNumber)
+    public BulkCreateErrorResult(final Integer status, final Collection<String> errorMessages, final Integer failedElementNumber)
     {
         this.status = status;
         this.errorMessages = (errorMessages != null) ? errorMessages : Collections.<String>emptyList();
@@ -55,9 +55,9 @@ public class BatchCreateErrorResult
     @Override
     public boolean equals(final Object obj)
     {
-        if (obj instanceof BatchCreateErrorResult)
+        if (obj instanceof BulkCreateErrorResult)
         {
-            final BatchCreateErrorResult that = (BatchCreateErrorResult) obj;
+            final BulkCreateErrorResult that = (BulkCreateErrorResult) obj;
             return Objects.equal(this.status, that.status)
                     && Objects.equal(this.errorMessages, that.errorMessages)
                     && Objects.equal(this.failedElementNumber, that.failedElementNumber);

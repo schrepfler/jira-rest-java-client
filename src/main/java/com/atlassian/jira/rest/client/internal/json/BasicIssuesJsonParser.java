@@ -18,7 +18,7 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.BasicIssues;
-import com.atlassian.jira.rest.client.domain.BatchCreateErrorResult;
+import com.atlassian.jira.rest.client.domain.BulkCreateErrorResult;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -33,7 +33,7 @@ public class BasicIssuesJsonParser implements JsonObjectParser<BasicIssues>
         final Collection<BasicIssue> issues = JsonParseUtil.parseJsonArray(json
                 .getJSONArray("issues"), new BasicIssueJsonParser());
 
-        final Collection<BatchCreateErrorResult> errors = JsonParseUtil.parseJsonArray(json
+        final Collection<BulkCreateErrorResult> errors = JsonParseUtil.parseJsonArray(json
                 .getJSONArray("errors"), new IssueErrorJsonParser());
 
         return new BasicIssues(issues, errors);
