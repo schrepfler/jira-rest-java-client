@@ -2,9 +2,7 @@ package com.atlassian.jira.rest.client.domain;
 
 import com.google.common.base.Objects;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
 
 /**
  * Represents error of creating single element during batch operation.
@@ -12,16 +10,16 @@ import java.util.Collections;
  * @since v1.1
  */
 
-public class BulkCreateErrorResult
+public class BulkOperationErrorResult
 {
     private final Integer status;
-    private final Collection<String> errorMessages;
+    private final Map<String,String> errorMessages;
     private final Integer failedElementNumber;
 
-    public BulkCreateErrorResult(final Integer status, final Collection<String> errorMessages, final Integer failedElementNumber)
+    public BulkOperationErrorResult(final Integer status, final Map<String,String> errorMessages, final Integer failedElementNumber)
     {
         this.status = status;
-        this.errorMessages = (errorMessages != null) ? errorMessages : Collections.<String>emptyList();
+        this.errorMessages = errorMessages;
         this.failedElementNumber = failedElementNumber;
     }
 
@@ -30,7 +28,7 @@ public class BulkCreateErrorResult
         return status;
     }
 
-    public Collection<String> getErrorMessages()
+    public Map<String,String> getErrorMessages()
     {
         return errorMessages;
     }
@@ -45,9 +43,9 @@ public class BulkCreateErrorResult
     public String toString()
     {
         return Objects.toStringHelper(this)
-                .add("issues", status)
-                .add("issues", Arrays.deepToString(errorMessages.toArray()))
-                .add("errors", failedElementNumber)
+                .add("status", status)
+                .add("errorMessages", errorMessages)
+                .add("failedElementNumber", failedElementNumber)
                 .toString();
 
     }
@@ -55,9 +53,9 @@ public class BulkCreateErrorResult
     @Override
     public boolean equals(final Object obj)
     {
-        if (obj instanceof BulkCreateErrorResult)
+        if (obj instanceof BulkOperationErrorResult)
         {
-            final BulkCreateErrorResult that = (BulkCreateErrorResult) obj;
+            final BulkOperationErrorResult that = (BulkOperationErrorResult) obj;
             return Objects.equal(this.status, that.status)
                     && Objects.equal(this.errorMessages, that.errorMessages)
                     && Objects.equal(this.failedElementNumber, that.failedElementNumber);

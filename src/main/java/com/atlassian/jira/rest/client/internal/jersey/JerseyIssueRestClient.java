@@ -23,7 +23,7 @@ import com.atlassian.jira.rest.client.ProgressMonitor;
 import com.atlassian.jira.rest.client.RestClientException;
 import com.atlassian.jira.rest.client.SessionRestClient;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.BasicIssues;
+import com.atlassian.jira.rest.client.domain.BulkOperationResult;
 import com.atlassian.jira.rest.client.domain.CimProject;
 import com.atlassian.jira.rest.client.domain.Comment;
 import com.atlassian.jira.rest.client.domain.Issue;
@@ -71,6 +71,9 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import javax.annotation.Nullable;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
@@ -80,9 +83,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
-import javax.annotation.Nullable;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  * Jersey-based implementation of IssueRestClient
@@ -395,8 +395,7 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 
 	@Override
 	public BasicIssue createIssue(IssueInput issue, ProgressMonitor progressMonitor) {
-		final UriBuilder uriBuilder = UriBuilder.fromUri(baseUri);
-		uriBuilder.path("issue");
+		final UriBuilder uriBuilder = UriBuilder.fromUri(baseUri).path("issue");
 
 		return postAndParse(uriBuilder.build(),
 				InputGeneratorCallable.create(new IssueInputJsonGenerator(), issue),
@@ -404,9 +403,8 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 	}
 
 	@Override
-	public BasicIssues createIssues(final Collection<IssueInput> issues, final ProgressMonitor progressMonitor) {
-		final UriBuilder uriBuilder = UriBuilder.fromUri(baseUri);
-		uriBuilder.path("issue/bulk");
+	public BulkOperationResult<BasicIssue> createIssues(final Collection<IssueInput> issues, final ProgressMonitor progressMonitor) {
+		final UriBuilder uriBuilder = UriBuilder.fromUri(baseUri).path("issue/bulk");
 
 		return postAndParse(uriBuilder.build(),
 				InputGeneratorCallable.create(new IssuesInputJsonGenerator(), issues),

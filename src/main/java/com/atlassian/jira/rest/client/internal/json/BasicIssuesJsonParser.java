@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Atlassian
+ * Copyright (C) 2012 Atlassian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,28 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.BasicIssues;
-import com.atlassian.jira.rest.client.domain.BulkCreateErrorResult;
+import com.atlassian.jira.rest.client.domain.BulkOperationErrorResult;
+import com.atlassian.jira.rest.client.domain.BulkOperationResult;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import java.util.Collection;
 
-public class BasicIssuesJsonParser implements JsonObjectParser<BasicIssues>
-{
+/**
+ * @since 1.1
+ */
+public class BasicIssuesJsonParser implements JsonObjectParser<BulkOperationResult<BasicIssue>> {
 
-    @Override
-    public BasicIssues parse(final JSONObject json) throws JSONException
-    {
-        final Collection<BasicIssue> issues = JsonParseUtil.parseJsonArray(json
-                .getJSONArray("issues"), new BasicIssueJsonParser());
+	@Override
+	public BulkOperationResult<BasicIssue> parse(final JSONObject json) throws JSONException {
+		final Collection<BasicIssue> issues =
+				JsonParseUtil.parseJsonArray(json.getJSONArray("issues"), new BasicIssueJsonParser());
 
-        final Collection<BulkCreateErrorResult> errors = JsonParseUtil.parseJsonArray(json
-                .getJSONArray("errors"), new IssueErrorJsonParser());
+		final Collection<BulkOperationErrorResult> errors =
+				JsonParseUtil.parseJsonArray(json.getJSONArray("errors"), new IssueErrorJsonParser());
 
-        return new BasicIssues(issues, errors);
-    }
+		return new BulkOperationResult<BasicIssue>(issues, errors);
+	}
 
 
 }
