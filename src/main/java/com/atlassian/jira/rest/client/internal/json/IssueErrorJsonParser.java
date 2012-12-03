@@ -17,9 +17,12 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.domain.BulkOperationErrorResult;
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -32,18 +35,29 @@ public class IssueErrorJsonParser implements JsonObjectParser<BulkOperationError
 
 	@Override
 	public BulkOperationErrorResult parse(final JSONObject json) throws JSONException {
-		final Map<String,String> errorMessages;
+
 		final Integer status = json.getInt("status");
 		final Integer issueNumber = json.getInt("failedElementNumber");
 
-		final JSONObject errorJsonObject = json.optJSONObject("errorMessages");
-		if (errorJsonObject != null) {
-			errorMessages = JsonParseUtil.toStringMap(errorJsonObject.names(),errorJsonObject);
-		}  else {
-			errorMessages = Collections.emptyMap();
+		final JSONObject elementErrors = json.optJSONObject("elementErrors");
+		final JSONObject jsonErrors = elementErrors.optJSONObject("errors");
+		final JSONArray jsonErrorMessages = elementErrors.optJSONArray("errorMessages");
+
+		final Collection<String> errorMessages;
+		if (jsonErrorMessages != null) {
+			errorMessages = JsonParseUtil.toStringCollection(jsonErrorMessages);
+		} else {
+			errorMessages = Collections.emptyList();
 		}
 
-		return new BulkOperationErrorResult(status, errorMessages, issueNumber);
+		final Map<String,String> errors;
+		if (jsonErrors != null) {
+			errors = JsonParseUtil.toStringMap(jsonErrors.names(),jsonErrors);
+		}  else {
+			errors = Collections.emptyMap();
+		}
+
+		return new BulkOperationErrorResult(new ErrorCollection(status,errorMessages,errors), issueNumber);
 	}
 
 }

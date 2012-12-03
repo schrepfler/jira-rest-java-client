@@ -1,8 +1,7 @@
 package com.atlassian.jira.rest.client.domain;
 
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
 import com.google.common.base.Objects;
-
-import java.util.Map;
 
 /**
  * Represents error of creating single element during batch operation.
@@ -12,39 +11,30 @@ import java.util.Map;
 
 public class BulkOperationErrorResult
 {
-    private final Integer status;
-    private final Map<String,String> errorMessages;
-    private final Integer failedElementNumber;
+	private final ErrorCollection elementErrors;
+	private final Integer failedElementNumber;
 
-    public BulkOperationErrorResult(final Integer status, final Map<String,String> errorMessages, final Integer failedElementNumber)
-    {
-        this.status = status;
-        this.errorMessages = errorMessages;
-        this.failedElementNumber = failedElementNumber;
-    }
+	public BulkOperationErrorResult(final ErrorCollection errors, final Integer failedElementNumber)
+	{
+		this.elementErrors = errors;
+		this.failedElementNumber = failedElementNumber;
+	}
 
-    public Integer getStatus()
-    {
-        return status;
-    }
+	public ErrorCollection getElementErrors() {
+		return elementErrors;
+	}
 
-    public Map<String,String> getErrorMessages()
-    {
-        return errorMessages;
-    }
-
-    public Integer getFailedElementNumber()
-    {
-        return failedElementNumber;
-    }
+	public Integer getFailedElementNumber()
+	{
+		return failedElementNumber;
+	}
 
 
     @Override
     public String toString()
     {
         return Objects.toStringHelper(this)
-                .add("status", status)
-                .add("errorMessages", errorMessages)
+                .add("elementErrors", elementErrors)
                 .add("failedElementNumber", failedElementNumber)
                 .toString();
 
@@ -56,8 +46,7 @@ public class BulkOperationErrorResult
         if (obj instanceof BulkOperationErrorResult)
         {
             final BulkOperationErrorResult that = (BulkOperationErrorResult) obj;
-            return Objects.equal(this.status, that.status)
-                    && Objects.equal(this.errorMessages, that.errorMessages)
+            return Objects.equal(this.elementErrors, that.elementErrors)
                     && Objects.equal(this.failedElementNumber, that.failedElementNumber);
         }
         return false;
@@ -66,6 +55,6 @@ public class BulkOperationErrorResult
     @Override
     public int hashCode()
     {
-        return Objects.hashCode(status, errorMessages, failedElementNumber);
+        return Objects.hashCode(elementErrors, failedElementNumber);
     }
 }
