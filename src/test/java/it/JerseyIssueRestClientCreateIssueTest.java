@@ -447,7 +447,7 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 						}
 					}
 					else {
-						value = expectedArray ? Collections.singletonList(singleValue) : singleValue;	
+						value = expectedArray ? Collections.singletonList(singleValue) : singleValue;
 					}
 					log.log("\t\t| selecting value: " + value);
 				} else {
