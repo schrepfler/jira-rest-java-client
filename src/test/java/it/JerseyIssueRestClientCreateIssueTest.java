@@ -45,6 +45,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,7 +79,7 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 
 	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
-	public void testCreateIssue() {
+	public void testCreateIssue() throws JSONException {
 		// collect CreateIssueMetadata for project with key TST
 		final IssueRestClient issueClient = client.getIssueClient();
 		final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
@@ -107,6 +111,8 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 		final ArrayList<String> fixVersionsNames = Lists.newArrayList("1.1");
 
 		// prepare IssueInput
+		final String multiUserCustomFieldId = "customfield_10031";
+		final ImmutableList<BasicUser> multiUserCustomFieldValues = ImmutableList.of(IntegrationTestUtil.USER1, IntegrationTestUtil.USER2);
 		final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(project, issueType, summary)
 				.setDescription(description)
 				.setAssignee(assignee)
@@ -114,7 +120,8 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 				.setFixVersionsNames(fixVersionsNames)
 				.setComponents(component)
 				.setDueDate(dueDate)
-				.setPriority(priority);
+				.setPriority(priority)
+				.setFieldValue(multiUserCustomFieldId, multiUserCustomFieldValues);
 
 		// create
 		final BasicIssue basicCreatedIssue = issueClient.createIssue(issueInputBuilder.build(), pm);
@@ -150,6 +157,19 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 		final BasicPriority actualPriority = createdIssue.getPriority();
 		assertNotNull(actualPriority);
 		assertEquals(priority.getId(), actualPriority.getId());
+
+		// check value of MultiUserSelect field
+		final Object multiUserValue = createdIssue.getField(multiUserCustomFieldId).getValue();
+		// ideally this should be Iterable<User>, but for now it's just an JSONArray...
+		assertThat(multiUserValue, Matchers.instanceOf(JSONArray.class));
+		final JSONArray multiUserArray = (JSONArray) multiUserValue;
+		final List<String> actualMultiUserNames = Lists.newArrayListWithCapacity(multiUserArray.length());
+		for (int i = 0; i<multiUserArray.length(); i++) {
+			final JSONObject jsonUser = (JSONObject) multiUserArray.get(i);
+			actualMultiUserNames.add((String) jsonUser.get("name"));
+		}
+		assertThat(actualMultiUserNames, containsInAnyOrder(
+						toArray(EntityHelper.toNamesList(multiUserCustomFieldValues), String.class)));
 	}
 
 	@JiraBuildNumberDependent(BN_JIRA_5)
