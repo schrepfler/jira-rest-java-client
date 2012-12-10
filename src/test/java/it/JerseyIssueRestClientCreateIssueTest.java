@@ -34,6 +34,7 @@ import com.atlassian.jira.rest.client.domain.EntityHelper;
 import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.IssueFieldId;
 import com.atlassian.jira.rest.client.domain.TimeTracking;
+import com.atlassian.jira.rest.client.domain.User;
 import com.atlassian.jira.rest.client.domain.input.CannotTransformValueException;
 import com.atlassian.jira.rest.client.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
@@ -137,9 +138,11 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 		assertEquals(summary, createdIssue.getSummary());
 		assertEquals(description, createdIssue.getDescription());
 
-		final BasicUser actualAssignee = createdIssue.getAssignee();
+		final User actualAssignee = createdIssue.getAssignee();
 		assertNotNull(actualAssignee);
 		assertEquals(assignee.getSelf(), actualAssignee.getSelf());
+		//TODO: We need some users for integration tests !
+		assertEquals(actualAssignee.getEmailAddress(), "wojciech.seliga@spartez.com");
 
 		final Iterable<String> actualAffectedVersionsNames = EntityHelper.toNamesList(createdIssue.getAffectedVersions());
 		assertThat(affectedVersionsNames, containsInAnyOrder(toArray(actualAffectedVersionsNames, String.class)));
@@ -169,7 +172,7 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 			actualMultiUserNames.add((String) jsonUser.get("name"));
 		}
 		assertThat(actualMultiUserNames, containsInAnyOrder(
-						toArray(EntityHelper.toNamesList(multiUserCustomFieldValues), String.class)));
+				toArray(EntityHelper.toNamesList(multiUserCustomFieldValues), String.class)));
 	}
 
 	@JiraBuildNumberDependent(BN_JIRA_5)
