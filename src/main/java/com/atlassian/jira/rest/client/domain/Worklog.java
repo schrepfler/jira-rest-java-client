@@ -32,7 +32,6 @@ public class Worklog {
 	private final URI issueUri;
 	private final BasicUser author;
 	private final BasicUser updateAuthor;
-    @Nullable
 	private final String comment;
 	private final DateTime creationDate;
 	private final DateTime updateDate;
@@ -41,7 +40,7 @@ public class Worklog {
 	@Nullable
 	private final Visibility visibility;
 
-	public Worklog(URI self, URI issueUri, BasicUser author, BasicUser updateAuthor, @Nullable String comment,
+	public Worklog(URI self, URI issueUri, BasicUser author, BasicUser updateAuthor, String comment,
                    DateTime creationDate, DateTime updateDate, DateTime startDate, int minutesSpent, @Nullable Visibility visibility) {
 		this.self = self;
 		this.issueUri = issueUri;
@@ -71,7 +70,6 @@ public class Worklog {
 		return updateAuthor;
 	}
 
-	@Nullable
     public String getComment() {
 		return comment;
 	}

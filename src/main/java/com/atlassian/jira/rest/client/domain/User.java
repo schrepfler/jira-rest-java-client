@@ -37,6 +37,7 @@ public class User extends BasicUser {
 
 	private final String emailAddress;
 
+	@Nullable
 	private final ExpandableProperty<String> groups;
 
 	private Map<String, URI> avatarUris;
@@ -47,7 +48,7 @@ public class User extends BasicUser {
 	@Nullable
 	private String timezone;
 	
-	public User(URI self, String name, String displayName, String emailAddress, ExpandableProperty<String> groups,
+	public User(URI self, String name, String displayName, String emailAddress, @Nullable ExpandableProperty<String> groups,
 			Map<String, URI> avatarUris, @Nullable String timezone) {
 		super(self, name, displayName);
 		Preconditions.checkNotNull(avatarUris.get(S48_48), "At least one avatar URL is expected - for 48x48");
@@ -90,6 +91,7 @@ public class User extends BasicUser {
 	/**
 	 * @return groups given user belongs to
 	 */
+	@Nullable
 	public ExpandableProperty<String> getGroups() {
 		return groups;
 	}
@@ -104,6 +106,10 @@ public class User extends BasicUser {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(super.hashCode(), emailAddress, avatarUris, groups, timezone);
+	}
 
 	/**
 	 * @since client 0.5, server 4.4
@@ -120,6 +126,7 @@ public class User extends BasicUser {
 				add("emailAddress", emailAddress).
 				add("avatarUris", avatarUris).
 				add("groups", groups).
+				add("timezone", timezone).
 				toString();
 	}
 

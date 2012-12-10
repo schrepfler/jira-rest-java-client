@@ -29,6 +29,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.*;
 
+// Ignore "May produce NPE" warnings, as we know what we are doing in tests
+@SuppressWarnings("ConstantConditions")
 @Restore(TestConstants.DEFAULT_JIRA_DUMP_FILE)
 public class JerseySessionRestClientTest extends AbstractJerseyRestClientTest {
 
@@ -62,8 +64,8 @@ public class JerseySessionRestClientTest extends AbstractJerseyRestClientTest {
 		assertEquals(TestConstants.USER1.getName(), session2.getUsername());
 		final DateTime lastFailedLoginDate = session2.getLoginInfo().getLastFailedLoginDate();
 
-		final JerseyJiraRestClient client2 = new JerseyJiraRestClient(jiraUri, new BasicHttpAuthenticationHandler(TestConstants.USER1.getName(),
-				"bad-password"));
+		final JerseyJiraRestClient client2 = new JerseyJiraRestClient(jiraUri,
+				new BasicHttpAuthenticationHandler(TestConstants.USER1.getName(), "bad-password"));
 		final DateTime now = new DateTime();
 		TestUtil.assertErrorCode(401, new Runnable() {
 			@Override

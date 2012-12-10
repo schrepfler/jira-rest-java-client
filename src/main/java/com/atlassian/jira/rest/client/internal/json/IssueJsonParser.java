@@ -23,7 +23,6 @@ import com.atlassian.jira.rest.client.domain.BasicPriority;
 import com.atlassian.jira.rest.client.domain.BasicProject;
 import com.atlassian.jira.rest.client.domain.BasicResolution;
 import com.atlassian.jira.rest.client.domain.BasicStatus;
-import com.atlassian.jira.rest.client.domain.BasicUser;
 import com.atlassian.jira.rest.client.domain.BasicVotes;
 import com.atlassian.jira.rest.client.domain.BasicWatchers;
 import com.atlassian.jira.rest.client.domain.ChangelogGroup;
@@ -34,6 +33,7 @@ import com.atlassian.jira.rest.client.domain.IssueFieldId;
 import com.atlassian.jira.rest.client.domain.IssueLink;
 import com.atlassian.jira.rest.client.domain.Subtask;
 import com.atlassian.jira.rest.client.domain.TimeTracking;
+import com.atlassian.jira.rest.client.domain.User;
 import com.atlassian.jira.rest.client.domain.Version;
 import com.atlassian.jira.rest.client.domain.Worklog;
 import com.google.common.base.Splitter;
@@ -110,7 +110,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 	private final BasicProjectJsonParser projectJsonParser = new BasicProjectJsonParser();
 	private final BasicPriorityJsonParser priorityJsonParser = new BasicPriorityJsonParser();
 	private final BasicResolutionJsonParser resolutionJsonParser = new BasicResolutionJsonParser();
-	private final BasicUserJsonParser userJsonParser = new BasicUserJsonParser();
+	private final UserJsonParser userJsonParser = new UserJsonParser();
 	private final SubtaskJsonParser subtaskJsonParser = new SubtaskJsonParser();
 	private final ChangelogJsonParser changelogJsonParser = new ChangelogJsonParser();
 	private final JsonWeakParserForString jsonWeakParserForString = new JsonWeakParserForString();
@@ -245,8 +245,8 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 
 		final BasicPriority priority = getOptionalField(shouldUseNestedValueAttribute, s, PRIORITY_FIELD.id, priorityJsonParser);
 		final BasicResolution resolution = getOptionalField(shouldUseNestedValueAttribute, s, RESOLUTION_FIELD.id, resolutionJsonParser);
-		final BasicUser assignee = getOptionalField(shouldUseNestedValueAttribute, s, ASSIGNEE_FIELD.id, userJsonParser);
-		final BasicUser reporter = getOptionalField(shouldUseNestedValueAttribute, s, REPORTER_FIELD.id, userJsonParser);
+		final User assignee = getOptionalField(shouldUseNestedValueAttribute, s, ASSIGNEE_FIELD.id, userJsonParser);
+		final User reporter = getOptionalField(shouldUseNestedValueAttribute, s, REPORTER_FIELD.id, userJsonParser);
 
 		final BasicProject project = projectJsonParser.parse(getFieldUnisex(s, PROJECT_FIELD.id));
 		final Collection<IssueLink> issueLinks;
@@ -353,6 +353,9 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 				if (SPECIAL_FIELDS.contains(key)) {
 					continue;
 				}
+				// TODO: JRJC-122
+				// we should use fieldParser here (some new version as the old one probably won't work)
+				// enable IssueJsonParserTest#testParseIssueWithUserPickerCustomFieldFilledOut after fixing this
 				final Object value = json.opt(key);
 				res.add(new Field(key, namesMap.get(key), typesMap.get("key"), value != JSONObject.NULL ? value : null));
 			} catch (final Exception e) {

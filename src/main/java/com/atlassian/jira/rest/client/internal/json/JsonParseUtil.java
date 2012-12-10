@@ -61,9 +61,29 @@ public class JsonParseUtil {
 			return new OptionalIterable<T>(JsonParseUtil.<T>parseJsonArray(jsonArray, jsonParser));
 		}
 	}
-    
+
+	@SuppressWarnings("UnusedDeclaration")
 	public static <T> ExpandableProperty<T> parseExpandableProperty(JSONObject json, JsonObjectParser<T> expandablePropertyBuilder)
 			throws JSONException {
+		return parseExpandableProperty(json, false, expandablePropertyBuilder);
+	}
+
+	@Nullable
+	public static <T> ExpandableProperty<T> parseOptionalExpandableProperty(@Nullable JSONObject json, JsonObjectParser<T> expandablePropertyBuilder)
+			throws JSONException {
+		return parseExpandableProperty(json, true, expandablePropertyBuilder);
+	}
+
+	@Nullable
+	private static <T> ExpandableProperty<T> parseExpandableProperty(@Nullable JSONObject json, Boolean optional, JsonObjectParser<T> expandablePropertyBuilder)
+			throws JSONException {
+		if (json == null) {
+			if (!optional) {
+				throw new IllegalArgumentException("json object cannot be null while optional is false");
+			}
+			return null;
+		}
+
 		final int numItems = json.getInt("size");
 		final Collection<T> items;
 		JSONArray itemsJa = json.getJSONArray("items");

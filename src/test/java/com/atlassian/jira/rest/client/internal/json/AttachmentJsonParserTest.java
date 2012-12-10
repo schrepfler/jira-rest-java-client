@@ -35,7 +35,7 @@ public class AttachmentJsonParserTest {
 		assertEquals("admin", attachment.getAuthor().getName());
 
 		assertEquals(new Attachment(toUri("http://localhost:8090/jira/rest/api/latest/attachment/10031"),
-				"snipe.png", TestConstants.USER_ADMIN, new DateTime(2010, 7, 26, 13, 31, 35, 577, DateTimeZone.forOffsetHours(2)),
+				"snipe.png", TestConstants.USER_ADMIN_BASIC_DEPRECATED, new DateTime(2010, 7, 26, 13, 31, 35, 577, DateTimeZone.forOffsetHours(2)),
 				31020, "image/png", toUri("http://localhost:8090/jira/secure/attachment/10031/snipe.png"),
 				toUri("http://localhost:8090/jira/secure/thumbnail/10031/10031_snipe.png")), attachment);
 	}

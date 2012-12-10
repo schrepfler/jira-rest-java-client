@@ -1,30 +1,31 @@
 {
 	"expand": "renderedFields,names,schema,transitions,operations,editmeta,changelog",
-	"id": "10074",
-	"self": "http://localhost:2990/jira/rest/api/latest/issue/10074",
-	"key": "TST-12",
+	"id": "10050",
+	"self": "http://localhost:2990/jira/rest/api/latest/issue/10050",
+	"key": "ANNON-1",
 	"fields": {
-		"summary": "Issue with empty Extra User field",
+		"summary": "An anonymously accessible issue",
 		"progress": {
 			"progress": 0,
-			"total": 0
+			"total": 144000,
+			"percent": 0
 		},
 		"timetracking": {
-			"originalEstimate": "0m",
-			"remainingEstimate": "0m",
-			"originalEstimateSeconds": 0,
-			"remainingEstimateSeconds": 0
+			"originalEstimate": "1w 5h",
+			"remainingEstimate": "1w",
+			"originalEstimateSeconds": 162000,
+			"remainingEstimateSeconds": 144000
 		},
 		"issuetype": {
-			"self": "http://localhost:2990/jira/rest/api/2/issuetype/1",
-			"id": "1",
-			"description": "A problem which impairs or prevents the functions of the product.",
-			"iconUrl": "http://localhost:2990/jira/images/icons/bug.gif",
-			"name": "Bug",
+			"self": "http://localhost:2990/jira/rest/api/2/issuetype/4",
+			"id": "4",
+			"description": "An improvement or enhancement to an existing feature or task.",
+			"iconUrl": "http://localhost:2990/jira/images/icons/improvement.gif",
+			"name": "Improvement",
 			"subtask": false
 		},
 		"votes": {
-			"self": "http://localhost:2990/jira/rest/api/2/issue/TST-12/votes",
+			"self": "http://localhost:2990/jira/rest/api/2/issue/ANNON-1/votes",
 			"votes": 0,
 			"hasVoted": false
 		},
@@ -43,24 +44,23 @@
 			"displayName": "Administrator",
 			"active": true
 		},
-		"aggregatetimeoriginalestimate": 0,
-		"created": "2012-12-07T15:49:06.765+0100",
-		"updated": "2012-12-07T15:49:22.068+0100",
+		"aggregatetimeoriginalestimate": 162000,
+		"created": "2010-10-01T18:02:06.178+0200",
+		"updated": "2010-12-06T13:09:30.662+0100",
 		"description": null,
 		"priority": {
-			"self": "http://localhost:2990/jira/rest/api/2/priority/3",
-			"iconUrl": "http://localhost:2990/jira/images/icons/priority_major.gif",
-			"name": "Major",
-			"id": "3"
+			"self": "http://localhost:2990/jira/rest/api/2/priority/1",
+			"iconUrl": "http://localhost:2990/jira/images/icons/priority_blocker.gif",
+			"name": "Blocker",
+			"id": "1"
 		},
-		"duedate": "2010-07-05",
+		"duedate": "2010-10-21",
 		"customfield_10001": null,
-		"customfield_10020": null,
 		"issuelinks": [],
 		"watches": {
-			"self": "http://localhost:2990/jira/rest/api/2/issue/TST-12/watchers",
+			"self": "http://localhost:2990/jira/rest/api/2/issue/ANNON-1/watchers",
 			"watchCount": 1,
-			"isWatching": false
+			"isWatching": true
 		},
 		"worklog": {
 			"startAt": 0,
@@ -68,7 +68,6 @@
 			"total": 0,
 			"worklogs": []
 		},
-		"customfield_10000": null,
 		"subtasks": [],
 		"status": {
 			"self": "http://localhost:2990/jira/rest/api/2/status/1",
@@ -78,49 +77,57 @@
 			"id": "1"
 		},
 		"labels": [
-			"a",
-			"bcds"
+			"a"
 		],
 		"workratio": 0,
 		"assignee": {
-			"self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
-			"name": "admin",
-			"emailAddress": "wojciech.seliga@spartez.com",
+			"self": "http://localhost:2990/jira/rest/api/2/user?username=user",
+			"name": "user",
+			"emailAddress": "testmail@example.com",
 			"avatarUrls": {
-				"16x16": "http://localhost:2990/jira/secure/useravatar?size=small&ownerId=admin&avatarId=10054",
-				"48x48": "http://localhost:2990/jira/secure/useravatar?ownerId=admin&avatarId=10054"
+				"16x16": "http://localhost:2990/jira/secure/useravatar?size=small&avatarId=10082",
+				"48x48": "http://localhost:2990/jira/secure/useravatar?avatarId=10082"
 			},
-			"displayName": "Administrator",
+			"displayName": "My Test User",
 			"active": true
 		},
 		"attachment": [],
-		"aggregatetimeestimate": 0,
+		"aggregatetimeestimate": 144000,
 		"project": {
-			"self": "http://localhost:2990/jira/rest/api/2/project/TST",
-			"id": "10000",
-			"key": "TST",
-			"name": "Test Project",
+			"self": "http://localhost:2990/jira/rest/api/2/project/ANNON",
+			"id": "10020",
+			"key": "ANNON",
+			"name": "Anonymously Accessible Project",
 			"avatarUrls": {
-				"16x16": "http://localhost:2990/jira/secure/projectavatar?size=small&pid=10000&avatarId=10050",
-				"48x48": "http://localhost:2990/jira/secure/projectavatar?pid=10000&avatarId=10050"
+				"16x16": "http://localhost:2990/jira/secure/projectavatar?size=small&pid=10020&avatarId=10011",
+				"48x48": "http://localhost:2990/jira/secure/projectavatar?pid=10020&avatarId=10011"
 			}
 		},
 		"versions": [],
 		"environment": null,
-		"timeestimate": 0,
+		"timeestimate": 144000,
 		"aggregateprogress": {
 			"progress": 0,
-			"total": 0
+			"total": 144000,
+			"percent": 0
 		},
 		"components": [],
 		"comment": {
 			"startAt": 0,
-			"maxResults": 0,
-			"total": 0,
-			"comments": []
+			"maxResults": 1,
+			"total": 1,
+			"comments": [
+				{
+					"self": "http://localhost:2990/jira/rest/api/2/issue/10050/comment/10040",
+					"id": "10040",
+					"body": "Comment from anonymous user",
+					"created": "2010-12-06T13:09:30.661+0100",
+					"updated": "2010-12-06T13:09:30.661+0100"
+				}
+			]
 		},
 		"customfield_10010": null,
-		"timeoriginalestimate": 0,
+		"timeoriginalestimate": 162000,
 		"customfield_10011": null,
 		"aggregatetimespent": null
 	},
@@ -142,11 +149,9 @@
 		"priority": "Priority",
 		"duedate": "Due Date",
 		"customfield_10001": "My Radio buttons",
-		"customfield_10020": "Extra User",
 		"issuelinks": "Linked Issues",
 		"watches": "Watchers",
 		"worklog": "Log Work",
-		"customfield_10000": "My Number Field New",
 		"subtasks": "Sub-Tasks",
 		"status": "Status",
 		"labels": "Labels",
@@ -238,11 +243,6 @@
 			"custom": "com.atlassian.jira.plugin.system.customfieldtypes:radiobuttons",
 			"customId": 10001
 		},
-		"customfield_10020": {
-			"type": "user",
-			"custom": "com.atlassian.jira.plugin.system.customfieldtypes:userpicker",
-			"customId": 10020
-		},
 		"issuelinks": {
 			"type": "array",
 			"items": "issuelinks",
@@ -257,11 +257,6 @@
 			"type": "array",
 			"items": "worklog",
 			"system": "worklog"
-		},
-		"customfield_10000": {
-			"type": "number",
-			"custom": "com.atlassian.jira.plugin.system.customfieldtypes:float",
-			"customId": 10000
 		},
 		"subtasks": {
 			"type": "array",
@@ -346,34 +341,8 @@
 	},
 	"changelog": {
 		"startAt": 0,
-		"maxResults": 1,
-		"total": 1,
-		"histories": [
-			{
-				"id": "10182",
-				"author": {
-					"self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
-					"name": "admin",
-					"emailAddress": "wojciech.seliga@spartez.com",
-					"avatarUrls": {
-						"16x16": "http://localhost:2990/jira/secure/useravatar?size=small&ownerId=admin&avatarId=10054",
-						"48x48": "http://localhost:2990/jira/secure/useravatar?ownerId=admin&avatarId=10054"
-					},
-					"displayName": "Administrator",
-					"active": true
-				},
-				"created": "2012-12-07T15:49:22.069+0100",
-				"items": [
-					{
-						"field": "Extra User",
-						"fieldtype": "custom",
-						"from": null,
-						"fromString": "wseliga",
-						"to": null,
-						"toString": ""
-					}
-				]
-			}
-		]
+		"maxResults": 0,
+		"total": 0,
+		"histories": []
 	}
 }

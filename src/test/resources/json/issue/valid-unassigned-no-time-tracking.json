@@ -1,20 +1,10 @@
 {
 	"expand": "renderedFields,names,schema,transitions,operations,editmeta,changelog",
-	"id": "10071",
-	"self": "http://localhost:2990/jira/rest/api/latest/issue/10071",
-	"key": "TST-9",
+	"id": "10072",
+	"self": "http://localhost:2990/jira/rest/api/latest/issue/10072",
+	"key": "TST-10",
 	"fields": {
-		"summary": "issue with votes",
-		"progress": {
-			"progress": 0,
-			"total": 0
-		},
-		"timetracking": {
-			"originalEstimate": "0m",
-			"remainingEstimate": "0m",
-			"originalEstimateSeconds": 0,
-			"remainingEstimateSeconds": 0
-		},
+		"summary": "Not assigned",
 		"issuetype": {
 			"self": "http://localhost:2990/jira/rest/api/2/issuetype/1",
 			"id": "1",
@@ -22,6 +12,11 @@
 			"iconUrl": "http://localhost:2990/jira/images/icons/bug.gif",
 			"name": "Bug",
 			"subtask": false
+		},
+		"votes": {
+			"self": "http://localhost:2990/jira/rest/api/2/issue/TST-10/votes",
+			"votes": 0,
+			"hasVoted": false
 		},
 		"resolution": null,
 		"fixVersions": [
@@ -36,7 +31,6 @@
 			}
 		],
 		"resolutiondate": null,
-		"timespent": null,
 		"reporter": {
 			"self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
 			"name": "admin",
@@ -48,9 +42,8 @@
 			"displayName": "Administrator",
 			"active": true
 		},
-		"aggregatetimeoriginalestimate": 0,
-		"updated": "2012-12-07T15:28:57.301+0100",
-		"created": "2012-12-07T15:28:57.301+0100",
+		"created": "2012-12-07T15:31:21.197+0100",
+		"updated": "2012-12-07T15:32:44.493+0100",
 		"description": "my description",
 		"priority": {
 			"self": "http://localhost:2990/jira/rest/api/2/priority/3",
@@ -65,11 +58,10 @@
 			"id": "10001"
 		},
 		"issuelinks": [],
-		"worklog": {
-			"startAt": 0,
-			"maxResults": 0,
-			"total": 0,
-			"worklogs": []
+		"watches": {
+			"self": "http://localhost:2990/jira/rest/api/2/issue/TST-10/watchers",
+			"watchCount": 1,
+			"isWatching": false
 		},
 		"customfield_10000": 1.457,
 		"subtasks": [],
@@ -82,19 +74,8 @@
 		},
 		"labels": [],
 		"workratio": 0,
-		"assignee": {
-			"self": "http://localhost:2990/jira/rest/api/2/user?username=wseliga",
-			"name": "wseliga",
-			"emailAddress": "wojciech.seliga@spartez.com",
-			"avatarUrls": {
-				"16x16": "http://localhost:2990/jira/secure/useravatar?size=small&avatarId=10082",
-				"48x48": "http://localhost:2990/jira/secure/useravatar?avatarId=10082"
-			},
-			"displayName": "Wojciech Seliga",
-			"active": true
-		},
+		"assignee": null,
 		"attachment": [],
-		"aggregatetimeestimate": 0,
 		"project": {
 			"self": "http://localhost:2990/jira/rest/api/2/project/TST",
 			"id": "10000",
@@ -125,11 +106,6 @@
 			}
 		],
 		"environment": "abc",
-		"timeestimate": 0,
-		"aggregateprogress": {
-			"progress": 0,
-			"total": 0
-		},
 		"components": [
 			{
 				"self": "http://localhost:2990/jira/rest/api/2/component/10000",
@@ -160,29 +136,24 @@
 				"48x48": "http://localhost:2990/jira/secure/projectavatar?pid=10000&avatarId=10050"
 			}
 		},
-		"timeoriginalestimate": 0,
-		"customfield_10011": null,
-		"aggregatetimespent": null
+		"customfield_10011": null
 	},
 	"names": {
 		"summary": "Summary",
-		"progress": "Progress",
-		"timetracking": "Time Tracking",
 		"issuetype": "Issue Type",
+		"votes": "Votes",
 		"resolution": "Resolution",
 		"fixVersions": "Fix Version/s",
 		"resolutiondate": "Resolved",
-		"timespent": "Time Spent",
 		"reporter": "Reporter",
-		"aggregatetimeoriginalestimate": "Σ Original Estimate",
-		"updated": "Updated",
 		"created": "Created",
+		"updated": "Updated",
 		"description": "Description",
 		"priority": "Priority",
 		"duedate": "Due Date",
 		"customfield_10001": "My Radio buttons",
 		"issuelinks": "Linked Issues",
-		"worklog": "Log Work",
+		"watches": "Watchers",
 		"customfield_10000": "My Number Field New",
 		"subtasks": "Sub-Tasks",
 		"status": "Status",
@@ -190,35 +161,27 @@
 		"workratio": "Work Ratio",
 		"assignee": "Assignee",
 		"attachment": "Attachment",
-		"aggregatetimeestimate": "Σ Remaining Estimate",
 		"project": "Project",
 		"versions": "Affects Version/s",
 		"environment": "Environment",
-		"timeestimate": "Remaining Estimate",
-		"aggregateprogress": "Σ Progress",
 		"components": "Component/s",
 		"comment": "Comment",
 		"customfield_10010": "project3",
-		"timeoriginalestimate": "Original Estimate",
-		"customfield_10011": "project2",
-		"aggregatetimespent": "Σ Time Spent"
+		"customfield_10011": "project2"
 	},
 	"schema": {
 		"summary": {
 			"type": "string",
 			"system": "summary"
 		},
-		"progress": {
-			"type": "progress",
-			"system": "progress"
-		},
-		"timetracking": {
-			"type": "timetracking",
-			"system": "timetracking"
-		},
 		"issuetype": {
 			"type": "issuetype",
 			"system": "issuetype"
+		},
+		"votes": {
+			"type": "array",
+			"items": "votes",
+			"system": "votes"
 		},
 		"resolution": {
 			"type": "resolution",
@@ -233,25 +196,17 @@
 			"type": "datetime",
 			"system": "resolutiondate"
 		},
-		"timespent": {
-			"type": "number",
-			"system": "timespent"
-		},
 		"reporter": {
 			"type": "user",
 			"system": "reporter"
 		},
-		"aggregatetimeoriginalestimate": {
-			"type": "number",
-			"system": "aggregatetimeoriginalestimate"
+		"created": {
+			"type": "datetime",
+			"system": "created"
 		},
 		"updated": {
 			"type": "datetime",
 			"system": "updated"
-		},
-		"created": {
-			"type": "datetime",
-			"system": "created"
 		},
 		"description": {
 			"type": "string",
@@ -275,10 +230,10 @@
 			"items": "issuelinks",
 			"system": "issuelinks"
 		},
-		"worklog": {
+		"watches": {
 			"type": "array",
-			"items": "worklog",
-			"system": "worklog"
+			"items": "watches",
+			"system": "watches"
 		},
 		"customfield_10000": {
 			"type": "number",
@@ -312,10 +267,6 @@
 			"items": "attachment",
 			"system": "attachment"
 		},
-		"aggregatetimeestimate": {
-			"type": "number",
-			"system": "aggregatetimeestimate"
-		},
 		"project": {
 			"type": "project",
 			"system": "project"
@@ -328,14 +279,6 @@
 		"environment": {
 			"type": "string",
 			"system": "environment"
-		},
-		"timeestimate": {
-			"type": "number",
-			"system": "timeestimate"
-		},
-		"aggregateprogress": {
-			"type": "progress",
-			"system": "aggregateprogress"
 		},
 		"components": {
 			"type": "array",
@@ -352,18 +295,10 @@
 			"custom": "com.atlassian.jira.plugin.system.customfieldtypes:project",
 			"customId": 10010
 		},
-		"timeoriginalestimate": {
-			"type": "number",
-			"system": "timeoriginalestimate"
-		},
 		"customfield_10011": {
 			"type": "string",
 			"custom": "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
 			"customId": 10011
-		},
-		"aggregatetimespent": {
-			"type": "number",
-			"system": "aggregatetimespent"
 		}
 	},
 	"transitions": [
@@ -415,7 +350,7 @@
 								"iconClass": "butt-edit",
 								"label": "Edit",
 								"title": "Edit this issue",
-								"href": "/jira/secure/EditIssue!default.jspa?id=10071"
+								"href": "/jira/secure/EditIssue!default.jspa?id=10072"
 							}
 						],
 						"groups": []
@@ -427,21 +362,21 @@
 								"styleClass": "issueaction-assign-issue",
 								"label": "Assign",
 								"title": "Assign this issue to someone",
-								"href": "/jira/secure/AssignIssue!default.jspa?id=10071"
+								"href": "/jira/secure/AssignIssue!default.jspa?id=10072"
 							},
 							{
 								"id": "assign-to-me",
 								"styleClass": "conjoined issueaction-assign-to-me",
 								"label": "Assign To Me",
 								"title": "Assign this issue to me",
-								"href": "/jira/secure/AssignIssue.jspa?atl_token=BWU2-SJPU-J495-LC4Y|86150b354f8321a7c5faa7117f478a4142a38150|lin&id=10071&assignee=admin"
+								"href": "/jira/secure/AssignIssue.jspa?atl_token=BWU2-SJPU-J495-LC4Y|86150b354f8321a7c5faa7117f478a4142a38150|lin&id=10072&assignee=admin"
 							},
 							{
 								"id": "comment-issue",
 								"styleClass": "conjoined issueaction-comment-issue",
 								"label": "Comment",
 								"title": "Comment on this issue",
-								"href": "/jira/secure/AddComment!default.jspa?id=10071"
+								"href": "/jira/secure/AddComment!default.jspa?id=10072"
 							}
 						],
 						"groups": [
@@ -455,11 +390,11 @@
 									{
 										"links": [
 											{
-												"id": "log-work",
-												"styleClass": "issueaction-log-work",
-												"label": "Log Work",
-												"title": "Log work against this issue",
-												"href": "/jira/secure/CreateWorklog!default.jspa?id=10071"
+												"id": "attach-file",
+												"styleClass": "issueaction-attach-file",
+												"label": "Attach Files",
+												"title": "Attach one or more files to this issue",
+												"href": "/jira/secure/AttachFile!default.jspa?id=10072"
 											}
 										],
 										"groups": []
@@ -467,11 +402,25 @@
 									{
 										"links": [
 											{
-												"id": "attach-file",
-												"styleClass": "issueaction-attach-file",
-												"label": "Attach Files",
-												"title": "Attach one or more files to this issue",
-												"href": "/jira/secure/AttachFile!default.jspa?id=10071"
+												"id": "view-voters",
+												"styleClass": "issueaction-view-voters",
+												"label": "Voters",
+												"title": "View voters for this issue",
+												"href": "/jira/secure/ViewVoters!default.jspa?id=10072"
+											},
+											{
+												"id": "toggle-watch-issue",
+												"styleClass": "issueaction-watch-issue",
+												"label": "Watch Issue",
+												"title": "Start watching this issue",
+												"href": "/jira/secure/VoteOrWatchIssue.jspa?atl_token=BWU2-SJPU-J495-LC4Y|86150b354f8321a7c5faa7117f478a4142a38150|lin&id=10072&watch=watch"
+											},
+											{
+												"id": "manage-watchers",
+												"styleClass": "issueaction-manage-watchers",
+												"label": "Watchers",
+												"title": "Manage the watchers of this issue",
+												"href": "/jira/secure/ManageWatchers!default.jspa?id=10072"
 											}
 										],
 										"groups": []
@@ -483,14 +432,14 @@
 												"styleClass": "issueaction-create-subtask",
 												"label": "Create Sub-Task",
 												"title": "Create sub-task for this issue",
-												"href": "/jira/secure/CreateSubTaskIssue!default.jspa?parentIssueId=10071"
+												"href": "/jira/secure/CreateSubTaskIssue!default.jspa?parentIssueId=10072"
 											},
 											{
 												"id": "issue-to-subtask",
 												"styleClass": "issueaction-issue-to-subtask",
 												"label": "Convert to Sub-Task",
 												"title": "Convert this issue to sub-task",
-												"href": "/jira/secure/ConvertIssue.jspa?id=10071"
+												"href": "/jira/secure/ConvertIssue.jspa?id=10072"
 											}
 										],
 										"groups": []
@@ -502,28 +451,28 @@
 												"styleClass": "issueaction-move-issue",
 												"label": "Move",
 												"title": "Move this issue to another project or issue type.",
-												"href": "/jira/secure/MoveIssue!default.jspa?id=10071"
+												"href": "/jira/secure/MoveIssue!default.jspa?id=10072"
 											},
 											{
 												"id": "link-issue",
 												"styleClass": "issueaction-link-issue",
 												"label": "Link",
 												"title": "Link this issue to another issue or item",
-												"href": "/jira/secure/LinkExistingIssue!default.jspa?id=10071"
+												"href": "/jira/secure/LinkExistingIssue!default.jspa?id=10072"
 											},
 											{
 												"id": "clone-issue",
 												"styleClass": "issueaction-clone-issue",
 												"label": "Clone",
 												"title": "Clone this issue",
-												"href": "/jira/secure/CloneIssueDetails!default.jspa?id=10071"
+												"href": "/jira/secure/CloneIssueDetails!default.jspa?id=10072"
 											},
 											{
 												"id": "edit-labels",
 												"styleClass": "issueaction-edit-labels",
 												"label": "Labels",
 												"title": "Edit this issue's labels",
-												"href": "/jira/secure/EditLabels!default.jspa?id=10071"
+												"href": "/jira/secure/EditLabels!default.jspa?id=10072"
 											}
 										],
 										"groups": []
@@ -535,7 +484,7 @@
 												"styleClass": "issueaction-delete-issue",
 												"label": "Delete",
 												"title": "Delete this issue",
-												"href": "/jira/secure/DeleteIssue!default.jspa?id=10071"
+												"href": "/jira/secure/DeleteIssue!default.jspa?id=10072"
 											}
 										],
 										"groups": []
@@ -550,13 +499,13 @@
 								"id": "action_id_5",
 								"styleClass": "issueaction-workflow-transition",
 								"label": "Resolve Issue",
-								"href": "/jira/secure/WorkflowUIDispatcher.jspa?id=10071&action=5&atl_token="
+								"href": "/jira/secure/WorkflowUIDispatcher.jspa?id=10072&action=5&atl_token="
 							},
 							{
 								"id": "action_id_2",
 								"styleClass": "issueaction-workflow-transition",
 								"label": "Close Issue",
-								"href": "/jira/secure/WorkflowUIDispatcher.jspa?id=10071&action=2&atl_token="
+								"href": "/jira/secure/WorkflowUIDispatcher.jspa?id=10072&action=2&atl_token="
 							}
 						],
 						"groups": [
@@ -574,7 +523,7 @@
 												"styleClass": "issueaction-workflow-transition",
 												"label": "Estimate",
 												"title": "Estimate - Provide some estimation",
-												"href": "/jira/secure/WorkflowUIDispatcher.jspa?id=10071&action=711&atl_token="
+												"href": "/jira/secure/WorkflowUIDispatcher.jspa?id=10072&action=711&atl_token="
 											}
 										],
 										"groups": []
@@ -598,15 +547,15 @@
 						"links": [
 							{
 								"label": "XML",
-								"href": "/jira/si/jira.issueviews:issue-xml/TST-9/TST-9.xml"
+								"href": "/jira/si/jira.issueviews:issue-xml/TST-10/TST-10.xml"
 							},
 							{
 								"label": "Word",
-								"href": "/jira/si/jira.issueviews:issue-word/TST-9/TST-9.doc"
+								"href": "/jira/si/jira.issueviews:issue-word/TST-10/TST-10.doc"
 							},
 							{
 								"label": "Printable",
-								"href": "/jira/si/jira.issueviews:issue-html/TST-9/TST-9.html"
+								"href": "/jira/si/jira.issueviews:issue-html/TST-10/TST-10.html"
 							}
 						],
 						"groups": []
@@ -626,18 +575,6 @@
 				"name": "Summary",
 				"operations": [
 					"set"
-				]
-			},
-			"timetracking": {
-				"required": false,
-				"schema": {
-					"type": "timetracking",
-					"system": "timetracking"
-				},
-				"name": "Time Tracking",
-				"operations": [
-					"set",
-					"edit"
 				]
 			},
 			"issuetype": {
@@ -705,7 +642,7 @@
 					"system": "assignee"
 				},
 				"name": "Assignee",
-				"autoCompleteUrl": "http://localhost:2990/jira/rest/api/latest/user/assignable/search?issueKey=TST-9&username=",
+				"autoCompleteUrl": "http://localhost:2990/jira/rest/api/latest/user/assignable/search?issueKey=TST-10&username=",
 				"operations": [
 					"set"
 				]
@@ -1023,8 +960,59 @@
 	},
 	"changelog": {
 		"startAt": 0,
-		"maxResults": 0,
-		"total": 0,
-		"histories": []
+		"maxResults": 2,
+		"total": 2,
+		"histories": [
+			{
+				"id": "10173",
+				"author": {
+					"self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+					"name": "admin",
+					"emailAddress": "wojciech.seliga@spartez.com",
+					"avatarUrls": {
+						"16x16": "http://localhost:2990/jira/secure/useravatar?size=small&ownerId=admin&avatarId=10054",
+						"48x48": "http://localhost:2990/jira/secure/useravatar?ownerId=admin&avatarId=10054"
+					},
+					"displayName": "Administrator",
+					"active": true
+				},
+				"created": "2012-12-07T15:31:32.126+0100",
+				"items": [
+					{
+						"field": "assignee",
+						"fieldtype": "jira",
+						"from": "wseliga",
+						"fromString": "Wojciech Seliga",
+						"to": "admin",
+						"toString": "Administrator"
+					}
+				]
+			},
+			{
+				"id": "10174",
+				"author": {
+					"self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+					"name": "admin",
+					"emailAddress": "wojciech.seliga@spartez.com",
+					"avatarUrls": {
+						"16x16": "http://localhost:2990/jira/secure/useravatar?size=small&ownerId=admin&avatarId=10054",
+						"48x48": "http://localhost:2990/jira/secure/useravatar?ownerId=admin&avatarId=10054"
+					},
+					"displayName": "Administrator",
+					"active": true
+				},
+				"created": "2012-12-07T15:32:44.495+0100",
+				"items": [
+					{
+						"field": "assignee",
+						"fieldtype": "jira",
+						"from": "admin",
+						"fromString": "Administrator",
+						"to": null,
+						"toString": null
+					}
+				]
+			}
+		]
 	}
 }
