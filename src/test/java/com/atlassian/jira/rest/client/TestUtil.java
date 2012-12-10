@@ -148,8 +148,6 @@ public class TestUtil {
 		return transitionFound;
 	}
 
-
-
 	private static void assertErrorCode(int errorCode, String message, Runnable runnable) {
 		try {
 			runnable.run();
@@ -164,12 +162,16 @@ public class TestUtil {
 			Assert.assertTrue("Expected UniformInterfaceException cause, but was [" + e.getCause() + "]", e.getCause() instanceof UniformInterfaceException);
 			Assert.assertEquals(errorCode, ((UniformInterfaceException) e.getCause()).getResponse().getStatus());
 			if (message != null && !message.equals(StringUtils.EMPTY)) {
-				final ErrorCollection onlyElement = Iterators.getOnlyElement(e.getErrorCollections().iterator());
-				if (!onlyElement.getErrorMessages().isEmpty()) {
-					Assert.assertEquals(message, Iterators.getOnlyElement(onlyElement.getErrorMessages().iterator()));
-				}
-				if (!onlyElement.getErrors().isEmpty()) {
-					Assert.assertEquals(message, Iterators.getOnlyElement(onlyElement.getErrors().values().iterator()));
+				if (e.getErrorCollections().isEmpty()) {
+					Assert.assertEquals(message, e.getMessage());
+				} else {
+					final ErrorCollection errorCollection = Iterators.getOnlyElement(e.getErrorCollections().iterator());
+					if (!errorCollection.getErrorMessages().isEmpty()) {
+						Assert.assertEquals(message, Iterators.getOnlyElement(errorCollection.getErrorMessages().iterator()));
+					}
+					if (!errorCollection.getErrors().isEmpty()) {
+						Assert.assertEquals(message, Iterators.getOnlyElement(errorCollection.getErrors().values().iterator()));
+					}
 				}
 			}
 		}
