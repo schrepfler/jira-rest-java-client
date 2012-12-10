@@ -36,10 +36,12 @@ import com.atlassian.jira.rest.client.domain.input.AttachmentInput;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.LinkIssuesInput;
 import com.atlassian.jira.rest.client.domain.input.TransitionInput;
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
@@ -69,6 +71,7 @@ import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER1;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER_ADMIN;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.resolveURI;
 import static com.atlassian.jira.rest.client.TestUtil.assertErrorCode;
+import static com.atlassian.jira.rest.client.TestUtil.assertExpectedErrorCollection;
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_4_3;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.ADMIN_PASSWORD;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.ADMIN_USERNAME;
@@ -450,7 +453,13 @@ public class JerseyIssueRestClientTest extends AbstractJerseyRestClientTest {
 				client.getIssueClient().linkIssue(new LinkIssuesInput("TST-7", "RST-1", "Duplicate", null), pm);
 			}
 		});
-		assertErrorCode(Response.Status.BAD_REQUEST, "Failed to create comment for issue 'TST-6'\nYou are currently not a member of the project role: Administrators.", new Runnable() {
+		final ErrorCollection.Builder ecb = ErrorCollection.Builder.builder();
+		ecb.status(Response.Status.BAD_REQUEST.getStatusCode())
+				.errorMessage("Failed to create comment for issue 'TST-6'")
+				.error("commentLevel", "You are currently not a member of the project role: Administrators.");
+		final ImmutableList<ErrorCollection> errorCollections = ImmutableList.of(ecb.build());
+
+		assertExpectedErrorCollection(errorCollections, new Runnable() {
 			@Override
 			public void run() {
 				client.getIssueClient().linkIssue(new LinkIssuesInput("TST-7", "TST-6", "Duplicate",

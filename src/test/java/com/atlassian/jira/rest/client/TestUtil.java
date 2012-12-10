@@ -17,8 +17,11 @@
 package com.atlassian.jira.rest.client;
 
 import com.atlassian.jira.rest.client.domain.Transition;
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
+import com.google.common.collect.Iterators;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import junit.framework.Assert;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -28,6 +31,7 @@ import javax.annotation.Nullable;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Collection;
 
 public class TestUtil {
 	private static DateTimeFormatter formatter = ISODateTimeFormat.dateTime();
@@ -51,7 +55,7 @@ public class TestUtil {
 	}
 
 	public static void assertErrorCode(int errorCode, Runnable runnable) {
-		assertErrorCode(errorCode, null, runnable);
+		assertErrorCode(errorCode, StringUtils.EMPTY, runnable);
 	}
 
 	@SuppressWarnings("unused")
@@ -72,52 +76,38 @@ public class TestUtil {
 
 	}
 
-
+	@Deprecated
 	public static void assertErrorCode(Response.Status status, String message, Runnable runnable) {
 		assertErrorCode(status.getStatusCode(), message, runnable);
 	}
 
+	public static void assertExpectedErrorCollection(final Collection<ErrorCollection> errors, final Runnable runnable) {
+		assertExpectedErrors(errors, runnable);
+	}
+
 	public static void assertErrorCodeWithRegexp(Response.Status status, String regexp, Runnable runnable) {
+
 		assertErrorCodeWithRegexp(status.getStatusCode(), regexp, runnable);
 	}
 
 	public static void assertErrorCode(Response.Status status, Runnable runnable) {
-		assertErrorCode(status.getStatusCode(), null, runnable);
+		assertErrorCode(status.getStatusCode(), StringUtils.EMPTY, runnable);
 	}
 
-	public static void assertErrorCode(int errorCode, String message, Runnable runnable) {
-		try {
-			runnable.run();
-			Assert.fail(UniformInterfaceException.class + " exception expected");
-		} catch (UniformInterfaceException e) {
-			final String msg = e.getResponse().getEntity(String.class);
-			if (errorCode != e.getResponse().getStatus()) {
-				Assert.fail("Unexpected error code and message [" + msg
-						+ "]. Expected [" + errorCode + "], actual [" + e.getResponse().getStatus() + "]");
-			}
-//			Assert.assertEquals(errorCode, );
-		} catch (RestClientException e) {
-			Assert.assertTrue("Expected UniformInterfaceException cause, but was [" + e.getCause() + "]", e.getCause() instanceof UniformInterfaceException);
-			Assert.assertEquals(errorCode, ((UniformInterfaceException) e.getCause()).getResponse().getStatus());
-			if (message != null) {
-				Assert.assertEquals(message, e.getMessage());
-			}
-		}
-	}
-
-	public static void assertErrorCodeWithRegexp(int errorCode, String regExp, Runnable runnable) {
+	public static void assertErrorCodeWithRegexp(final int errorCode, final String regExp, final Runnable runnable) {
 		try {
 			runnable.run();
 			Assert.fail(UniformInterfaceException.class + " exception expected");
 		} catch (UniformInterfaceException e) {
 			Assert.assertEquals(errorCode, e.getResponse().getStatus());
-		} catch (RestClientException e) {
-			Assert.assertTrue(e.getCause() instanceof UniformInterfaceException);
-			Assert.assertEquals(errorCode, ((UniformInterfaceException) e.getCause()).getResponse().getStatus());
-			Assert.assertTrue("'" + e.getMessage() + "' does not match regexp '" + regExp + "'", e.getMessage().matches(regExp));
+		} catch (RestClientException ex) {
+			Assert.assertTrue(ex.getCause() instanceof UniformInterfaceException);
+			final ErrorCollection errorElement = Iterators.getOnlyElement(ex.getErrorCollections().iterator());
+			Assert.assertEquals(errorElement.getStatus().intValue(), ((UniformInterfaceException) ex.getCause()).getResponse().getStatus());
+			final String errorMessage = Iterators.getOnlyElement(errorElement.getErrorMessages().iterator());
+			Assert.assertTrue("'" + ex.getMessage() + "' does not match regexp '" + regExp + "'", errorMessage.matches(regExp));
 		}
 	}
-
 
 	public static String getLastPathSegment(URI uri) {
 		final String path = uri.getPath();
@@ -156,5 +146,49 @@ public class TestUtil {
 			}
 		}
 		return transitionFound;
+	}
+
+
+
+	private static void assertErrorCode(int errorCode, String message, Runnable runnable) {
+		try {
+			runnable.run();
+			Assert.fail(UniformInterfaceException.class + " exception expected");
+		} catch (UniformInterfaceException e) {
+			final String msg = e.getResponse().getEntity(String.class);
+			if (errorCode != e.getResponse().getStatus()) {
+				Assert.fail("Unexpected error code and message [" + msg
+						+ "]. Expected [" + errorCode + "], actual [" + e.getResponse().getStatus() + "]");
+			}
+		} catch (RestClientException e) {
+			Assert.assertTrue("Expected UniformInterfaceException cause, but was [" + e.getCause() + "]", e.getCause() instanceof UniformInterfaceException);
+			Assert.assertEquals(errorCode, ((UniformInterfaceException) e.getCause()).getResponse().getStatus());
+			if (message != null && !message.equals(StringUtils.EMPTY)) {
+				final ErrorCollection onlyElement = Iterators.getOnlyElement(e.getErrorCollections().iterator());
+				if (!onlyElement.getErrorMessages().isEmpty()) {
+					Assert.assertEquals(message, Iterators.getOnlyElement(onlyElement.getErrorMessages().iterator()));
+				}
+				if (!onlyElement.getErrors().isEmpty()) {
+					Assert.assertEquals(message, Iterators.getOnlyElement(onlyElement.getErrors().values().iterator()));
+				}
+			}
+		}
+	}
+
+	private static void assertExpectedErrors(final Collection<ErrorCollection> expectedErrors, final Runnable runnable) {
+		try {
+			runnable.run();
+			Assert.fail(UniformInterfaceException.class + " exception expected");
+		} catch (UniformInterfaceException e) {
+			final String msg = e.getResponse().getEntity(String.class);
+			final ErrorCollection onlyElement = Iterators.getOnlyElement(expectedErrors.iterator());
+			if (onlyElement.getStatus() != e.getResponse().getStatus()) {
+				Assert.fail("Unexpected error code and message [" + msg
+						+ "]. Expected [" + onlyElement.getStatus() + "], actual [" + e.getResponse().getStatus() + "]");
+			}
+		} catch (RestClientException e) {
+			Assert.assertTrue("Expected UniformInterfaceException cause, but was [" + e.getCause() + "]", e.getCause() instanceof UniformInterfaceException);
+			Assert.assertEquals(e.getErrorCollections(),expectedErrors);
+		}
 	}
 }

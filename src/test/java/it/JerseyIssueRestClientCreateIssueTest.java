@@ -41,6 +41,7 @@ import com.atlassian.jira.rest.client.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -452,6 +453,81 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 		}
 	}
 
+	@JiraBuildNumberDependent(value = BN_JIRA_6)
+	@Test
+	public void testCreateManySubtasksInGivenOrderWithAllFailing() throws NoSuchFieldException, IllegalAccessException {
+		// collect CreateIssueMetadata for project with key TST
+		final IssueRestClient issueClient = client.getIssueClient();
+		final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
+				new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build(), pm);
+
+		// select project and issue
+		assertEquals(1, Iterables.size(metadataProjects));
+		final CimProject project = metadataProjects.iterator().next();
+		final CimIssueType issueType = EntityHelper.findEntityByName(project.getIssueTypes(), "Sub-task");
+
+		// grab the first component
+		final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+		assertNotNull(allowedValuesForComponents);
+		assertTrue(allowedValuesForComponents.iterator().hasNext());
+		final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
+
+		// grab the first priority
+		final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+		assertNotNull(allowedValuesForPriority);
+		assertTrue(allowedValuesForPriority.iterator().hasNext());
+		final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
+
+		// build issue input
+		final String description = "Some description for substask";
+		final BasicUser assignee = IntegrationTestUtil.USER1;
+		final List<String> affectedVersionsNames = Collections.emptyList();
+		final DateTime dueDate = new DateTime(new Date().getTime());
+		final ArrayList<String> fixVersionsNames = Lists.newArrayList("1.1");
+
+		final Set<String> summaries = ImmutableSet.of("Summary 1","Summary 2","Summary 3","Summary 4","Summary 5");
+		final Set<String> summariesWithError = ImmutableSet.of("Summary 1","Summary 2","Summary 3","Summary 4","Summary 5");
+
+		final int issuesToCreateCount = summaries.size() - summariesWithError.size();
+		final int issuesInErrorCount = summariesWithError.size();
+
+		final List<IssueInput> issuesToCreate = Lists.newArrayList();
+		// prepare IssueInput
+		for (final String summary : summaries) {
+			String currentProjectKey = project.getKey();
+			//last issue to create will have a non existing project - to simulate creation error
+			if (summariesWithError.contains(summary)) {
+				currentProjectKey = "FAKE_KEY";
+			}
+
+			final IssueInputBuilder issueInputBuilder =
+					new IssueInputBuilder(currentProjectKey, issueType.getId(), summary)
+							.setDescription(description)
+							.setAssignee(assignee)
+							.setAffectedVersionsNames(affectedVersionsNames)
+							.setFixVersionsNames(fixVersionsNames)
+							.setComponents(component)
+							.setDueDate(dueDate)
+							.setPriority(priority)
+							.setFieldValue("parent",
+									ComplexIssueInputFieldValue.with("key", "TST-1"));
+
+			issuesToCreate.add(issueInputBuilder.build());
+		}
+		assertEquals(summaries.size(), issuesToCreate.size());
+
+		// create
+		try {
+			issueClient.createIssues(issuesToCreate, pm);
+		} catch (RestClientException ex) {
+			assertEquals(issuesInErrorCount, ex.getErrorCollections().size());
+			for (final ErrorCollection errorCollection : ex.getErrorCollections()) {
+				assertTrue("Unexpected error messages", errorCollection.getErrorMessages().isEmpty());
+				final String message = errorCollection.getErrors().get("project");
+				assertEquals("project is required", message);
+			}
+		}
+	}
 
 	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test

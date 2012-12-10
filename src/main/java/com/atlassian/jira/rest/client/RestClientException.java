@@ -16,10 +16,9 @@
 
 package com.atlassian.jira.rest.client;
 
-import com.google.common.base.Joiner;
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
+import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -30,39 +29,27 @@ import java.util.Collections;
  * @since v0.1
  */
 public class RestClientException extends RuntimeException {
-    private final Collection<String> errorMessages;
+	private final Collection<ErrorCollection> errorCollections;
 
-    public RestClientException(Throwable cause) {
+    public RestClientException(final Throwable cause) {
         super(cause);
-        errorMessages = Collections.emptyList();
+		errorCollections = Collections.emptyList();
     }
-    public RestClientException(String errorMessage, Throwable cause) {
+
+    public RestClientException(final Collection<ErrorCollection> errorCollections, final Throwable cause) {
+        super(errorCollections.toString(), cause);
+		this.errorCollections = ImmutableList.copyOf(errorCollections);
+    }
+
+    public RestClientException(final String errorMessage, final Throwable cause) {
         super(errorMessage, cause);
-        this.errorMessages = Arrays.asList(errorMessage);
-    }
-
-
-    /**
-     * @param errorMessages messages which will be joined with newline character and accessible then via {@link #getMessage()}
-     * @param cause the cause of this exception or <code>null</code>
-     */
-    public RestClientException(Collection<String> errorMessages, Throwable cause) {
-        super(Joiner.on("\n").join(errorMessages), cause);
-        this.errorMessages = new ArrayList<String>(errorMessages);
-    }
-
-    /**
-     * @param errorMessages messages which will be joined with newline character and accessible then via {@link #getMessage()}
-     */
-    public RestClientException(Collection<String> errorMessages) {
-        super(Joiner.on("\n").join(errorMessages));
-        this.errorMessages = new ArrayList<String>(errorMessages);
+		this.errorCollections = ImmutableList.of(new ErrorCollection(errorMessage));
     }
 
     /**
      * @return error messages used while building this exception object
      */
-    public Iterable<String> getErrorMessages() {
-        return errorMessages;
+    public Collection<ErrorCollection> getErrorCollections() {
+        return errorCollections;
     }
 }

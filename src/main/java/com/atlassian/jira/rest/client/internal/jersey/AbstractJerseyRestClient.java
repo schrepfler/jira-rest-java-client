@@ -18,10 +18,13 @@ package com.atlassian.jira.rest.client.internal.jersey;
 
 import com.atlassian.jira.rest.client.ProgressMonitor;
 import com.atlassian.jira.rest.client.RestClientException;
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.atlassian.jira.rest.client.internal.json.gen.JsonGenerator;
+import com.google.common.collect.ImmutableList;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
@@ -31,8 +34,9 @@ import org.codehaus.jettison.json.JSONObject;
 
 import javax.annotation.Nullable;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -52,22 +56,15 @@ public abstract class AbstractJerseyRestClient {
 	protected <T> T invoke(Callable<T> callable) throws RestClientException {
 		try {
 			return callable.call();
-		} catch (UniformInterfaceException e) {
-//			// maybe captcha?
-//			if (e.getResponse().getClientResponseStatus() == ClientResponse.Status.FORBIDDEN || e.getResponse().getClientResponseStatus() == ClientResponse.Status.UNAUTHORIZED) {
-//
-//			}
-//			final List<String> headers = e.getResponse().getHeaders().get("X-Authentication-Denied-Reason");
-//			if (headers != null) {
-//				System.out.println(headers);
-//			}
-//
+		} catch (UniformInterfaceException ex) {
+			//todo: try to handle captcha -> read change history
 			try {
-				final String body = e.getResponse().getEntity(String.class);
-				final Collection<String> errorMessages = extractErrors(body);
-				throw new RestClientException(errorMessages, e);
+				final ClientResponse response = ex.getResponse();
+				final String body = response.getEntity(String.class);
+				final Collection<ErrorCollection> errorMessages = extractErrors(response.getStatus(), body);
+				throw new RestClientException(errorMessages, ex);
 			} catch (JSONException e1) {
-				throw new RestClientException(e);
+				throw new RestClientException(ex);
 			}
 		} catch (RestClientException e) {
 			throw e;
@@ -190,21 +187,20 @@ public abstract class AbstractJerseyRestClient {
 	}
 
 
-	static Collection<String> extractErrors(String body) throws JSONException {
-		JSONObject jsonObject = new JSONObject(body);
-		final Collection<String> errorMessages = new ArrayList<String>();
-		final JSONArray errorMessagesJsonArray = jsonObject.optJSONArray("errorMessages");
-		if (errorMessagesJsonArray != null) {
-			errorMessages.addAll(JsonParseUtil.toStringCollection(errorMessagesJsonArray));
-		}
-		final JSONObject errorJsonObject = jsonObject.optJSONObject("errors");
-		if (errorJsonObject != null) {
-			final JSONArray valuesJsonArray = errorJsonObject.toJSONArray(errorJsonObject.names());
-			if (valuesJsonArray != null) {
-				errorMessages.addAll(JsonParseUtil.toStringCollection(valuesJsonArray));
+	static Collection<ErrorCollection> extractErrors(final int status, final String body) throws JSONException {
+		final JSONObject jsonObject = new JSONObject(body);
+		final JSONArray issues = jsonObject.optJSONArray("issues");
+		final ImmutableList.Builder<ErrorCollection> results  = ImmutableList.builder();
+		if (issues != null && issues.length() == 0) {
+			final JSONArray errors = jsonObject.optJSONArray("errors");
+			for (int i = 0; i < errors.length(); i++ ) {
+				final JSONObject currentJsonObject = errors.getJSONObject(i);
+				results.add(getErrorsFromJson(currentJsonObject.getInt("status"), currentJsonObject.optJSONObject("elementErrors")));
 			}
+		} else {
+			results.add(getErrorsFromJson(status, jsonObject));
 		}
-		return errorMessages;
+		return results.build();
 	}
 
 
@@ -228,5 +224,24 @@ public abstract class AbstractJerseyRestClient {
 		}
 	}
 
+	private static ErrorCollection getErrorsFromJson(final int status, final JSONObject jsonObject) throws JSONException {
+		final JSONObject jsonErrors = jsonObject.optJSONObject("errors");
+		final JSONArray jsonErrorMessages = jsonObject.optJSONArray("errorMessages");
+
+		final Collection<String> errorMessages;
+		if (jsonErrorMessages != null) {
+			errorMessages = JsonParseUtil.toStringCollection(jsonErrorMessages);
+		} else {
+			errorMessages = Collections.emptyList();
+		}
+
+		final Map<String,String> errors;
+		if (jsonErrors != null && jsonErrors.length() > 0) {
+			errors = JsonParseUtil.toStringMap(jsonErrors.names(), jsonErrors);
+		}  else {
+			errors = Collections.emptyMap();
+		}
+		return new ErrorCollection(status, errorMessages, errors);
+	}
 
 }

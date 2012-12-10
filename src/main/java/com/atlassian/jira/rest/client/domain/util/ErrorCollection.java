@@ -1,13 +1,17 @@
 package com.atlassian.jira.rest.client.domain.util;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
+ * Error container returned in bulk operations
  *
- * @since v5.2
+ * @since v2.0
  */
 public class ErrorCollection {
 
@@ -19,6 +23,10 @@ public class ErrorCollection {
 		this.status = status;
 		this.errors = errors;
 		this.errorMessages = errorMessages;
+	}
+
+	public ErrorCollection(final String errorMessage) {
+		this(null, ImmutableList.of(errorMessage), Collections.<String,String>emptyMap());
 	}
 
 	public Integer getStatus() {
@@ -41,7 +49,6 @@ public class ErrorCollection {
 				.add("errors", errors)
 				.add("errorMessages", errorMessages)
 				.toString();
-
 	}
 
 	@Override
@@ -61,5 +68,42 @@ public class ErrorCollection {
 	public int hashCode()
 	{
 		return Objects.hashCode(status, errors, errorMessages);
+	}
+
+	public static class Builder {
+
+		private int status;
+		private final ImmutableMap.Builder<String,String> errors;
+		private final ImmutableList.Builder<String> errorMessages;
+
+		public Builder() {
+			errors = ImmutableMap.builder();
+			errorMessages = ImmutableList.builder();
+		}
+
+		public Builder status(final int status) {
+			this.status = status;
+			return this;
+		}
+
+		public Builder error(final String key, final String message) {
+			errors.put(key, message);
+			return this;
+
+		}
+
+		public Builder errorMessage(final String message) {
+			errorMessages.add(message);
+			return this;
+		}
+
+		public ErrorCollection build() {
+			return new ErrorCollection(status, errorMessages.build(), errors.build());
+		}
+
+		public static Builder builder() {
+			return new Builder();
+		}
+
 	}
 }

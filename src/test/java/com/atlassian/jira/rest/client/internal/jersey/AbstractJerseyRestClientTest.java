@@ -16,7 +16,9 @@
 
 package com.atlassian.jira.rest.client.internal.jersey;
 
+import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.json.ResourceUtil;
+import com.google.common.collect.Iterators;
 import org.codehaus.jettison.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,32 +28,39 @@ import java.util.Collection;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 public class AbstractJerseyRestClientTest {
+
+	private static final int BAD_REQUEST = 400;
+
 	@Test
 	public void testExtractErrors() throws JSONException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid.json");
-		final Collection<String> stringCollection = AbstractJerseyRestClient.extractErrors(str);
-		Assert.assertThat(stringCollection, containsInAnyOrder("abcfsd"));
+		final Collection<ErrorCollection> errors = AbstractJerseyRestClient.extractErrors(BAD_REQUEST, str);
+		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
+		Assert.assertThat(errorCollection.getErrorMessages(), containsInAnyOrder("abcfsd"));
 	}
 
 	@Test
 	public void testExtractErrors2() throws JSONException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid2.json");
-		final Collection<String> stringCollection = AbstractJerseyRestClient.extractErrors(str);
-		Assert.assertThat(stringCollection, containsInAnyOrder("a", "b", "xxx"));
+		final Collection<ErrorCollection> errors = AbstractJerseyRestClient.extractErrors(BAD_REQUEST, str);
+		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
+		Assert.assertThat(errorCollection.getErrorMessages(), containsInAnyOrder("a", "b", "xxx"));
 	}
 
 	@Test
 	public void testExtractErrors3() throws JSONException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid3.json");
-		final Collection<String> stringCollection = AbstractJerseyRestClient.extractErrors(str);
-		Assert.assertThat(stringCollection, containsInAnyOrder("aa", "bb"));
+		final Collection<ErrorCollection> errors = AbstractJerseyRestClient.extractErrors(BAD_REQUEST, str);
+		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
+		Assert.assertThat(errorCollection.getErrorMessages(), containsInAnyOrder("aa", "bb"));
 	}
 
 	@Test
 	public void testExtractErrors4() throws JSONException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid4.json");
-		final Collection<String> stringCollection = AbstractJerseyRestClient.extractErrors(str);
-		Assert.assertThat(stringCollection, containsInAnyOrder("a", "b", "y", "z"));
+		final Collection<ErrorCollection> errors = AbstractJerseyRestClient.extractErrors(BAD_REQUEST, str);
+		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
+		Assert.assertThat(errorCollection.getErrorMessages(), containsInAnyOrder("a", "b", "y", "z"));
 	}
 
 }
