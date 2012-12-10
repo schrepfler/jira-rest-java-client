@@ -39,6 +39,7 @@ import com.atlassian.jira.rest.client.domain.Worklog;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.hamcrest.collection.IsEmptyCollection;
@@ -132,7 +133,7 @@ public class IssueJsonParserTest {
 		assertEquals(Visibility.group("jira-users"), worklog2.getVisibility());
 
 		final Worklog worklog3 = Iterables.get(worklogs, 3);
-		assertEquals("", worklog3.getComment());
+		assertEquals(StringUtils.EMPTY, worklog3.getComment());
 
 		// comments
 		assertEquals(4, Iterables.size(issue.getComments()));
@@ -283,7 +284,7 @@ public class IssueJsonParserTest {
         assertEquals(1, Iterables.size(worklogs));
         final Worklog worklog = Iterables.get(worklogs, 0);
         assertEquals("Worklog comment should be returned as empty string, when JIRA doesn't include it in reply",
-				"", worklog.getComment());
+				StringUtils.EMPTY, worklog.getComment());
         assertEquals(180, worklog.getMinutesSpent());
         assertEquals("deleteduser", worklog.getAuthor().getName());
     }
