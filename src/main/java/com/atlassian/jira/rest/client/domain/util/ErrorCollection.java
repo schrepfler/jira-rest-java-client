@@ -43,6 +43,10 @@ public class ErrorCollection {
 		return errors;
 	}
 
+	public static Builder builder() {
+		return new Builder();
+	}
+
 	@Override
 	public String toString()
 	{
@@ -102,9 +106,5 @@ public class ErrorCollection {
 		public ErrorCollection build() {
 			return new ErrorCollection(status, errorMessages.build(), errors.build());
 		}
-	}
-
-	public static Builder builder() {
-		return new Builder();
 	}
 }

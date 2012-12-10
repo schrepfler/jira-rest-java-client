@@ -288,8 +288,7 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 							.setComponents(component)
 							.setDueDate(dueDate)
 							.setPriority(priority)
-							.setFieldValue("parent",
-									ComplexIssueInputFieldValue.with("key", "TST-1"));
+							.setFieldValue("parent", ComplexIssueInputFieldValue.with("key", "TST-1"));
 
 			issuesToCreate.add(issueInputBuilder.build());
 		}
@@ -399,8 +398,7 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 							.setComponents(component)
 							.setDueDate(dueDate)
 							.setPriority(priority)
-							.setFieldValue("parent",
-									ComplexIssueInputFieldValue.with("key", "TST-1"));
+							.setFieldValue("parent", ComplexIssueInputFieldValue.with("key", "TST-1"));
 
 			issuesToCreate.add(issueInputBuilder.build());
 		}
@@ -509,8 +507,7 @@ public class JerseyIssueRestClientCreateIssueTest extends AbstractJerseyRestClie
 							.setComponents(component)
 							.setDueDate(dueDate)
 							.setPriority(priority)
-							.setFieldValue("parent",
-									ComplexIssueInputFieldValue.with("key", "TST-1"));
+							.setFieldValue("parent", ComplexIssueInputFieldValue.with("key", "TST-1"));
 
 			issuesToCreate.add(issueInputBuilder.build());
 		}
