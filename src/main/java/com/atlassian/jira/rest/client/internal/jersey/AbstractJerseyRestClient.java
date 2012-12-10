@@ -63,8 +63,8 @@ public abstract class AbstractJerseyRestClient {
 				final String body = response.getEntity(String.class);
 				final Collection<ErrorCollection> errorMessages = extractErrors(response.getStatus(), body);
 				throw new RestClientException(errorMessages, ex);
-			} catch (JSONException e1) {
-				throw new RestClientException(ex);
+			} catch (JSONException jsonEx) {
+				throw new RestClientException(jsonEx);
 			}
 		} catch (RestClientException e) {
 			throw e;

@@ -19,13 +19,11 @@ package com.atlassian.jira.rest.client.internal.jersey;
 import com.atlassian.jira.rest.client.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.json.ResourceUtil;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import org.codehaus.jettison.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.List;
 
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
@@ -62,10 +60,10 @@ public class AbstractJerseyRestClientTest {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid4.json");
 		final Collection<ErrorCollection> errors = AbstractJerseyRestClient.extractErrors(BAD_REQUEST, str);
 		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
-        final List<String> lista = Lists.newArrayList(errorCollection.getErrorMessages());
-		lista.addAll(errorCollection.getErrors().values());
 
-		Assert.assertThat(lista, containsInAnyOrder("a", "b", "y", "z"));
+		Assert.assertThat(errorCollection.getErrorMessages(), containsInAnyOrder("a", "b"));
+		Assert.assertEquals(errorCollection.getErrors().get("a"),"y");
+		Assert.assertEquals(errorCollection.getErrors().get("c"),"z");
 	}
 
 }

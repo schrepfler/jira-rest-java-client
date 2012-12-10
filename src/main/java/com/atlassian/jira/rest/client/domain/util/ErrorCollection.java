@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class ErrorCollection {
 	private final Collection<String> errorMessages;
 	private final Map<String, String> errors;
 
-	public ErrorCollection(final Integer status, final Collection<String> errorMessages, final Map<String, String> errors) {
+	public ErrorCollection(@Nullable final Integer status, final Collection<String> errorMessages, final Map<String, String> errors) {
 		this.status = status;
 		this.errors = errors;
 		this.errorMessages = errorMessages;
@@ -29,6 +30,7 @@ public class ErrorCollection {
 		this(null, ImmutableList.of(errorMessage), Collections.<String,String>emptyMap());
 	}
 
+	@Nullable
 	public Integer getStatus() {
 		return status;
 	}
@@ -100,10 +102,9 @@ public class ErrorCollection {
 		public ErrorCollection build() {
 			return new ErrorCollection(status, errorMessages.build(), errors.build());
 		}
+	}
 
-		public static Builder builder() {
-			return new Builder();
-		}
-
+	public static Builder builder() {
+		return new Builder();
 	}
 }

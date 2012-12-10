@@ -453,7 +453,7 @@ public class JerseyIssueRestClientTest extends AbstractJerseyRestClientTest {
 				client.getIssueClient().linkIssue(new LinkIssuesInput("TST-7", "RST-1", "Duplicate", null), pm);
 			}
 		});
-		final ErrorCollection.Builder ecb = ErrorCollection.Builder.builder();
+		final ErrorCollection.Builder ecb = ErrorCollection.builder();
 		ecb.status(Response.Status.BAD_REQUEST.getStatusCode())
 				.errorMessage("Failed to create comment for issue 'TST-6'")
 				.error("commentLevel", "You are currently not a member of the project role: Administrators.");
