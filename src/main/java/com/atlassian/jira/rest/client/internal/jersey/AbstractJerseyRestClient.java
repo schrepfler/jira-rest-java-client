@@ -56,20 +56,21 @@ public abstract class AbstractJerseyRestClient {
 	protected <T> T invoke(Callable<T> callable) throws RestClientException {
 		try {
 			return callable.call();
-		} catch (UniformInterfaceException ex) {
+		} catch (UniformInterfaceException uniformEx) {
 			//todo: try to handle captcha -> read change history
 			try {
-				final ClientResponse response = ex.getResponse();
+				final ClientResponse response = uniformEx.getResponse();
 				final String body = response.getEntity(String.class);
 				final Collection<ErrorCollection> errorMessages = extractErrors(response.getStatus(), body);
-				throw new RestClientException(errorMessages, ex);
-			} catch (JSONException jsonEx) {
-				throw new RestClientException(jsonEx);
+				throw new RestClientException(errorMessages, uniformEx);
+			} catch (JSONException ignoredEx) {
+				//if we can't parse the response, we rethrow original exception
+				throw new RestClientException(uniformEx);
 			}
-		} catch (RestClientException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RestClientException(e);
+		} catch (RestClientException restEx) {
+			throw restEx;
+		} catch (Exception ex) {
+			throw new RestClientException(ex);
 		}
 	}
 
