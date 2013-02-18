@@ -19,6 +19,8 @@ public class IssueUpdateJsonGenerator implements JsonGenerator<Iterable<FieldInp
             for (final FieldInput field : fieldInputs) {
                 if (field.getValue() != null) {
                     fields.put(field.getId(), generator.generateFieldValueForJson(field.getValue()));
+                } else {
+                    fields.put(field.getId(), JSONObject.NULL);
                 }
             }
         }
