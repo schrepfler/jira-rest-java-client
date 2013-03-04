@@ -27,12 +27,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import javax.annotation.Nullable;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * JSON parser that produces Map of String => CimFieldInfo
@@ -119,7 +114,7 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 		final Set<StandardOperation> res = Sets.newHashSetWithExpectedSize(operationsCount);
 		for (int i = 0; i < operationsCount; i++) {
 			String opName = operations.getString(i);
-			StandardOperation op = StandardOperation.valueOf(opName.toUpperCase());
+			StandardOperation op = StandardOperation.valueOf(opName.toUpperCase(Locale.ENGLISH));
 			res.add(op);
 		}
 		return res;
