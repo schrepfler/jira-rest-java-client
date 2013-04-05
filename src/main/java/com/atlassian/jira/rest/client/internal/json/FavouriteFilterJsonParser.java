@@ -17,8 +17,8 @@ public class FavouriteFilterJsonParser implements JsonObjectParser<FavouriteFilt
         final URI selfUri = JsonParseUtil.getSelfUri(json);
         final long id = json.getLong("id");
         final String name = json.getString("name");
-        final String jql = json.getString("jql");
-        final URI searchUrl = JsonParseUtil.parseURI(json.getString("searchUrl"));
+        final String jql = json.has("jql") ? json.getString("jql") : null;
+        final URI searchUrl = json.has("searchUrl") ? JsonParseUtil.parseURI(json.getString("searchUrl")) : null;
         final URI viewUrl = JsonParseUtil.parseURI(json.getString("viewUrl"));
         return new FavouriteFilter(selfUri, name, id, jql, viewUrl, searchUrl);
     }

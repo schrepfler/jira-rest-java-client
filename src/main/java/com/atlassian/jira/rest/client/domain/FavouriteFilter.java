@@ -3,6 +3,7 @@ package com.atlassian.jira.rest.client.domain;
 import com.atlassian.jira.rest.client.IdentifiableEntity;
 import com.google.common.base.Objects;
 
+import javax.annotation.Nullable;
 import java.net.URI;
 
 /**
@@ -12,11 +13,13 @@ import java.net.URI;
  */
 public class FavouriteFilter extends AddressableNamedEntity implements IdentifiableEntity<Long> {
     private final Long id;
+    @Nullable
     private final String jql;
     private final URI viewUrl;
+    @Nullable
     private final URI searchUrl;
 
-    public FavouriteFilter(URI self, String name, Long id, String jql, URI viewUrl, URI searchUrl) {
+    public FavouriteFilter(URI self, String name, Long id, @Nullable String jql, URI viewUrl, @Nullable URI searchUrl) {
         super(self, name);
         this.id = id;
         this.jql = jql;
@@ -29,6 +32,7 @@ public class FavouriteFilter extends AddressableNamedEntity implements Identifia
         return id;
     }
 
+    @Nullable
     public String getJql() {
         return jql;
     }
@@ -37,6 +41,7 @@ public class FavouriteFilter extends AddressableNamedEntity implements Identifia
         return viewUrl;
     }
 
+    @Nullable
     public URI getSearchUrl() {
         return searchUrl;
     }
