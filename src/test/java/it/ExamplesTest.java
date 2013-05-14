@@ -31,7 +31,7 @@ public class ExamplesTest extends AbstractJerseyRestClientTest {
 
 		// -- check state after example
         IssueRestClient.Expandos[] values = IssueRestClient.Expandos.values();
-        final Issue issue = client.getIssueClient().getIssue("TST-7", ImmutableList.of(values), pm);
+        final Issue issue = client.getIssueClient().getIssue("TST-7", ImmutableList.copyOf(values), pm);
 
 		// votes
 		final BasicVotes votes = issue.getVotes();
