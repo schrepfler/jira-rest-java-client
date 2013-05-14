@@ -17,10 +17,15 @@
 package com.atlassian.jira.rest.client.internal.jersey;
 
 import com.atlassian.jira.rest.client.ProgressMonitor;
+import com.atlassian.jira.rest.client.RestClientException;
 import com.atlassian.jira.rest.client.SessionRestClient;
+import com.atlassian.jira.rest.client.domain.Authentication;
 import com.atlassian.jira.rest.client.domain.Session;
+import com.atlassian.jira.rest.client.internal.json.AuthenticationJsonParser;
 import com.atlassian.jira.rest.client.internal.json.SessionJsonParser;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -32,6 +37,7 @@ import java.net.URI;
  */
 public class JerseySessionRestClient extends AbstractJerseyRestClient  implements SessionRestClient {
 	private final SessionJsonParser sessionJsonParser = new SessionJsonParser();
+    private final AuthenticationJsonParser authenticationJsonParser = new AuthenticationJsonParser();
 
 	public JerseySessionRestClient(ApacheHttpClient client, URI serverUri) {
 		super(serverUri, client);
@@ -41,4 +47,15 @@ public class JerseySessionRestClient extends AbstractJerseyRestClient  implement
 	public Session getCurrentSession(ProgressMonitor progressMonitor) {
 		return getAndParse(UriBuilder.fromUri(baseUri).path("rest/auth/latest/session").build(), sessionJsonParser, progressMonitor);
 	}
+
+    @Override
+    public Authentication login(String username, String password, ProgressMonitor progressMonitor) throws RestClientException {
+        try {
+            return postAndParse(
+                UriBuilder.fromUri(baseUri).path("rest/auth/1/session").build(),
+                new JSONObject().put("username", username).put("password", password), authenticationJsonParser, progressMonitor);
+        } catch (JSONException e) {
+            throw new RestClientException(e);
+        }
+    }
 }
