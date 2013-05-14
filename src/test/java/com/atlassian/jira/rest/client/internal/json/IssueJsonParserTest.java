@@ -287,7 +287,7 @@ public class IssueJsonParserTest {
 		final Issue issue = parseIssue("/json/issue/subtasks-5.json");
 		Iterable<Subtask> subtasks = issue.getSubtasks();
 		assertEquals(1, Iterables.size(subtasks));
-		Subtask subtask = Iterables.get(subtasks, 0, null);
+		Subtask subtask = Iterables.get(subtasks, 0);
 		assertNotNull(subtask);
 		assertEquals("SAM-2", subtask.getIssueKey());
 		assertEquals("Open", subtask.getStatus().getName());

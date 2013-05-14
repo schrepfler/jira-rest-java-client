@@ -16,6 +16,7 @@
 
 package com.atlassian.jira.rest.client;
 
+import com.atlassian.jira.rest.client.domain.Authentication;
 import com.atlassian.jira.rest.client.domain.Session;
 
 /**
@@ -30,4 +31,6 @@ public interface SessionRestClient {
 	 * @throws RestClientException in case of problems (connectivity, malformed messages, etc.)
 	 */
 	Session getCurrentSession(ProgressMonitor progressMonitor) throws RestClientException;
+
+    Authentication login(String username, String password, ProgressMonitor progressMonitor) throws RestClientException;
 }

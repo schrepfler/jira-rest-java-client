@@ -39,7 +39,7 @@ public class TransitionJsonParserTest {
 
         final Transition transition = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/transition/validV5.json"));
         assertEquals(4, Iterables.size(transition.getFields()));
-        assertEquals(new Transition.Field("assignee", false, "user", "Assignee"), Iterables.getFirst(transition.getFields(), null));
+        assertEquals(new Transition.Field("assignee", false, "user", "Assignee"), Iterables.get(transition.getFields(), 0));
         assertEquals(5, transition.getId());
     }
 }
