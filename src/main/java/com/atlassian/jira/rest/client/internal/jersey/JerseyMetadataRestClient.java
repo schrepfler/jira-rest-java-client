@@ -18,19 +18,8 @@ package com.atlassian.jira.rest.client.internal.jersey;
 
 import com.atlassian.jira.rest.client.MetadataRestClient;
 import com.atlassian.jira.rest.client.ProgressMonitor;
-import com.atlassian.jira.rest.client.domain.IssueType;
-import com.atlassian.jira.rest.client.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.domain.Priority;
-import com.atlassian.jira.rest.client.domain.Resolution;
-import com.atlassian.jira.rest.client.domain.ServerInfo;
-import com.atlassian.jira.rest.client.domain.Status;
-import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
-import com.atlassian.jira.rest.client.internal.json.IssueLinkTypesJsonParser;
-import com.atlassian.jira.rest.client.internal.json.IssueTypeJsonParser;
-import com.atlassian.jira.rest.client.internal.json.PriorityJsonParser;
-import com.atlassian.jira.rest.client.internal.json.ResolutionJsonParser;
-import com.atlassian.jira.rest.client.internal.json.ServerInfoJsonParser;
-import com.atlassian.jira.rest.client.internal.json.StatusJsonParser;
+import com.atlassian.jira.rest.client.domain.*;
+import com.atlassian.jira.rest.client.internal.json.*;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import org.codehaus.jettison.json.JSONObject;
@@ -47,17 +36,18 @@ import java.util.concurrent.Callable;
 public class JerseyMetadataRestClient extends AbstractJerseyRestClient implements MetadataRestClient {
 	private final String SERVER_INFO_RESOURCE = "/serverInfo";
 	private final ServerInfoJsonParser serverInfoJsonParser = new ServerInfoJsonParser();
-	private final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
-	private final GenericJsonArrayParser<IssueType> issueTypesJsonParser = GenericJsonArrayParser.create(issueTypeJsonParser);
-	private final StatusJsonParser statusJsonParser = new StatusJsonParser();
+    private SessionInfoParser sessionInfoJsonParser = new SessionInfoParser();
+    private final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
+    private final GenericJsonArrayParser<IssueType> issueTypesJsonParser = GenericJsonArrayParser.create(issueTypeJsonParser);
+    private final StatusJsonParser statusJsonParser = new StatusJsonParser();
     private final GenericJsonArrayParser<Status> statusesJsonParser = GenericJsonArrayParser.create(statusJsonParser);
     private final PriorityJsonParser priorityJsonParser = new PriorityJsonParser();
-	private final GenericJsonArrayParser<Priority> prioritiesJsonParser = GenericJsonArrayParser.create(priorityJsonParser);
-	private final ResolutionJsonParser resolutionJsonParser = new ResolutionJsonParser();
-	private final GenericJsonArrayParser<Resolution> resolutionsJsonParser = GenericJsonArrayParser.create(resolutionJsonParser);
-	private final IssueLinkTypesJsonParser issueLinkTypesJsonParser = new IssueLinkTypesJsonParser();
+    private final GenericJsonArrayParser<Priority> prioritiesJsonParser = GenericJsonArrayParser.create(priorityJsonParser);
+    private final ResolutionJsonParser resolutionJsonParser = new ResolutionJsonParser();
+    private final GenericJsonArrayParser<Resolution> resolutionsJsonParser = GenericJsonArrayParser.create(resolutionJsonParser);
+    private final IssueLinkTypesJsonParser issueLinkTypesJsonParser = new IssueLinkTypesJsonParser();
 
-	public JerseyMetadataRestClient(URI baseUri, ApacheHttpClient client) {
+    public JerseyMetadataRestClient(URI baseUri, ApacheHttpClient client) {
 		super(baseUri, client);
 	}
 
@@ -122,4 +112,18 @@ public class JerseyMetadataRestClient extends AbstractJerseyRestClient implement
 			}
 		});
 	}
+
+    @Override
+    public SessionInfo getSessionInfo(ProgressMonitor progressMonitor) {
+        return invoke(new Callable<SessionInfo>() {
+            @Override
+            public SessionInfo call() throws Exception {
+
+                URI sessionUri = UriBuilder.fromUri(baseUri.toString().replace("api", "auth")).path("/session").build();
+
+                final WebResource sessionInfoResource = client.resource(sessionUri);
+                return sessionInfoJsonParser.parse(sessionInfoResource.get(JSONObject.class));
+            }
+        });
+    }
 }

@@ -16,12 +16,7 @@
 
 package com.atlassian.jira.rest.client;
 
-import com.atlassian.jira.rest.client.domain.IssueType;
-import com.atlassian.jira.rest.client.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.domain.Priority;
-import com.atlassian.jira.rest.client.domain.Resolution;
-import com.atlassian.jira.rest.client.domain.ServerInfo;
-import com.atlassian.jira.rest.client.domain.Status;
+import com.atlassian.jira.rest.client.domain.*;
 
 import java.net.URI;
 
@@ -122,4 +117,12 @@ public interface MetadataRestClient {
 	 * @throws RestClientException in case of problems (connectivity, malformed messages, etc.)
 	 */
 	ServerInfo getServerInfo(ProgressMonitor progressMonitor);
+
+    /**
+     * Retrieves information about current user session
+     * @param progressMonitor progress monitor
+     * @return information about current user session
+     * @throws RestClientException in case of problems (connectivity, malformed messages, etc.)
+     */
+    SessionInfo getSessionInfo(ProgressMonitor progressMonitor);
 }
