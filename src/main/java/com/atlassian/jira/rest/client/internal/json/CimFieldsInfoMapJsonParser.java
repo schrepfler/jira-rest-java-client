@@ -119,7 +119,7 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 		}
 		return res;
 	}
-	
+
 	private  JsonObjectParser<Object> getParserFor(FieldSchema fieldSchema) throws JSONException {
 		final Set<String> customFieldsTypesWithFieldOption = ImmutableSet.of(
 				"com.atlassian.jira.plugin.system.customfieldtypes:multicheckboxes",
