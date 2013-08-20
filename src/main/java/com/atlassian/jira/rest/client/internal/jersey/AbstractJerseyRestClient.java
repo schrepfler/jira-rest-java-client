@@ -35,24 +35,30 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+import static com.sun.jersey.api.client.ClientResponse.Status.MOVED_PERMANENTLY;
+import static com.sun.jersey.api.client.ClientResponse.Status.TEMPORARY_REDIRECT;
+
 /**
  * Parent class for Jersey-based implementation of REST clients
  *
  * @since v0.1
  */
 public abstract class AbstractJerseyRestClient {
-	protected final ApacheHttpClient client;
-	protected final URI baseUri;
+    public static final int MAX_REDIRECTS = 10;
+    protected final ApacheHttpClient client;
+    private final boolean followRedirects;
+    protected final URI baseUri;
 
-	public AbstractJerseyRestClient(URI baseUri, ApacheHttpClient client) {
-		this.baseUri = baseUri;
-		this.client = client;
-	}
+    public AbstractJerseyRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
+        this.baseUri = baseUri;
+        this.client = client;
+        this.followRedirects = followRedirects;
+    }
 
-	protected <T> T invoke(Callable<T> callable) throws RestClientException {
-		try {
-			return callable.call();
-		} catch (UniformInterfaceException e) {
+    protected <T> T invoke(Callable<T> callable) throws RestClientException {
+        try {
+            return callable.call();
+        } catch (UniformInterfaceException e) {
 //			// maybe captcha?
 //			if (e.getResponse().getClientResponseStatus() == ClientResponse.Status.FORBIDDEN || e.getResponse().getClientResponseStatus() == ClientResponse.Status.UNAUTHORIZED) {
 //
@@ -62,171 +68,191 @@ public abstract class AbstractJerseyRestClient {
 //				System.out.println(headers);
 //			}
 //
-			try {
-				final String body = e.getResponse().getEntity(String.class);
-				final Collection<String> errorMessages = extractErrors(body);
-				throw new RestClientException(errorMessages, e);
-			} catch (JSONException e1) {
-				throw new RestClientException(e);
-			}
-		} catch (RestClientException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RestClientException(e);
-		}
-	}
+            try {
+                final String body = e.getResponse().getEntity(String.class);
+                final Collection<String> errorMessages = extractErrors(body);
+                throw new RestClientException(errorMessages, e);
+            } catch (JSONException e1) {
+                throw new RestClientException(e);
+            }
+        } catch (RestClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RestClientException(e);
+        }
+    }
 
-	protected <T> T getAndParse(final URI uri, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
-		return invoke(new Callable<T>() {
-			@Override
-			public T call() throws Exception {
-				final WebResource webResource = client.resource(uri);
-				final JSONObject s = webResource.get(JSONObject.class);
-				return parser.parse(s);
-			}
-		});
+    protected <T> T getAndParse(final URI uri, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
+        return invoke(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                final WebResource webResource = client.resource(uri);
+                final JSONObject s = webResource.get(JSONObject.class);
+                return parser.parse(s);
+            }
+        });
 
-	}
+    }
 
-	protected <T> T getAndParse(final URI uri, final JsonArrayParser<T> parser, ProgressMonitor progressMonitor) {
-		return invoke(new Callable<T>() {
-			@Override
-			public T call() throws Exception {
-				final WebResource webResource = client.resource(uri);
-				final JSONArray jsonArray = webResource.get(JSONArray.class);
-				return parser.parse(jsonArray);
-			}
-		});
-	}
+    protected <T> T getAndParse(final URI uri, final JsonArrayParser<T> parser, ProgressMonitor progressMonitor) {
+        return invoke(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                final WebResource webResource = client.resource(uri);
+                final JSONArray jsonArray = webResource.get(JSONArray.class);
+                return parser.parse(jsonArray);
+            }
+        });
+    }
 
-	protected void delete(final URI uri, ProgressMonitor progressMonitor) {
-		invoke(new Callable<Void>() {
-			@Override
-			public Void call() throws Exception {
-				final WebResource webResource = client.resource(uri);
-				webResource.delete();
-				return null;
-			}
-		});
-	}
+    protected void delete(final URI uri, ProgressMonitor progressMonitor) {
+        invoke(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                final WebResource webResource = client.resource(uri);
+                webResource.delete();
+                return null;
+            }
+        });
+    }
 
-	protected <T> T postAndParse(final URI uri, @Nullable final JSONObject postEntity, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
-		return invoke(new Callable<T>() {
-			@Override
-			public T call() throws Exception {
-				final WebResource webResource = client.resource(uri);
-				final JSONObject s = postEntity != null ? webResource.post(JSONObject.class, postEntity) : webResource.post(JSONObject.class);
-				return parser.parse(s);
-			}
-		});
-	}
+    protected <T> T postAndParse(final URI uri, @Nullable final JSONObject postEntity, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
+        return invoke(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                final WebResource webResource = client.resource(uri);
+                final JSONObject s = postEntity != null ? webResource.post(JSONObject.class, postEntity) : webResource.post(JSONObject.class);
+                return parser.parse(s);
+            }
+        });
+    }
 
-	protected void post(final URI uri, @Nullable final JSONObject postEntity, ProgressMonitor progressMonitor) {
-		post(uri, new Callable<JSONObject>() {
-			@Override
-			public JSONObject call() throws Exception {
-				return postEntity;
+    protected void post(final URI uri, @Nullable final JSONObject postEntity, ProgressMonitor progressMonitor) {
+        post(uri, new Callable<JSONObject>() {
+            @Override
+            public JSONObject call() throws Exception {
+                return postEntity;
 
-			}
-		}, progressMonitor);
-	}
+            }
+        }, progressMonitor);
+    }
 
-	protected void post(final URI uri, final Callable<JSONObject> callable, ProgressMonitor progressMonitor) {
-		invoke(new Callable<Void>() {
-			@Override
-			public Void call() throws Exception {
-				final WebResource webResource = client.resource(uri);
-				final JSONObject postEntity = callable.call();
-				if (postEntity != null) {
-					webResource.post(postEntity);
-				} else {
-					webResource.post();
-				}
-				return null;
-			}
-		});
+    protected void post(final URI uri, final Callable<JSONObject> callable, ProgressMonitor progressMonitor) {
+        invoke(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                final WebResource webResource = client.resource(uri);
+                final JSONObject postEntity = callable.call();
+                if (postEntity != null) {
+                    webResource.post(postEntity);
+                } else {
+                    webResource.post();
+                }
+                return null;
+            }
+        });
 
-	}
+    }
 
-	protected <T> T postAndParse(final URI uri, final Callable<JSONObject> callable, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
-		return impl(uri, Method.POST, callable, parser);
-	}
+    protected <T> T postAndParse(final URI uri, final Callable<JSONObject> callable, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
+        return impl(uri, Method.POST, callable, parser);
+    }
 
-	protected <T> T putAndParse(final URI uri, final Callable<JSONObject> callable, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
-		return impl(uri, Method.PUT, callable, parser);
-	}
+    protected <T> T putAndParse(final URI uri, final Callable<JSONObject> callable, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
+        return impl(uri, Method.PUT, callable, parser);
+    }
 
-	enum Method {
-		PUT, POST
-	}
+    enum Method {
+        PUT, POST
+    }
 
-	private <T> T impl(final URI uri, final Method method, final Callable<JSONObject> callable, final JsonObjectParser<T> parser) {
-		return invoke(new Callable<T>() {
-			@Override
-			public T call() throws Exception {
-				final WebResource webResource = client.resource(uri);
-				final JSONObject postEntity = callable.call();
-				final JSONObject s;
-				s = doHttpMethod(webResource, postEntity, method);
-				return parser.parse(s);
-			}
-		});
-	}
+    private <T> T impl(final URI uri, final Method method, final Callable<JSONObject> callable, final JsonObjectParser<T> parser) {
+        return invoke(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
 
-	private JSONObject doHttpMethod(WebResource webResource, @Nullable JSONObject postEntity, Method method) {
-		if (postEntity != null) {
-			if (method == Method.POST) {
-				return webResource.post(JSONObject.class, postEntity);
-			} else {
-				return webResource.put(JSONObject.class, postEntity);
-			}
-		} else {
-			if (method == Method.POST) {
-				return webResource.post(JSONObject.class);
-			} else {
-				return webResource.put(JSONObject.class);
-			}
-		}
-	}
+                URI currentURI = uri;
+
+                int i = 0;
+
+                do {
+                    try {
+                        final WebResource webResource = client.resource(currentURI);
+                        final JSONObject postEntity = callable.call();
+                        final JSONObject s;
+                        s = doHttpMethod(webResource, postEntity, method);
+                        return parser.parse(s);
+                    } catch (UniformInterfaceException e) {
+                        if (followRedirects && i < MAX_REDIRECTS
+                                && (e.getResponse().getStatus() == MOVED_PERMANENTLY.getStatusCode() || e.getResponse().getStatus() == TEMPORARY_REDIRECT.getStatusCode())) {
+                            currentURI = e.getResponse().getLocation();
+                        } else {
+                            throw e;
+                        }
+                    } finally {
+                        ++i;
+                    }
+                } while (i < MAX_REDIRECTS);
+
+                throw new RestClientException("Maximum number of redirects reached.");
+            }
+        });
+    }
+
+    private JSONObject doHttpMethod(WebResource webResource, @Nullable JSONObject postEntity, Method method) {
+        if (postEntity != null) {
+            if (method == Method.POST) {
+                return webResource.post(JSONObject.class, postEntity);
+            } else {
+                return webResource.put(JSONObject.class, postEntity);
+            }
+        } else {
+            if (method == Method.POST) {
+                return webResource.post(JSONObject.class);
+            } else {
+                return webResource.put(JSONObject.class);
+            }
+        }
+    }
 
 
-	static Collection<String> extractErrors(String body) throws JSONException {
-		JSONObject jsonObject = new JSONObject(body);
-		final Collection<String> errorMessages = new ArrayList<String>();
-		final JSONArray errorMessagesJsonArray = jsonObject.optJSONArray("errorMessages");
-		if (errorMessagesJsonArray != null) {
-			errorMessages.addAll(JsonParseUtil.toStringCollection(errorMessagesJsonArray));
-		}
-		final JSONObject errorJsonObject = jsonObject.optJSONObject("errors");
-		if (errorJsonObject != null) {
-			final JSONArray valuesJsonArray = errorJsonObject.toJSONArray(errorJsonObject.names());
-			if (valuesJsonArray != null) {
-				errorMessages.addAll(JsonParseUtil.toStringCollection(valuesJsonArray));
-			}
-		}
-		return errorMessages;
-	}
+    static Collection<String> extractErrors(String body) throws JSONException {
+        JSONObject jsonObject = new JSONObject(body);
+        final Collection<String> errorMessages = new ArrayList<String>();
+        final JSONArray errorMessagesJsonArray = jsonObject.optJSONArray("errorMessages");
+        if (errorMessagesJsonArray != null) {
+            errorMessages.addAll(JsonParseUtil.toStringCollection(errorMessagesJsonArray));
+        }
+        final JSONObject errorJsonObject = jsonObject.optJSONObject("errors");
+        if (errorJsonObject != null) {
+            final JSONArray valuesJsonArray = errorJsonObject.toJSONArray(errorJsonObject.names());
+            if (valuesJsonArray != null) {
+                errorMessages.addAll(JsonParseUtil.toStringCollection(valuesJsonArray));
+            }
+        }
+        return errorMessages;
+    }
 
 
-	protected static class InputGeneratorCallable<T> implements Callable<JSONObject> {
+    protected static class InputGeneratorCallable<T> implements Callable<JSONObject> {
 
-		private final JsonGenerator<T> generator;
-		private final T bean;
+        private final JsonGenerator<T> generator;
+        private final T bean;
 
-		public static <T> InputGeneratorCallable<T> create(JsonGenerator<T> generator, T bean) {
-			return new InputGeneratorCallable<T>(generator, bean);
-		}
+        public static <T> InputGeneratorCallable<T> create(JsonGenerator<T> generator, T bean) {
+            return new InputGeneratorCallable<T>(generator, bean);
+        }
 
-		public InputGeneratorCallable(JsonGenerator<T> generator, T bean) {
-			this.generator = generator;
-			this.bean = bean;
-		}
+        public InputGeneratorCallable(JsonGenerator<T> generator, T bean) {
+            this.generator = generator;
+            this.bean = bean;
+        }
 
-		@Override
-		public JSONObject call() throws Exception {
-			return generator.generate(bean);
-		}
-	}
+        @Override
+        public JSONObject call() throws Exception {
+            return generator.generate(bean);
+        }
+    }
 
 
 }

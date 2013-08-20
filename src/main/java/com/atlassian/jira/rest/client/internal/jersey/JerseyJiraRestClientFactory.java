@@ -31,7 +31,12 @@ import java.net.URI;
 public class JerseyJiraRestClientFactory implements JiraRestClientFactory {
     @Override
     public JiraRestClient create(URI serverUri, AuthenticationHandler authenticationHandler) {
-        return new JerseyJiraRestClient(serverUri, authenticationHandler);
+        return new JerseyJiraRestClient(serverUri, authenticationHandler, false);
+    }
+
+    @Override
+    public JiraRestClient create(URI serverUri, AuthenticationHandler authenticationHandler, boolean followRedirects) {
+        return new JerseyJiraRestClient(serverUri, authenticationHandler, followRedirects);
     }
 
 	@Override

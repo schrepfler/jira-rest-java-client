@@ -27,4 +27,6 @@ public interface JiraRestClientFactory {
     JiraRestClient create(URI serverUri, final AuthenticationHandler authenticationHandler);
 
 	JiraRestClient createWithBasicHttpAuthentication(URI serverUri, String username, String password);
+
+    JiraRestClient create(URI serverUri, AuthenticationHandler authenticationHandler, boolean followRedirects);
 }

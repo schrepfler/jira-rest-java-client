@@ -23,7 +23,6 @@ import com.atlassian.jira.rest.client.domain.VersionRelatedIssuesCount;
 import com.atlassian.jira.rest.client.domain.input.VersionInput;
 import com.atlassian.jira.rest.client.domain.input.VersionPosition;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
-import com.atlassian.jira.rest.client.internal.json.JsonParser;
 import com.atlassian.jira.rest.client.internal.json.VersionJsonParser;
 import com.atlassian.jira.rest.client.internal.json.VersionRelatedIssueCountJsonParser;
 import com.atlassian.jira.rest.client.internal.json.gen.JsonGenerator;
@@ -46,8 +45,8 @@ public class JerseyVersionRestClient extends AbstractJerseyRestClient implements
 
 	private final URI versionRootUri;
 
-	public JerseyVersionRestClient(URI baseUri, ApacheHttpClient client) {
-		super(baseUri, client);
+	public JerseyVersionRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 		versionRootUri = UriBuilder.fromUri(baseUri).path("version").build();
 	}
 

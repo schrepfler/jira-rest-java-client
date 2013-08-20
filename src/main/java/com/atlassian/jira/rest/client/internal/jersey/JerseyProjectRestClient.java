@@ -40,8 +40,8 @@ public class JerseyProjectRestClient extends AbstractJerseyRestClient implements
 	private final ProjectJsonParser projectJsonParser = new ProjectJsonParser();
 	private final BasicProjectsJsonParser basicProjectsJsonParser = new BasicProjectsJsonParser();
 
-	public JerseyProjectRestClient(URI baseUri, ApacheHttpClient client) {
-		super(baseUri, client);
+	public JerseyProjectRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 	}
 
 	@Override

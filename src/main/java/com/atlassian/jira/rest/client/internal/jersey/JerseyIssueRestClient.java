@@ -104,8 +104,8 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 	private final CreateIssueMetadataJsonParser createIssueMetadataJsonParser = new CreateIssueMetadataJsonParser();
 	private ServerInfo serverInfo;
 
-	public JerseyIssueRestClient(URI baseUri, ApacheHttpClient client, SessionRestClient sessionRestClient, MetadataRestClient metadataRestClient) {
-		super(baseUri, client);
+	public JerseyIssueRestClient(URI baseUri, ApacheHttpClient client, SessionRestClient sessionRestClient, MetadataRestClient metadataRestClient, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 		this.sessionRestClient = sessionRestClient;
 		this.metadataRestClient = metadataRestClient;
 	}

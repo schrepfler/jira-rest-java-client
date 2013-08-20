@@ -34,8 +34,8 @@ public class JerseyUserRestClient extends AbstractJerseyRestClient implements Us
 	private static final String USER_URI_PREFIX = "user";
 	private final UserJsonParser userJsonParser = new UserJsonParser();
 
-	public JerseyUserRestClient(URI baseUri, ApacheHttpClient client) {
-		super(baseUri, client);
+	public JerseyUserRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 	}
 
 	@Override

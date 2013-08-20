@@ -39,8 +39,8 @@ public class JerseySessionRestClient extends AbstractJerseyRestClient  implement
 	private final SessionJsonParser sessionJsonParser = new SessionJsonParser();
     private final AuthenticationJsonParser authenticationJsonParser = new AuthenticationJsonParser();
 
-	public JerseySessionRestClient(ApacheHttpClient client, URI serverUri) {
-		super(serverUri, client);
+	public JerseySessionRestClient(ApacheHttpClient client, URI serverUri, boolean followRedirects) {
+		super(serverUri, client, followRedirects);
 	}
 
 	@Override

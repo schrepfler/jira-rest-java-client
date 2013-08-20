@@ -42,8 +42,8 @@ public class JerseyComponentRestClient extends AbstractJerseyRestClient implemen
 	private final ComponentJsonParser componentJsonParser = new ComponentJsonParser();
 	private final URI componentUri;
 
-	public JerseyComponentRestClient(URI baseUri, ApacheHttpClient client) {
-		super(baseUri, client);
+	public JerseyComponentRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 		componentUri = UriBuilder.fromUri(baseUri).path("component").build();
 	}
 

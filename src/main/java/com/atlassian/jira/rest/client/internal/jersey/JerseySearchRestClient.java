@@ -59,8 +59,8 @@ public class JerseySearchRestClient extends AbstractJerseyRestClient implements 
 	private static final String SEARCH_URI_PREFIX = "search";
 	private final URI searchUri;
 
-	public JerseySearchRestClient(URI baseUri, ApacheHttpClient client) {
-		super(baseUri, client);
+	public JerseySearchRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 		searchUri = UriBuilder.fromUri(baseUri).path(SEARCH_URI_PREFIX).build();
 	}
 

@@ -60,6 +60,15 @@ public class RestClientException extends RuntimeException {
     }
 
     /**
+     *
+     * @param errorMessage
+     */
+    public RestClientException(String errorMessage) {
+        super(errorMessage);
+        this.errorMessages = Arrays.asList(errorMessage);
+    }
+
+    /**
      * @return error messages used while building this exception object
      */
     public Iterable<String> getErrorMessages() {

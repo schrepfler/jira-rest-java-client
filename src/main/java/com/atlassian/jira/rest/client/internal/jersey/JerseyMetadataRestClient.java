@@ -47,8 +47,8 @@ public class JerseyMetadataRestClient extends AbstractJerseyRestClient implement
     private final GenericJsonArrayParser<Resolution> resolutionsJsonParser = GenericJsonArrayParser.create(resolutionJsonParser);
     private final IssueLinkTypesJsonParser issueLinkTypesJsonParser = new IssueLinkTypesJsonParser();
 
-    public JerseyMetadataRestClient(URI baseUri, ApacheHttpClient client) {
-		super(baseUri, client);
+    public JerseyMetadataRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 	}
 
 	@Override

@@ -62,11 +62,11 @@ public abstract class AbstractJerseyRestClientTest extends NimbleFuncTestCase {
 	}
 
 	protected void setClient(String username, String password) {
-		client = new JerseyJiraRestClient(jiraUri, new BasicHttpAuthenticationHandler(username, password));
+		client = new JerseyJiraRestClient(jiraUri, new BasicHttpAuthenticationHandler(username, password), false);
 	}
 
 	protected void setAnonymousMode() {
-		client = new JerseyJiraRestClient(jiraUri, new AnonymousAuthenticationHandler());
+		client = new JerseyJiraRestClient(jiraUri, new AnonymousAuthenticationHandler(), false);
 	}
 
 	protected void setUser2() {

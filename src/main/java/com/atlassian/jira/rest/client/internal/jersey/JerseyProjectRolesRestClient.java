@@ -39,8 +39,8 @@ public class JerseyProjectRolesRestClient extends AbstractJerseyRestClient imple
 	private final BasicProjectRoleJsonParser basicRoleJsonParser;
 
 	public JerseyProjectRolesRestClient(
-			final URI baseUri, final ApacheHttpClient client, final URI serverUri) {
-		super(baseUri, client);
+            final URI baseUri, final ApacheHttpClient client, final URI serverUri, boolean followRedirects) {
+		super(baseUri, client, followRedirects);
 		this.projectRoleJsonParser = new ProjectRoleJsonParser(serverUri);
 		this.basicRoleJsonParser = new BasicProjectRoleJsonParser();
 	}

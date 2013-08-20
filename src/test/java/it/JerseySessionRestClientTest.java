@@ -41,7 +41,7 @@ public class JerseySessionRestClientTest extends AbstractJerseyRestClientTest {
 
 	@Test
 	public void testInvalidCredentials() {
-		client = new JerseyJiraRestClient(jiraUri, new BasicHttpAuthenticationHandler(ADMIN_USERNAME, ADMIN_PASSWORD + "invalid"));
+		client = new JerseyJiraRestClient(jiraUri, new BasicHttpAuthenticationHandler(ADMIN_USERNAME, ADMIN_PASSWORD + "invalid"), false);
 		TestUtil.assertErrorCode(401, new Runnable() {
 			@Override
 			public void run() {
@@ -57,13 +57,13 @@ public class JerseySessionRestClientTest extends AbstractJerseyRestClientTest {
 
 		// that is not a mistake - username and the password for this user is the same
 		client = new JerseyJiraRestClient(jiraUri, new BasicHttpAuthenticationHandler(TestConstants.USER1.getName(),
-				TestConstants.USER1.getName()));
+				TestConstants.USER1.getName()), false);
 		final Session session2 = client.getSessionClient().getCurrentSession(new NullProgressMonitor());
 		assertEquals(TestConstants.USER1.getName(), session2.getUsername());
 		final DateTime lastFailedLoginDate = session2.getLoginInfo().getLastFailedLoginDate();
 
 		final JerseyJiraRestClient client2 = new JerseyJiraRestClient(jiraUri, new BasicHttpAuthenticationHandler(TestConstants.USER1.getName(),
-				"bad-password"));
+				"bad-password"), false);
 		final DateTime now = new DateTime();
 		TestUtil.assertErrorCode(401, new Runnable() {
 			@Override
