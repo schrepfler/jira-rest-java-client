@@ -74,4 +74,6 @@ public interface SearchRestClient {
      * @since 1.1 client 5.0 server
      */
     Iterable<FavouriteFilter> getFavouriteFilters(NullProgressMonitor pm);
+
+    SearchResult searchJqlWithFullIssues(@Nullable String jql, int maxResults, int startAt, Iterable<IssueRestClient.Expandos> expand, ProgressMonitor progressMonitor);
 }

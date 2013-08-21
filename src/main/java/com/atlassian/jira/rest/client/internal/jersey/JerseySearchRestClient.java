@@ -66,23 +66,30 @@ public class JerseySearchRestClient extends AbstractJerseyRestClient implements 
 
 	@Override
 	public SearchResult searchJql(@Nullable String jql, ProgressMonitor progressMonitor) {
-        return searchJqlImpl(jql, null, null, progressMonitor, keyOnlySearchResultJsonParser);
+        return searchJqlImpl(jql, null, null, progressMonitor, keyOnlySearchResultJsonParser, DEFAULT_EXPANDS);
 	}
 
 	@Override
 	public SearchResult searchJql(@Nullable String jql, int maxResults, int startAt, ProgressMonitor progressMonitor) {
-		return searchJqlImpl(jql, maxResults, startAt, progressMonitor, keyOnlySearchResultJsonParser);
+		return searchJqlImpl(jql, maxResults, startAt, progressMonitor, keyOnlySearchResultJsonParser, DEFAULT_EXPANDS);
 	}
 
     @Override
     public SearchResult searchJqlWithFullIssues(@Nullable String jql, int maxResults, int startAt, ProgressMonitor progressMonitor) {
-        return searchJqlImpl(jql, maxResults, startAt, progressMonitor, fullSearchResultJsonParser);
+        return searchJqlImpl(jql, maxResults, startAt, progressMonitor, fullSearchResultJsonParser, DEFAULT_EXPANDS);
     }
 
-    private SearchResult searchJqlImpl(@Nullable String jql, Integer maxResults, Integer startAt, ProgressMonitor progressMonitor, SearchResultJsonParser parser) {
+    @Override
+    public SearchResult searchJqlWithFullIssues(@Nullable String jql, int maxResults, int startAt, Iterable<IssueRestClient.Expandos> expand, ProgressMonitor progressMonitor) {
+        return searchJqlImpl(jql, maxResults, startAt, progressMonitor, fullSearchResultJsonParser, expand);
+    }
+
+    private SearchResult searchJqlImpl(@Nullable String jql, Integer maxResults, Integer startAt, ProgressMonitor progressMonitor, SearchResultJsonParser parser, Iterable<IssueRestClient.Expandos> expand) {
         if (jql == null) {
             jql = "";
         }
+
+        final Iterable<IssueRestClient.Expandos> expands = Iterables.concat(DEFAULT_EXPANDS, expand);
 
         if (jql.length() > MAX_JQL_LENGTH_FOR_HTTP_GET) {
             UriBuilder uriBuilder = UriBuilder.fromUri(searchUri);
@@ -93,7 +100,7 @@ public class JerseySearchRestClient extends AbstractJerseyRestClient implements 
                     postEntity.put(START_AT_ATTRIBUTE, startAt);
                     postEntity.put(MAX_RESULTS_ATTRIBUTE, maxResults);
                 }
-                uriBuilder = uriBuilder.queryParam(EXPAND_ATTRIBUTE, Joiner.on(',').join(Iterables.transform(DEFAULT_EXPANDS, EXPANDO_TO_PARAM)));
+                uriBuilder = uriBuilder.queryParam(EXPAND_ATTRIBUTE, Joiner.on(',').join(Iterables.transform(expands, EXPANDO_TO_PARAM)));
             } catch (JSONException e) {
                 throw new RestClientException(e);
             }
@@ -103,7 +110,7 @@ public class JerseySearchRestClient extends AbstractJerseyRestClient implements 
             if (maxResults != null && startAt != null) {
                 uriBuilder = uriBuilder.queryParam(MAX_RESULTS_ATTRIBUTE, maxResults).queryParam(START_AT_ATTRIBUTE, startAt);
             }
-            URI uri = uriBuilder.queryParam(EXPAND_ATTRIBUTE, Joiner.on(',').join(Iterables.transform(DEFAULT_EXPANDS, EXPANDO_TO_PARAM))).build();
+            URI uri = uriBuilder.queryParam(EXPAND_ATTRIBUTE, Joiner.on(',').join(Iterables.transform(expands, EXPANDO_TO_PARAM))).build();
             return getAndParse(uri, parser, progressMonitor);
         }
     }
