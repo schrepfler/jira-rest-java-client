@@ -390,7 +390,6 @@ public class IssueJsonParserTest {
     public void testPl2860() throws Exception {
         final Issue issue = parseIssue("/json/issue/PL-2860.json");
         Iterable<Attachment> attachments = issue.getAttachments();
-        Assert.assertTrue("attachment list should not be null", attachments != null);
-        Assert.assertTrue("attachment list should be empty", !attachments.iterator().hasNext());
+        Assert.assertNull(attachments);
     }
 }
