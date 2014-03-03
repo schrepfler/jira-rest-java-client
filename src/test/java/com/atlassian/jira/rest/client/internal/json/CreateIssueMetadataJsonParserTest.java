@@ -128,6 +128,19 @@ public class CreateIssueMetadataJsonParserTest {
 		assertAllowedValuesOfType(issueTypeFields.get("customfield_10010").getAllowedValues(), BasicProject.class);
 	}
 
+
+    /**
+     * Test https://support.atlassian.com/browse/ECSP-254
+     * @throws JSONException
+     */
+    @Test
+    public void testParseWithFieldsExpanded2() throws JSONException {
+        final CreateIssueMetadataJsonParser parser = new CreateIssueMetadataJsonParser();
+        final Iterable<CimProject> createMetaProjects = parser.parse(
+                ResourceUtil.getJsonObjectFromResource("/json/createmeta/valid-with-fields-expanded_ECSP-254.json")
+        );
+    }
+
 	private void assertAllowedValuesOfType(final Iterable<Object> allowedValues, Class type) {
 		assertThat(allowedValues, JUnitMatchers.everyItem(Matchers.instanceOf(type)));
 	}
