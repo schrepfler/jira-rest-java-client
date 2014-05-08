@@ -655,175 +655,170 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	}
 
 	@Test
-	// TODO: implement
 	public void testAddAttachment() throws IOException {
+        attachmentTestWithIssue("TST-3", new AttachmentTest() {
+            @Override
+            public void test(IssueRestClient issueClient, Issue issue) throws IOException {
+                String str = "Wojtek";
+                final String filename1 = "my-test-file";
+                issueClient.addAttachment(issue.getAttachmentsUri(), new ByteArrayInputStream(str.getBytes("UTF-8")), filename1).claim();
+                final String filename2 = "my-picture.png";
+                issueClient.addAttachment(issue.getAttachmentsUri(), AsynchronousIssueRestClientTest.class
+                        .getResourceAsStream("/attachment-test/transparent-png.png"), filename2).claim();
 
-		if (!doesJiraSupportAddingAttachment()) {
-			return;
-		}
-		final IssueRestClient issueClient = client.getIssueClient();
-		final Issue issue = issueClient.getIssue("TST-3").claim();
-		assertFalse(issue.getAttachments().iterator().hasNext());
+                final Issue issueWithAttachments = issueClient.getIssue(issue.getKey()).claim();
+                final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
+                assertEquals(2, Iterables.size(attachments));
+                final Iterable<String> attachmentsNames = Iterables.transform(attachments, new Function<Attachment, String>() {
+                    @Override
+                    public String apply(@Nullable Attachment from) {
+                        return from.getFilename();
+                    }
+                });
+                assertThat(attachmentsNames, containsInAnyOrder(filename1, filename2));
+                final Attachment pictureAttachment = Iterables.find(attachments, new Predicate<Attachment>() {
+                    @Override
+                    public boolean apply(@Nullable Attachment input) {
+                        return filename2.equals(input.getFilename());
+                    }
+                });
 
-		String str = "Wojtek";
-		final String filename1 = "my-test-file";
-		issueClient.addAttachment(issue.getAttachmentsUri(), new ByteArrayInputStream(str.getBytes("UTF-8")), filename1).claim();
-		final String filename2 = "my-picture.png";
-		issueClient.addAttachment(issue.getAttachmentsUri(), AsynchronousIssueRestClientTest.class
-				.getResourceAsStream("/attachment-test/transparent-png.png"), filename2).claim();
+                // let's download it now and compare it's binary content
 
-		final Issue issueWithAttachments = issueClient.getIssue("TST-3").claim();
-		final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
-		assertEquals(2, Iterables.size(attachments));
-		final Iterable<String> attachmentsNames = Iterables.transform(attachments, new Function<Attachment, String>() {
-			@Override
-			public String apply(@Nullable Attachment from) {
-				return from.getFilename();
-			}
-		});
-		assertThat(attachmentsNames, containsInAnyOrder(filename1, filename2));
-		final Attachment pictureAttachment = Iterables.find(attachments, new Predicate<Attachment>() {
-			@Override
-			public boolean apply(@Nullable Attachment input) {
-				return filename2.equals(input.getFilename());
-			}
-		});
-
-		// let's download it now and compare it's binary content
-
-		assertTrue(
-				IOUtils.contentEquals(AsynchronousIssueRestClientTest.class
-						.getResourceAsStream("/attachment-test/transparent-png.png"),
-						issueClient.getAttachment(pictureAttachment.getContentUri()).claim()));
+                assertTrue(
+                        IOUtils.contentEquals(AsynchronousIssueRestClientTest.class
+                                        .getResourceAsStream("/attachment-test/transparent-png.png"),
+                                issueClient.getAttachment(pictureAttachment.getContentUri()).claim()));
+            }
+        });
 	}
 
 	@Test
 	public void testAddAttachmentWithUtf8InNameAndBody() throws IOException {
-		final IssueRestClient issueClient = client.getIssueClient();
-		final Issue issue = issueClient.getIssue("TST-3").claim();
-		assertFalse(issue.getAttachments().iterator().hasNext());
+        attachmentTestWithIssue("TST-3", new AttachmentTest() {
+            @Override
+            public void test(IssueRestClient issueClient, Issue issue) throws IOException {
+                final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(UTF8_FILE_BODY.getBytes("UTF-8"));
+                issueClient.addAttachment(issue.getAttachmentsUri(), byteArrayInputStream, UTF8_FILE_NAME).claim();
 
-		final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(UTF8_FILE_BODY.getBytes("UTF-8"));
-		issueClient.addAttachment(issue.getAttachmentsUri(), byteArrayInputStream, UTF8_FILE_NAME).claim();
+                final Issue issueWithAttachments = issueClient.getIssue(issue.getKey()).claim();
+                final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
+                assertEquals(1, Iterables.size(attachments));
+                final Attachment attachment = attachments.iterator().next();
+                assertThat(attachment.getFilename(), equalTo(UTF8_FILE_NAME));
 
-		final Issue issueWithAttachments = issueClient.getIssue("TST-3").claim();
-		final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
-		assertEquals(1, Iterables.size(attachments));
-		final Attachment attachment = attachments.iterator().next();
-		assertThat(attachment.getFilename(), equalTo(UTF8_FILE_NAME));
-
-		assertTrue(IOUtils.contentEquals(new ByteArrayInputStream(UTF8_FILE_BODY.getBytes("UTF-8")),
-				issueClient.getAttachment(attachment.getContentUri()).claim()));
+                assertTrue(IOUtils.contentEquals(new ByteArrayInputStream(UTF8_FILE_BODY.getBytes("UTF-8")),
+                        issueClient.getAttachment(attachment.getContentUri()).claim()));
+            }
+        });
 	}
 
 	@Test
-	// TODO: implement
 	public void testAddAttachments() throws IOException {
-		if (!doesJiraSupportAddingAttachment()) {
-			return;
-		}
-		final IssueRestClient issueClient = client.getIssueClient();
-		final Issue issue = issueClient.getIssue("TST-4").claim();
-		assertFalse(issue.getAttachments().iterator().hasNext());
+        attachmentTestWithIssue("TST-4", new AttachmentTest() {
+            @Override
+            public void test(IssueRestClient issueClient, Issue issue) throws IOException {
+                assertFalse(issue.getAttachments().iterator().hasNext());
 
-		final AttachmentInput[] attachmentInputs = new AttachmentInput[3];
-		for (int i = 1; i <= 3; i++) {
-			attachmentInputs[i - 1] = new AttachmentInput("my-test-file-" + i + ".txt", new ByteArrayInputStream((
-					"content-of-the-file-" + i).getBytes("UTF-8")));
-		}
-		issueClient.addAttachments(issue.getAttachmentsUri(), attachmentInputs).claim();
+                final AttachmentInput[] attachmentInputs = new AttachmentInput[3];
+                for (int i = 1; i <= 3; i++) {
+                    attachmentInputs[i - 1] = new AttachmentInput("my-test-file-" + i + ".txt", new ByteArrayInputStream((
+                            "content-of-the-file-" + i).getBytes("UTF-8")));
+                }
+                issueClient.addAttachments(issue.getAttachmentsUri(), attachmentInputs).claim();
 
-		final Issue issueWithAttachments = issueClient.getIssue("TST-4").claim();
-		final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
-		assertEquals(3, Iterables.size(attachments));
-		Pattern pattern = Pattern.compile("my-test-file-(\\d)\\.txt");
-		for (Attachment attachment : attachments) {
-			assertTrue(pattern.matcher(attachment.getFilename()).matches());
-			final Matcher matcher = pattern.matcher(attachment.getFilename());
-			matcher.find();
-			final String interfix = matcher.group(1);
-			assertTrue(IOUtils.contentEquals(new ByteArrayInputStream(("content-of-the-file-" + interfix).getBytes("UTF-8")),
-					issueClient.getAttachment(attachment.getContentUri()).claim()));
+                final Issue issueWithAttachments = issueClient.getIssue(issue.getKey()).claim();
+                final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
+                assertEquals(3, Iterables.size(attachments));
+                Pattern pattern = Pattern.compile("my-test-file-(\\d)\\.txt");
+                for (Attachment attachment : attachments) {
+                    assertTrue(pattern.matcher(attachment.getFilename()).matches());
+                    final Matcher matcher = pattern.matcher(attachment.getFilename());
+                    matcher.find();
+                    final String interfix = matcher.group(1);
+                    assertTrue(IOUtils.contentEquals(new ByteArrayInputStream(("content-of-the-file-" + interfix).getBytes("UTF-8")),
+                            issueClient.getAttachment(attachment.getContentUri()).claim()));
 
-		}
+                }
+            }
+        });
 	}
 
 	@Test
 	public void testAddAttachmentsWithUtf8InNameAndBody() throws IOException {
-		final IssueRestClient issueClient = client.getIssueClient();
-		final Issue issue = issueClient.getIssue("TST-4").claim();
-		assertFalse(issue.getAttachments().iterator().hasNext());
+        attachmentTestWithIssue("TST-4", new AttachmentTest() {
+            @Override
+            public void test(IssueRestClient issueClient, Issue issue) throws IOException {
+                final AttachmentInput[] attachmentInputs = new AttachmentInput[3];
+                final String[] names = new String[3];
+                final String[] contents = new String[3];
+                for (int i = 0; i < 3; i++) {
+                    names[i] = UTF8_FILE_NAME + "-" + i + ".txt";
+                    contents[i] = "content-of-the-file-" + i + " with some utf8: " + UTF8_FILE_BODY;
+                    attachmentInputs[i] = new AttachmentInput(names[i], new ByteArrayInputStream(contents[i].getBytes("UTF-8")));
+                }
+                issueClient.addAttachments(issue.getAttachmentsUri(), attachmentInputs).claim();
 
-		final AttachmentInput[] attachmentInputs = new AttachmentInput[3];
-		final String[] names = new String[3];
-		final String[] contents = new String[3];
-		for (int i = 0; i < 3; i++) {
-			names[i] = UTF8_FILE_NAME + "-" + i + ".txt";
-			contents[i] = "content-of-the-file-" + i + " with some utf8: " + UTF8_FILE_BODY;
-			attachmentInputs[i] = new AttachmentInput(names[i], new ByteArrayInputStream(contents[i].getBytes("UTF-8")));
-		}
-		issueClient.addAttachments(issue.getAttachmentsUri(), attachmentInputs).claim();
+                final Issue issueWithAttachments = issueClient.getIssue(issue.getKey()).claim();
+                final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
+                assertEquals(3, Iterables.size(attachments));
+                Pattern pattern = Pattern.compile(".*-(\\d)\\.txt");
+                for (Attachment attachment : attachments) {
+                    assertTrue(pattern.matcher(attachment.getFilename()).matches());
+                    final Matcher matcher = pattern.matcher(attachment.getFilename());
+                    matcher.find();
+                    final int attachmentNum = Integer.parseInt(matcher.group(1));
+                    assertThat(attachment.getFilename(), equalTo(names[attachmentNum]));
+                    assertTrue(IOUtils.contentEquals(new ByteArrayInputStream((contents[attachmentNum]).getBytes("UTF-8")),
+                            issueClient.getAttachment(attachment.getContentUri()).claim()));
 
-		final Issue issueWithAttachments = issueClient.getIssue("TST-4").claim();
-		final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
-		assertEquals(3, Iterables.size(attachments));
-		Pattern pattern = Pattern.compile(".*-(\\d)\\.txt");
-		for (Attachment attachment : attachments) {
-			assertTrue(pattern.matcher(attachment.getFilename()).matches());
-			final Matcher matcher = pattern.matcher(attachment.getFilename());
-			matcher.find();
-			final int attachmentNum = Integer.parseInt(matcher.group(1));
-			assertThat(attachment.getFilename(), equalTo(names[attachmentNum]));
-			assertTrue(IOUtils.contentEquals(new ByteArrayInputStream((contents[attachmentNum]).getBytes("UTF-8")),
-					issueClient.getAttachment(attachment.getContentUri()).claim()));
-
-		}
+                }
+            }
+        });
 	}
 
 	@Test
-	// TODO: implement
 	public void testAddFileAttachments() throws IOException {
-		if (!doesJiraSupportAddingAttachment()) {
-			return;
-		}
-		final IssueRestClient issueClient = client.getIssueClient();
-		final Issue issue = issueClient.getIssue("TST-5").claim();
-		assertFalse(issue.getAttachments().iterator().hasNext());
+        attachmentTestWithIssue("TST-5", new AttachmentTest() {
+            @Override
+            public void test(IssueRestClient issueClient, Issue issue) throws IOException {
+                final File tempFile = File.createTempFile("jim-integration-test", ".txt");
+                tempFile.deleteOnExit();
+                FileWriter writer = new FileWriter(tempFile);
+                writer.write("This is the content of my file which I am going to upload to JIRA for testing.");
+                writer.close();
+                issueClient.addAttachments(issue.getAttachmentsUri(), tempFile).claim();
 
-		final File tempFile = File.createTempFile("jim-integration-test", ".txt");
-		tempFile.deleteOnExit();
-		FileWriter writer = new FileWriter(tempFile);
-		writer.write("This is the content of my file which I am going to upload to JIRA for testing.");
-		writer.close();
-		issueClient.addAttachments(issue.getAttachmentsUri(), tempFile).claim();
-
-		final Issue issueWithAttachments = issueClient.getIssue("TST-5").claim();
-		final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
-		assertEquals(1, Iterables.size(attachments));
-		assertTrue(IOUtils.contentEquals(new FileInputStream(tempFile),
-				issueClient.getAttachment(attachments.iterator().next().getContentUri()).claim()));
+                final Issue issueWithAttachments = issueClient.getIssue(issue.getKey()).claim();
+                final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
+                assertEquals(1, Iterables.size(attachments));
+                assertTrue(IOUtils.contentEquals(new FileInputStream(tempFile),
+                        issueClient.getAttachment(attachments.iterator().next().getContentUri()).claim()));
+            }
+        });
 	}
 
 	@Test
 	public void testAddFileAttachmentWithUtf8InNameAndBody() throws IOException {
-		final IssueRestClient issueClient = client.getIssueClient();
-		final Issue issue = issueClient.getIssue("TST-5").claim();
-		assertFalse(issue.getAttachments().iterator().hasNext());
+        attachmentTestWithIssue("TST-5", new AttachmentTest() {
+            @Override
+            public void test(IssueRestClient issueClient, Issue issue) throws IOException {
+                final File tempFile = File.createTempFile(UTF8_FILE_NAME, ".txt");
+                tempFile.deleteOnExit();
+                FileWriter writer = new FileWriter(tempFile);
+                writer.write(UTF8_FILE_BODY);
+                writer.close();
+                issueClient.addAttachments(issue.getAttachmentsUri(), tempFile).claim();
 
-		final File tempFile = File.createTempFile(UTF8_FILE_NAME, ".txt");
-		tempFile.deleteOnExit();
-		FileWriter writer = new FileWriter(tempFile);
-		writer.write(UTF8_FILE_BODY);
-		writer.close();
-		issueClient.addAttachments(issue.getAttachmentsUri(), tempFile).claim();
-
-		final Issue issueWithAttachments = issueClient.getIssue("TST-5").claim();
-		final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
-		assertEquals(1, Iterables.size(attachments));
-		final Attachment firstAttachment = attachments.iterator().next();
-		assertTrue(IOUtils.contentEquals(new FileInputStream(tempFile),
-				issueClient.getAttachment(firstAttachment.getContentUri()).claim()));
-		assertThat(firstAttachment.getFilename(), equalTo(tempFile.getName()));
+                final Issue issueWithAttachments = issueClient.getIssue(issue.getKey()).claim();
+                final Iterable<Attachment> attachments = issueWithAttachments.getAttachments();
+                assertEquals(1, Iterables.size(attachments));
+                final Attachment firstAttachment = attachments.iterator().next();
+                assertTrue(IOUtils.contentEquals(new FileInputStream(tempFile),
+                        issueClient.getAttachment(firstAttachment.getContentUri()).claim()));
+                assertThat(firstAttachment.getFilename(), equalTo(tempFile.getName()));
+            }
+        });
 	}
 
 	private void setUserLanguageToEnUk() {
@@ -901,7 +896,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		// although there are 2 watchers, only one is listed with details - the caller itself, as the caller does not
 		// have view watchers and voters permission
 		assertThat(client.getIssueClient().getWatchers(watchedIssue.getWatchers().getSelf()).claim().getUsers(),
-				containsInAnyOrder(USER2));
+                containsInAnyOrder(USER2));
 	}
 
 	@Test
@@ -914,7 +909,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		assertTrue(Iterables.contains(transitions, startProgressTransition));
 
 		client.getIssueClient().transition(issue, new TransitionInput(IntegrationTestUtil.START_PROGRESS_TRANSITION_ID,
-				Collections.<FieldInput>emptyList(), Comment.valueOf("My test comment"))).claim();
+                Collections.<FieldInput>emptyList(), Comment.valueOf("My test comment"))).claim();
 		final Issue transitionedIssue = client.getIssueClient().getIssue("TST-1").claim();
 		assertEquals("In Progress", transitionedIssue.getStatus().getName());
 		final Iterable<Transition> transitionsAfterTransition = client.getIssueClient().getTransitions(issue).claim();
@@ -960,4 +955,24 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 
 		return basicCreatedIssue;
 	}
+
+    private void attachmentTestWithIssue(String issueKey, AttachmentTest test) throws IOException {
+        if (!doesJiraSupportAddingAttachment()) {
+            return;
+        }
+        final IssueRestClient issueClient = client.getIssueClient();
+        final Issue issue = issueClient.getIssue(issueKey).claim();
+        assertFalse(issue.getAttachments().iterator().hasNext());
+
+        try {
+            test.test(issueClient, issue);
+        } finally {
+            // Delete the test issue. At the moment, this is the easiest way to clean up attachments created by tests.
+            issueClient.deleteIssue(issueKey, true).claim();
+        }
+    }
+
+    private interface AttachmentTest {
+        void test(IssueRestClient issueClient, Issue issue) throws IOException;
+    }
 }
