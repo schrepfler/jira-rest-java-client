@@ -149,7 +149,7 @@ public class JsonParseUtil {
 
 	public static URI parseURI(String str) {
 		try {
-			return new URI(str);
+			return new URI(str.trim());
 		} catch (URISyntaxException e) {
 			throw new RestClientException(e);
 		}
