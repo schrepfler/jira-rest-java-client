@@ -5,6 +5,8 @@ import com.atlassian.jira.rest.client.domain.SecurityLevel;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.Exception;
+
 /**
  * User: kalamon
  * Date: 05.12.12
@@ -16,5 +18,12 @@ public class SecurityLevelJsonParserTest {
         final SecurityLevelJsonParser parser = new SecurityLevelJsonParser();
         final SecurityLevel sl = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/securityLevel/valid.json"));
         Assert.assertEquals(new SecurityLevel(TestUtil.toUri("http://localhost:8083/rest/api/2/securitylevel/10001"), 10001L, "foo", "bar"), sl);
+    }
+
+    @Test
+    public void testParseWithoutDescription() throws Exception {
+        final SecurityLevelJsonParser parser = new SecurityLevelJsonParser();
+        final SecurityLevel sl = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/securityLevel/nodescription.json"));
+        Assert.assertEquals(new SecurityLevel(TestUtil.toUri("http://localhost:8083/rest/api/2/securitylevel/10001"), 10001L, "foo", ""), sl);
     }
 }

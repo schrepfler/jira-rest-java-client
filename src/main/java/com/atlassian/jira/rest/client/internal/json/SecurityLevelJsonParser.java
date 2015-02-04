@@ -26,7 +26,7 @@ public class SecurityLevelJsonParser implements JsonObjectParser<SecurityLevel> 
 	@Override
 	public SecurityLevel parse(JSONObject json) throws JSONException {
 		final String name = json.getString("name");
-        final String description = json.getString("description");
+        final String description = json.optString("description");
         final Long id = JsonParseUtil.getOptionalLong(json, "id");
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
 		return new SecurityLevel(selfUri, id, name, description);
