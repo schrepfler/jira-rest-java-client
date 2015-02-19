@@ -40,6 +40,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Map;
 
 /**
  * Jersey-based implementation of JIRA REST client.
@@ -77,6 +78,13 @@ public class JerseyJiraRestClient implements JiraRestClient {
         searchRestClient = new JerseySearchRestClient(baseUri, client, followRedirects);
         versionRestClient = new JerseyVersionRestClient(baseUri, client, followRedirects);
         projectRolesRestClient = new JerseyProjectRolesRestClient(baseUri, client, serverUri, followRedirects);
+    }
+
+    public JerseyJiraRestClient(final URI serverUri, final AuthenticationHandler authenticationHandler, boolean followRedirects,
+                                Map<String, String> headers, Map<String, String> queryParams) {
+        this(serverUri, authenticationHandler, followRedirects);
+
+        setClientHeadersAndQueryParams(headers, queryParams);
     }
 
     public JerseyJiraRestClient(final URI serverUri, final ApacheHttpClient client, boolean followRedirects) {
@@ -147,6 +155,27 @@ public class JerseyJiraRestClient implements JiraRestClient {
     public static ApacheHttpClientHandler createDefaultClientHander(DefaultApacheHttpClientConfig config) {
         final HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
         return new ApacheHttpClientHandler(client, config);
+    }
+
+    private void setClientHeadersAndQueryParams(Map<String, String> headers, Map<String, String> queryParams) {
+        ((AbstractJerseyRestClient)metadataRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)metadataRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)sessionRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)sessionRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)issueRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)issueRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)userRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)userRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)projectRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)projectRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)componentRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)componentRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)searchRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)searchRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)versionRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)versionRestClient).setQueryParams(queryParams);
+        ((AbstractJerseyRestClient)projectRolesRestClient).setHeaders(headers);
+        ((AbstractJerseyRestClient)projectRolesRestClient).setQueryParams(queryParams);
     }
 
     public static ApacheHttpClient createDefaultClient(DefaultApacheHttpClientConfig config, final AuthenticationHandler authenticationHandler) {

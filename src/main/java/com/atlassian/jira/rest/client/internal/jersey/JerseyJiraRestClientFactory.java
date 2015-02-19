@@ -20,8 +20,10 @@ import com.atlassian.jira.rest.client.AuthenticationHandler;
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
+import com.google.common.collect.ImmutableMap;
 
 import java.net.URI;
+import java.util.Map;
 
 /**
  * Servers Jersey-based implementations of the JiraRestClient
@@ -44,5 +46,10 @@ public class JerseyJiraRestClientFactory implements JiraRestClientFactory {
 		return create(serverUri, new BasicHttpAuthenticationHandler(username, password));
 	}
 
+    protected JiraRestClient create(URI serverUri, AuthenticationHandler authenticationHandler, boolean followRedirects,
+                                    Map<String, String> headers, Map<String, String> queryParams) {
+        return new JerseyJiraRestClient(serverUri, authenticationHandler, followRedirects, ImmutableMap.copyOf(headers),
+                ImmutableMap.copyOf(queryParams));
+    }
 
 }

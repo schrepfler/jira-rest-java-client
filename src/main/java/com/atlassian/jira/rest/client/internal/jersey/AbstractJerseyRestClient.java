@@ -22,8 +22,8 @@ import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.atlassian.jira.rest.client.internal.json.gen.JsonGenerator;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
+import com.google.common.collect.ImmutableMap;
+import com.sun.jersey.api.client.*;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static com.sun.jersey.api.client.ClientResponse.Status.MOVED_PERMANENTLY;
@@ -49,10 +50,15 @@ public abstract class AbstractJerseyRestClient {
     private final boolean followRedirects;
     protected final URI baseUri;
 
+    private Map<String, String> headers;
+    private Map<String, String> queryParams;
+
     public AbstractJerseyRestClient(URI baseUri, ApacheHttpClient client, boolean followRedirects) {
         this.baseUri = baseUri;
         this.client = client;
         this.followRedirects = followRedirects;
+        this.headers = ImmutableMap.of();
+        this.queryParams = ImmutableMap.of();
     }
 
     protected <T> T invoke(Callable<T> callable) throws RestClientException {
@@ -82,11 +88,23 @@ public abstract class AbstractJerseyRestClient {
         }
     }
 
+    private WebResource.Builder createWebResource(URI uri) {
+        WebResource webResource = client.resource(uri);
+        for (Map.Entry<String, String> queryParam: queryParams.entrySet()) {
+            webResource = webResource.queryParam(queryParam.getKey(), queryParam.getValue());
+        }
+        WebResource.Builder webResourceBuilder = webResource.getRequestBuilder();
+        for (Map.Entry<String, String> header: headers.entrySet()) {
+            webResourceBuilder = webResourceBuilder.header(header.getKey(), header.getValue());
+        }
+        return webResourceBuilder;
+    }
+
     protected <T> T getAndParse(final URI uri, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
         return invoke(new Callable<T>() {
             @Override
             public T call() throws Exception {
-                final WebResource webResource = client.resource(uri);
+                WebResource.Builder webResource = createWebResource(uri);
                 final JSONObject s = webResource.get(JSONObject.class);
                 return parser.parse(s);
             }
@@ -98,7 +116,7 @@ public abstract class AbstractJerseyRestClient {
         return invoke(new Callable<T>() {
             @Override
             public T call() throws Exception {
-                final WebResource webResource = client.resource(uri);
+                WebResource.Builder webResource = createWebResource(uri);
                 final JSONArray jsonArray = webResource.get(JSONArray.class);
                 return parser.parse(jsonArray);
             }
@@ -109,7 +127,7 @@ public abstract class AbstractJerseyRestClient {
         invoke(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                final WebResource webResource = client.resource(uri);
+                WebResource.Builder webResource = createWebResource(uri);
                 webResource.delete();
                 return null;
             }
@@ -120,7 +138,7 @@ public abstract class AbstractJerseyRestClient {
         return invoke(new Callable<T>() {
             @Override
             public T call() throws Exception {
-                final WebResource webResource = client.resource(uri);
+                WebResource.Builder webResource = createWebResource(uri);
                 final JSONObject s = postEntity != null ? webResource.post(JSONObject.class, postEntity) : webResource.post(JSONObject.class);
                 return parser.parse(s);
             }
@@ -141,7 +159,7 @@ public abstract class AbstractJerseyRestClient {
         invoke(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                final WebResource webResource = client.resource(uri);
+                WebResource.Builder webResource = createWebResource(uri);
                 final JSONObject postEntity = callable.call();
                 if (postEntity != null) {
                     webResource.post(postEntity);
@@ -177,7 +195,7 @@ public abstract class AbstractJerseyRestClient {
 
                 do {
                     try {
-                        final WebResource webResource = client.resource(currentURI);
+                        WebResource.Builder webResource = createWebResource(uri);
                         final JSONObject postEntity = callable.call();
                         final JSONObject s;
                         s = doHttpMethod(webResource, postEntity, method);
@@ -199,7 +217,7 @@ public abstract class AbstractJerseyRestClient {
         });
     }
 
-    private JSONObject doHttpMethod(WebResource webResource, @Nullable JSONObject postEntity, Method method) {
+    private JSONObject doHttpMethod(WebResource.Builder webResource, @Nullable JSONObject postEntity, Method method) {
         if (postEntity != null) {
             if (method == Method.POST) {
                 return webResource.post(JSONObject.class, postEntity);
@@ -233,6 +251,21 @@ public abstract class AbstractJerseyRestClient {
         return errorMessages;
     }
 
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = ImmutableMap.copyOf(headers);
+    }
+
+    public Map<String, String> getQueryParams() {
+        return queryParams;
+    }
+
+    public void setQueryParams(Map<String, String> queryParams) {
+        this.queryParams = ImmutableMap.copyOf(queryParams);
+    }
 
     protected static class InputGeneratorCallable<T> implements Callable<JSONObject> {
 
@@ -253,6 +286,7 @@ public abstract class AbstractJerseyRestClient {
             return generator.generate(bean);
         }
     }
+
 
 
 }
