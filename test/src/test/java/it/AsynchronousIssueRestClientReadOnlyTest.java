@@ -136,10 +136,10 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 
 		assertEquals(3, Iterables.size(issue.getComments()));
 
-        final String[] expandosForJira5 = {"renderedFields", "names", "schema", "transitions", "operations", "editmeta", "changelog"};
-        final String[] expandosForJira6_4 = toArray(Lists.asList("versionedRepresentations", expandosForJira5), String.class);
+		final String[] expandosForJira5 = {"renderedFields", "names", "schema", "transitions", "operations", "editmeta", "changelog"};
+		final String[] expandosForJira6_4 = toArray(Lists.asList("versionedRepresentations", expandosForJira5), String.class);
 
-        // here is anyOf matcher because "versionedRepresentations" was introduced in the middle of v6.4
+		// here is anyOf matcher because "versionedRepresentations" was introduced in the middle of v6.4
 		assertThat(issue.getExpandos(), anyOf(containsInAnyOrder(expandosForJira5), containsInAnyOrder(expandosForJira6_4)));
 		assertEquals(new TimeTracking(null, 0, 190), issue.getTimeTracking());
 		assertTrue(Iterables.size(issue.getFields()) > 0);
