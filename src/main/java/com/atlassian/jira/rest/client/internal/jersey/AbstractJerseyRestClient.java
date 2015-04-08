@@ -18,9 +18,11 @@ package com.atlassian.jira.rest.client.internal.jersey;
 
 import com.atlassian.jira.rest.client.ProgressMonitor;
 import com.atlassian.jira.rest.client.RestClientException;
+import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
+import com.atlassian.jira.rest.client.internal.json.gen.IssueUpdateJsonGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.JsonGenerator;
 import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.*;
@@ -171,6 +173,25 @@ public abstract class AbstractJerseyRestClient {
         });
 
     }
+
+	protected void put(final URI uri, @Nullable final Iterable<FieldInput> fields, ProgressMonitor progressMonitor) {
+		invoke(new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+				WebResource.Builder issueResource = createWebResource(uri);
+
+				JSONObject jsonOutputObject = new JSONObject();
+
+				JSONObject fieldsJs = new IssueUpdateJsonGenerator().generate(fields);
+
+				if (fieldsJs.keys().hasNext()) {
+					jsonOutputObject.put("fields", fieldsJs);
+				}
+				issueResource.put(jsonOutputObject);
+				return null;
+			}
+		});
+	}
 
     protected <T> T postAndParse(final URI uri, final Callable<JSONObject> callable, final JsonObjectParser<T> parser, ProgressMonitor progressMonitor) {
         return impl(uri, Method.POST, callable, parser);

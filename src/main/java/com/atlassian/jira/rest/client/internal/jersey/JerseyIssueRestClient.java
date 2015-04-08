@@ -38,15 +38,7 @@ import com.atlassian.jira.rest.client.domain.input.LinkIssuesInput;
 import com.atlassian.jira.rest.client.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.domain.input.WorklogInput;
 import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
-import com.atlassian.jira.rest.client.internal.json.BasicIssueJsonParser;
-import com.atlassian.jira.rest.client.internal.json.CreateIssueMetadataJsonParser;
-import com.atlassian.jira.rest.client.internal.json.IssueJsonParser;
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
-import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
-import com.atlassian.jira.rest.client.internal.json.TransitionJsonParser;
-import com.atlassian.jira.rest.client.internal.json.TransitionJsonParserV5;
-import com.atlassian.jira.rest.client.internal.json.VotesJsonParser;
-import com.atlassian.jira.rest.client.internal.json.WatchersJsonParserBuilder;
+import com.atlassian.jira.rest.client.internal.json.*;
 import com.atlassian.jira.rest.client.internal.json.gen.*;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -98,10 +90,9 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 	private final IssueJsonParser issueParser = new IssueJsonParser();
 	private final BasicIssueJsonParser basicIssueParser = new BasicIssueJsonParser();
 	private final JsonObjectParser<Watchers> watchersParser = WatchersJsonParserBuilder.createWatchersParser();
-	private final TransitionJsonParser transitionJsonParser = new TransitionJsonParser();
-	private final JsonObjectParser<Transition> transitionJsonParserV5 = new TransitionJsonParserV5();
 	private final VotesJsonParser votesJsonParser = new VotesJsonParser();
 	private final CreateIssueMetadataJsonParser createIssueMetadataJsonParser = new CreateIssueMetadataJsonParser();
+	private final TransitionParser transitionParser = new TransitionParser();
 	private ServerInfo serverInfo;
 
 	public JerseyIssueRestClient(URI baseUri, ApacheHttpClient client, SessionRestClient sessionRestClient, MetadataRestClient metadataRestClient, boolean followRedirects) {
@@ -144,33 +135,7 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 
 	@Override
 	public Iterable<Transition> getTransitions(final URI transitionsUri, ProgressMonitor progressMonitor) {
-		return invoke(new Callable<Iterable<Transition>>() {
-			@Override
-			public Iterable<Transition> call() throws Exception {
-				final WebResource transitionsResource = client.resource(transitionsUri);
-				final JSONObject jsonObject = transitionsResource.get(JSONObject.class);
-				if (jsonObject.has("transitions")) {
-					return JsonParseUtil.parseJsonArray(jsonObject.getJSONArray("transitions"), transitionJsonParserV5);
-				} else {
-					final Collection<Transition> transitions = new ArrayList<Transition>(jsonObject.length());
-					@SuppressWarnings("unchecked")
-					final Iterator<String> iterator = jsonObject.keys();
-					while (iterator.hasNext()) {
-						final String key = iterator.next();
-						try {
-							final int id = Integer.parseInt(key);
-							final Transition transition = transitionJsonParser.parse(jsonObject.getJSONObject(key), id);
-							transitions.add(transition);
-						} catch (JSONException e) {
-							throw new RestClientException(e);
-						} catch (NumberFormatException e) {
-							throw new RestClientException("Transition id should be an integer, but found [" + key + "]", e);
-						}
-					}
-					return transitions;
-				}
-			}
-		});
+		return getAndParse(transitionsUri, transitionParser, progressMonitor);
 	}
 
 	@Override
@@ -220,19 +185,7 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 
     @Override
     public void update(final Issue issue, final Iterable<FieldInput> fields, ProgressMonitor progressMonitor) {
-        invoke(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                JSONObject jsonObject = new JSONObject();
-                final  WebResource issueResource = client.resource(issue.getSelf());
-                JSONObject fieldsJs = new IssueUpdateJsonGenerator().generate(fields);
-                if (fieldsJs.keys().hasNext()) {
-                    jsonObject.put("fields", fieldsJs);
-                }
-                issueResource.put(jsonObject);
-                return null;
-            }
-        });
+		put(issue.getSelf(), fields, progressMonitor);
     }
 
 	@Override

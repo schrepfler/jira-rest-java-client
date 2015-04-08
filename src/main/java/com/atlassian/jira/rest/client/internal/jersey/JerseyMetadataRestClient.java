@@ -103,27 +103,13 @@ public class JerseyMetadataRestClient extends AbstractJerseyRestClient implement
 
 	@Override
 	public ServerInfo getServerInfo(ProgressMonitor progressMonitor) {
-		return invoke(new Callable<ServerInfo>() {
-			@Override
-			public ServerInfo call() throws Exception {
-				final WebResource serverInfoResource = client.resource(UriBuilder.fromUri(baseUri)
-						.path(SERVER_INFO_RESOURCE).build());
-				return serverInfoJsonParser.parse(serverInfoResource.get(JSONObject.class));
-			}
-		});
+		final URI uri = UriBuilder.fromUri(baseUri).path(SERVER_INFO_RESOURCE).build();
+		return getAndParse(uri, serverInfoJsonParser, progressMonitor);
 	}
 
     @Override
     public SessionInfo getSessionInfo(ProgressMonitor progressMonitor) {
-        return invoke(new Callable<SessionInfo>() {
-            @Override
-            public SessionInfo call() throws Exception {
-
-                URI sessionUri = UriBuilder.fromUri(baseUri.toString().replace("api", "auth")).path("/session").build();
-
-                final WebResource sessionInfoResource = client.resource(sessionUri);
-                return sessionInfoJsonParser.parse(sessionInfoResource.get(JSONObject.class));
-            }
-        });
+		URI sessionUri = UriBuilder.fromUri(baseUri.toString().replace("api", "auth")).path("/session").build();
+		return getAndParse(sessionUri, sessionInfoJsonParser, progressMonitor);
     }
 }
