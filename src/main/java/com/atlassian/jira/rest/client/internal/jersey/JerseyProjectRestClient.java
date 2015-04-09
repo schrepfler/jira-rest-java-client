@@ -46,15 +46,7 @@ public class JerseyProjectRestClient extends AbstractJerseyRestClient implements
 
 	@Override
 	public Project getProject(final URI projectUri, ProgressMonitor progressMonitor) {
-		return invoke(new Callable<Project>() {
-			@Override
-			public Project call() throws Exception {
-				final WebResource projectResource = client.resource(projectUri);
-				final JSONObject jsonObject = projectResource.get(JSONObject.class);
-				return projectJsonParser.parse(jsonObject);
-			}
-		});
-
+		return getAndParse(projectUri, projectJsonParser, progressMonitor);
 	}
 
 	@Override

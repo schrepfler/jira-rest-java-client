@@ -171,8 +171,9 @@ public class JerseyIssueRestClient extends AbstractJerseyRestClient implements I
 				if (fieldsJs.keys().hasNext()) {
 					jsonObject.put("fields", fieldsJs);
 				}
-				final WebResource issueResource = client.resource(transitionsUri);
-				issueResource.post(jsonObject);
+
+				post(transitionsUri, jsonObject, progressMonitor);
+
 				return null;
 			}
 		});
