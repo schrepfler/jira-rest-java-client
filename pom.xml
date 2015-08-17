@@ -79,16 +79,19 @@
                 <groupId>com.atlassian.httpclient</groupId>
                 <artifactId>atlassian-httpclient-api</artifactId>
                 <version>${atlassian.httpclient.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.atlassian.httpclient</groupId>
                 <artifactId>atlassian-httpclient-spi</artifactId>
                 <version>${atlassian.httpclient.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.atlassian.httpclient</groupId>
                 <artifactId>atlassian-httpclient-apache-httpcomponents</artifactId>
                 <version>${atlassian.httpclient.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -100,6 +103,7 @@
                         <artifactId>httpcore</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
