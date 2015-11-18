@@ -20,6 +20,7 @@ import com.atlassian.jira.functest.framework.UserProfile;
 import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.LongCondition;
 import com.atlassian.jira.nimblefunctests.annotation.Restore;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptionsBuilder;
@@ -42,6 +43,8 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.api.domain.input.LinkIssuesInput;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
+import com.atlassian.jira.testkit.client.Backdoor;
+import com.atlassian.jira.testkit.client.util.TestKitLocalEnvironmentData;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
@@ -97,6 +100,10 @@ import static org.junit.Assert.*;
 @SuppressWarnings("ConstantConditions")
 @Restore(DEFAULT_JIRA_DUMP_FILE)
 public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestClientTest {
+
+	private static final long ANONYMOUS_PERMISSION_SCHEME_ID = 10000l;
+
+	Backdoor backdoor = new Backdoor(new TestKitLocalEnvironmentData());
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -925,7 +932,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	@Test
 	public void testFetchingIssueWithAnonymousComment() {
 		setUserLanguageToEnUk();
-		administration.permissionSchemes().scheme("Anonymous Permission Scheme").grantPermissionToGroup(15, "");
+		backdoor.permissionSchemes().addEveryonePermission(ANONYMOUS_PERMISSION_SCHEME_ID, ProjectPermissions.ADD_COMMENTS);
 		assertEquals(IntegrationTestUtil.USER_ADMIN, client.getIssueClient().getIssue("TST-5").claim().getAssignee());
 		navigation.logout();
 		navigation.issue().addComment("ANNON-1", "my nice comment");
