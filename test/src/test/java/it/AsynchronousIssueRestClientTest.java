@@ -930,8 +930,9 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 
 	@Test
 	public void testFetchingIssueWithAnonymousComment() {
+		backdoor.darkFeatures().enableForSite("com.atlassian.jira.permission-schemes.single-page-ui.disabled");
 		setUserLanguageToEnUk();
-		backdoor.permissionSchemes().addGroupPermission(ANONYMOUS_PERMISSION_SCHEME_ID, 15, "");
+		administration.permissionSchemes().scheme("Anonymous Permission Scheme").grantPermissionToGroup(15, "");
 		assertEquals(IntegrationTestUtil.USER_ADMIN, client.getIssueClient().getIssue("TST-5").claim().getAssignee());
 		navigation.logout();
 		navigation.issue().addComment("ANNON-1", "my nice comment");
