@@ -20,7 +20,6 @@ import com.atlassian.jira.functest.framework.UserProfile;
 import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.LongCondition;
 import com.atlassian.jira.nimblefunctests.annotation.Restore;
-import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptionsBuilder;
@@ -932,7 +931,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	@Test
 	public void testFetchingIssueWithAnonymousComment() {
 		setUserLanguageToEnUk();
-		backdoor.permissionSchemes().addEveryonePermission(ANONYMOUS_PERMISSION_SCHEME_ID, ProjectPermissions.ADD_COMMENTS);
+		backdoor.permissionSchemes().addGroupPermission(ANONYMOUS_PERMISSION_SCHEME_ID, 15, "");
 		assertEquals(IntegrationTestUtil.USER_ADMIN, client.getIssueClient().getIssue("TST-5").claim().getAssignee());
 		navigation.logout();
 		navigation.issue().addComment("ANNON-1", "my nice comment");
