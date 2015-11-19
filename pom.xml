@@ -50,6 +50,7 @@
         <atlassian.httpclient.version>0.13.2</atlassian.httpclient.version>
         <atlassian.concurrent.version>2.4.0-M9</atlassian.concurrent.version>
         <amps.version>5.1.11</amps.version>
+        <testkit.version>5.2-m29</testkit.version>
     </properties>
     <modules>
         <module>api</module>
