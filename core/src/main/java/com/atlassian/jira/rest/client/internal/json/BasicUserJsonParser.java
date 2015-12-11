@@ -17,12 +17,12 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class BasicUserJsonParser implements JsonObjectParser<BasicUser> {
 	@Override
-	public BasicUser parse(JSONObject jsonObject) throws JSONException {
+	public BasicUser parse(JsonObject jsonObject) throws JsonParseException {
 		return JsonParseUtil.parseBasicUser(jsonObject);
 	}
 }

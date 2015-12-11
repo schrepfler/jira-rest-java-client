@@ -24,9 +24,9 @@ import com.atlassian.jira.rest.client.api.OptionalIterable;
 import com.atlassian.jira.rest.client.api.domain.BasicProjectRole;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.base.Splitter;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,10 +40,10 @@ public class ProjectJsonParser implements JsonObjectParser<Project> {
 	private final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
 	private final BasicProjectRoleJsonParser basicProjectRoleJsonParser = new BasicProjectRoleJsonParser();
 
-    static Iterable<String> parseExpandos(final JSONObject json) throws JSONException
+    static Iterable<String> parseExpandos(final JsonObject json) throws JsonParseException
     {
         if (json.has("expand")) {
-            final String expando = json.getString("expand");
+            final String expando = json.get("expand").getAsString();
             return Splitter.on(',').split(expando);
         } else {
             return Collections.emptyList();
@@ -51,11 +51,11 @@ public class ProjectJsonParser implements JsonObjectParser<Project> {
     }
 
 	@Override
-	public Project parse(JSONObject json) throws JSONException {
+	public Project parse(JsonObject json) throws JsonParseException {
         URI self = JsonParseUtil.getSelfUri(json);
         final Iterable<String> expandos = parseExpandos(json);
-        final BasicUser lead = JsonParseUtil.parseBasicUser(json.getJSONObject("lead"));
-		final String key = json.getString("key");
+        final BasicUser lead = JsonParseUtil.parseBasicUser(json.getAsJsonObject("lead"));
+		final String key = json.get("key").getAsString();
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
 		final String name = JsonParseUtil.getOptionalString(json, "name");
 		final String urlStr = JsonParseUtil.getOptionalString(json, "url");
@@ -69,10 +69,10 @@ public class ProjectJsonParser implements JsonObjectParser<Project> {
 		if ("".equals(description)) {
 			description = null;
 		}
-		final Collection<Version> versions = JsonParseUtil.parseJsonArray(json.getJSONArray("versions"), versionJsonParser);
+		final Collection<Version> versions = JsonParseUtil.parseJsonArray(json.getAsJsonArray("versions"), versionJsonParser);
 		final Collection<BasicComponent> components = JsonParseUtil.parseJsonArray(json
-				.getJSONArray("components"), componentJsonParser);
-		final JSONArray issueTypesArray = json.optJSONArray("issueTypes");
+				.getAsJsonArray("components"), componentJsonParser);
+		final JsonArray issueTypesArray = json.getAsJsonArray("issueTypes");
 		final OptionalIterable<IssueType> issueTypes = JsonParseUtil.parseOptionalJsonArray(issueTypesArray, issueTypeJsonParser);
 		final Collection<BasicProjectRole> projectRoles = basicProjectRoleJsonParser.parse(JsonParseUtil
 				.getOptionalJsonObject(json, "roles"));

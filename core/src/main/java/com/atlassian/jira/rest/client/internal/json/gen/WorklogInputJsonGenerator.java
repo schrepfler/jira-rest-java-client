@@ -20,8 +20,8 @@ import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.input.WorklogInput;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.joda.time.format.DateTimeFormatter;
 
 public class WorklogInputJsonGenerator implements JsonGenerator<WorklogInput> {
@@ -39,12 +39,12 @@ public class WorklogInputJsonGenerator implements JsonGenerator<WorklogInput> {
 	}
 
 	@Override
-	public JSONObject generate(final WorklogInput worklogInput) throws JSONException {
-		final JSONObject res = new JSONObject()
-				.put("self", worklogInput.getSelf())
-				.put("comment", worklogInput.getComment())
-				.put("started", dateTimeFormatter.print(worklogInput.getStartDate()))
-				.put("timeSpent", worklogInput.getMinutesSpent() + "m");
+	public JsonObject generate(final WorklogInput worklogInput) throws JsonParseException {
+		JsonObject res = new JsonObject();
+		res.addProperty("self", worklogInput.getSelf().toString());
+		res.addProperty("comment", worklogInput.getComment());
+		res.addProperty("started", dateTimeFormatter.print(worklogInput.getStartDate()));
+		res.addProperty("timeSpent", worklogInput.getMinutesSpent() + "m");
 
 		putGeneratedIfNotNull("visibility", worklogInput.getVisibility(), res, visibilityGenerator);
 		putGeneratedIfNotNull("author", worklogInput.getAuthor(), res, basicUserJsonGenerator);
@@ -52,10 +52,10 @@ public class WorklogInputJsonGenerator implements JsonGenerator<WorklogInput> {
 		return res;
 	}
 
-	private <K> JSONObject putGeneratedIfNotNull(final String key, final K value, final JSONObject dest, final JsonGenerator<K> generator)
-			throws JSONException {
+	private <K> JsonObject putGeneratedIfNotNull(final String key, final K value, final JsonObject dest, final JsonGenerator<K> generator)
+			throws JsonParseException {
 		if (value != null) {
-			dest.put(key, generator.generate(value));
+			dest.add(key, generator.generate(value));
 		}
 		return dest;
 	}

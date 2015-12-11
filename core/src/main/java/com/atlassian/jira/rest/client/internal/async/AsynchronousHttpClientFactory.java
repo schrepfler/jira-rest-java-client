@@ -24,8 +24,6 @@ import com.atlassian.httpclient.spi.ThreadLocalContextManagers;
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.util.concurrent.Effect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,8 +143,6 @@ public class AsynchronousHttpClientFactory {
 	}
 
 	private static final class MavenUtils {
-		private static final Logger logger = LoggerFactory.getLogger(MavenUtils.class);
-
 		private static final String UNKNOWN_VERSION = "unknown";
 
 		static String getVersion(String groupId, String artifactId) {
@@ -158,8 +154,8 @@ public class AsynchronousHttpClientFactory {
 				props.load(resourceAsStream);
 				return props.getProperty("version", UNKNOWN_VERSION);
 			} catch (Exception e) {
-				logger.debug("Could not find version for maven artifact {}:{}", groupId, artifactId);
-				logger.debug("Got the following exception", e);
+				System.err.println("Could not find version for maven artifact " + groupId + ":" + artifactId);
+				System.err.println("Got the following exception " + e);
 				return UNKNOWN_VERSION;
 			} finally {
 				if (resourceAsStream != null) {

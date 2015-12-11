@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.BasicVotes;
 import com.atlassian.jira.rest.client.api.domain.Votes;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.util.Collection;
 
@@ -29,9 +29,9 @@ public class VotesJsonParser implements JsonObjectParser<Votes> {
 	private final BasicUserJsonParser basicUserJsonParser = new BasicUserJsonParser();
 
 	@Override
-	public Votes parse(JSONObject json) throws JSONException {
+	public Votes parse(JsonObject json) throws JsonParseException {
 		final BasicVotes basicVotes = basicVotesJsonParser.parse(json);
-		final Collection<BasicUser> users = JsonParseUtil.parseJsonArray(json.getJSONArray("voters"), basicUserJsonParser);
+		final Collection<BasicUser> users = JsonParseUtil.parseJsonArray(json.getAsJsonArray("voters"), basicUserJsonParser);
 		return new Votes(basicVotes.getSelf(), basicVotes.getVotes(), basicVotes.hasVoted(), users);
 	}
 }

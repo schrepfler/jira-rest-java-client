@@ -17,12 +17,12 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.TimeTracking;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class TimeTrackingJsonParserV5 implements JsonObjectParser<TimeTracking> {
 	@Override
-	public TimeTracking parse(JSONObject json) throws JSONException {
+	public TimeTracking parse(JsonObject json) throws JsonParseException {
 		final Integer originalEstimateMinutes = JsonParseUtil.parseOptionInteger(json, "originalEstimateSeconds");
 		final Integer timeRemainingMinutes = JsonParseUtil.parseOptionInteger(json, "remainingEstimateSeconds");
 		final Integer timeSpentMinutes = JsonParseUtil.parseOptionInteger(json, "timeSpentSeconds");

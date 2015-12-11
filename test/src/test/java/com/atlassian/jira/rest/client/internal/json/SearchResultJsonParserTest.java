@@ -25,7 +25,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.google.common.collect.Iterables;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -73,7 +73,7 @@ public class SearchResultJsonParserTest {
 
 	@Test
 	public void testParseInvalidTotal() throws Exception {
-		exception.expect(JSONException.class);
+		exception.expect(JsonParseException.class);
 		exception.expectMessage("JSONObject[\"total\"] is not a number.");
 
 		parser.parse(getJsonObjectFromResource("/json/search/issues-invalid-total.json"));

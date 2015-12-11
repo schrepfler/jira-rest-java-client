@@ -15,8 +15,8 @@
  */
 package com.atlassian.jira.rest.client.internal.json;
 
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
 
 import java.util.ArrayList;
 
@@ -33,10 +33,10 @@ public class GenericJsonArrayParser<T> implements JsonArrayParser<Iterable<T>> {
 	}
 
 	@Override
-	public Iterable<T> parse(JSONArray json) throws JSONException {
-		ArrayList<T> res = new ArrayList<T>(json.length());
-		for (int i = 0; i < json.length(); i++) {
-			res.add(jsonParser.parse(json.getJSONObject(i)));
+	public Iterable<T> parse(JsonArray json) throws JsonParseException {
+		ArrayList<T> res = new ArrayList<T>(json.size());
+		for (int i = 0; i < json.size(); i++) {
+			res.add(jsonParser.parse(json.get(i).getAsJsonObject()));
 		}
 		return res;
 	}

@@ -17,7 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.SecurityLevel;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Test;
 
 import java.net.URI;
@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 public class SecurityLevelJsonParserTest {
 
 	@Test
-	public void testParse() throws JSONException {
+	public void testParse() throws JsonParseException {
 		final SecurityLevelJsonParser parser = new SecurityLevelJsonParser();
 		final SecurityLevel securityLevel = parser.parse(getJsonObjectFromResource("/json/securitylevel/valid.json"));
 

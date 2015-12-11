@@ -17,7 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Status;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ import static com.atlassian.jira.rest.client.TestUtil.toUri;
 
 public class StatusJsonParserTest {
 	@Test
-	public void testParse() throws JSONException {
+	public void testParse() throws JsonParseException {
 		final StatusJsonParser parser = new StatusJsonParser();
 		final Status status = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/status/valid.json"));
 		Assert.assertEquals(new Status(toUri("http://localhost:8090/jira/rest/api/latest/status/1"),

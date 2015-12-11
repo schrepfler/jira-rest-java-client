@@ -17,18 +17,18 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.IssueType;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
 public class IssueTypeJsonParser implements JsonObjectParser<IssueType> {
 	@Override
-	public IssueType parse(JSONObject json) throws JSONException {
+	public IssueType parse(JsonObject json) throws JsonParseException {
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final long id = json.getLong("id");
-		final String name = json.getString("name");
-		final boolean isSubtask = json.getBoolean("subtask");
+		final long id = json.get("id").getAsLong();
+		final String name = json.get("name").getAsString();
+		final boolean isSubtask = json.get("subtask").getAsBoolean();
 		final String iconUrl = JsonParseUtil.getOptionalString(json, "iconUrl");
 		final URI iconUri = iconUrl == null ? null : JsonParseUtil.parseURI(iconUrl);
 		final String description = JsonParseUtil.getOptionalString(json, "description");

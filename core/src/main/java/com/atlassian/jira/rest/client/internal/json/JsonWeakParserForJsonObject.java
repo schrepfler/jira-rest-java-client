@@ -16,8 +16,9 @@
 
 package com.atlassian.jira.rest.client.internal.json;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 class JsonWeakParserForJsonObject<T> implements JsonWeakParser<T> {
 	private final JsonObjectParser<T> jsonParser;
@@ -26,16 +27,16 @@ class JsonWeakParserForJsonObject<T> implements JsonWeakParser<T> {
 		this.jsonParser = jsonParser;
 	}
 
-	private <T> T convert(Object o, Class<T> clazz) throws JSONException {
+	private <T> T convert(Object o, Class<T> clazz) throws JsonParseException {
 		try {
 			return clazz.cast(o);
 		} catch (ClassCastException e) {
-			throw new JSONException("Expected [" + clazz.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
+			throw new JsonParseException("Expected [" + clazz.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
 		}
 	}
 
 	@Override
-	public T parse(Object o) throws JSONException {
-		return jsonParser.parse(convert(o, JSONObject.class));
+	public T parse(Object o) throws JsonParseException {
+		return jsonParser.parse(convert(o, JsonObject.class));
 	}
 }

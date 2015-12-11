@@ -22,7 +22,7 @@ import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.input.WorklogInput;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.atlassian.jira.rest.client.internal.json.ResourceUtil;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class WorklogInputJsonGeneratorTest {
 	}
 
 	@Test
-	public void testGenerate() throws JSONException {
+	public void testGenerate() throws JsonParseException {
 		final WorklogInput worklogInput = new WorklogInput(
 				toUri("http://localhost:8090/jira/rest/api/latest/worklog/10010"),
 				toUri("http://localhost:8090/jira/rest/api/latest/issue/TST-2"), USER, ADMIN, "my first work",
@@ -57,7 +57,7 @@ public class WorklogInputJsonGeneratorTest {
 	}
 
 	@Test
-	public void testGenerateWithoutVisibility() throws JSONException {
+	public void testGenerateWithoutVisibility() throws JsonParseException {
 		final WorklogInput worklogInput = new WorklogInput(
 				toUri("http://localhost:8090/jira/rest/api/latest/worklog/10010"),
 				toUri("http://localhost:8090/jira/rest/api/latest/issue/TST-2"), ADMIN, USER, "my first work",
@@ -68,7 +68,7 @@ public class WorklogInputJsonGeneratorTest {
 	}
 
 	@Test
-	public void testGenerateWithoutAuthorAndUpdateAuthor() throws JSONException {
+	public void testGenerateWithoutAuthorAndUpdateAuthor() throws JsonParseException {
 		final WorklogInput worklogInput = new WorklogInput(
 				toUri("http://localhost:8090/jira/rest/api/latest/worklog/10010"),
 				toUri("http://localhost:8090/jira/rest/api/latest/issue/TST-2"), null, null, "my first work",

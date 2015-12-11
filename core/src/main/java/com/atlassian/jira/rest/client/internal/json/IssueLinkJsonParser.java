@@ -18,8 +18,9 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
 
 import java.net.URI;
 
@@ -27,10 +28,10 @@ public class IssueLinkJsonParser implements JsonObjectParser<IssueLink> {
 	private final IssueLinkTypeJsonParser issueLinkTypeJsonParser = new IssueLinkTypeJsonParser();
 
 	@Override
-	public IssueLink parse(JSONObject json) throws JSONException {
-		final String key = json.getString("issueKey");
-		final URI targetIssueUri = JsonParseUtil.parseURI(json.getString("issue"));
-		final IssueLinkType issueLinkType = issueLinkTypeJsonParser.parse(json.getJSONObject("type"));
+	public IssueLink parse(JsonObject json) throws JsonParseException {
+		final String key = json.get("issueKey").getAsString();
+		final URI targetIssueUri = JsonParseUtil.parseURI(json.get("issue").getAsString());
+		final IssueLinkType issueLinkType = issueLinkTypeJsonParser.parse(json.getAsJsonObject("type"));
 		return new IssueLink(key, targetIssueUri, issueLinkType);
 	}
 }

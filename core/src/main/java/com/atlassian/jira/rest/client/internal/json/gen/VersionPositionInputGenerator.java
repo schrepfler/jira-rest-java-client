@@ -18,13 +18,13 @@ package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.input.VersionPosition;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class VersionPositionInputGenerator implements JsonGenerator<VersionPosition> {
 	@Override
-	public JSONObject generate(VersionPosition versionPosition) throws JSONException {
-		final JSONObject res = new JSONObject();
+	public JsonObject generate(VersionPosition versionPosition) throws JsonParseException {
+		final JsonObject res = new JsonObject();
 		final String posValue;
 		switch (versionPosition) {
 			case FIRST:
@@ -42,7 +42,7 @@ public class VersionPositionInputGenerator implements JsonGenerator<VersionPosit
 			default:
 				throw new RestClientException("Unsupported position [" + versionPosition + "]", null);
 		}
-		res.put("position", posValue);
+		res.addProperty("position", posValue);
 		return res;
 	}
 }

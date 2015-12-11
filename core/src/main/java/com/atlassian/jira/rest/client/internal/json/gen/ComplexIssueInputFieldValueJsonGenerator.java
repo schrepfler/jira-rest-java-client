@@ -17,10 +17,12 @@
 package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import java.util.Map;
 
 /**
@@ -30,32 +32,32 @@ import java.util.Map;
  */
 public class ComplexIssueInputFieldValueJsonGenerator implements JsonGenerator<ComplexIssueInputFieldValue> {
 	@Override
-	public JSONObject generate(ComplexIssueInputFieldValue bean) throws JSONException {
-		final JSONObject json = new JSONObject();
+	public JsonObject generate(ComplexIssueInputFieldValue bean) throws JsonParseException {
+		final JsonObject json = new JsonObject();
 		for (Map.Entry<String, Object> entry : bean.getValuesMap().entrySet()) {
-			json.put(entry.getKey(), generateFieldValueForJson(entry.getValue()));
+			json.add(entry.getKey(), generateFieldValueForJson(entry.getValue()));
 		}
 		return json;
 	}
 
-	public Object generateFieldValueForJson(Object rawValue) throws JSONException {
+	public JsonElement generateFieldValueForJson(Object rawValue) throws JsonParseException {
 		if (rawValue == null) {
-			return JSONObject.NULL;
+			return new JsonNull();
 		} else if (rawValue instanceof ComplexIssueInputFieldValue) {
 			return generate((ComplexIssueInputFieldValue) rawValue);
 		} else if (rawValue instanceof Iterable) {
 			// array with values
-			final JSONArray array = new JSONArray();
+			final JsonArray array = new JsonArray();
 			for (Object value : (Iterable) rawValue) {
-				array.put(generateFieldValueForJson(value));
+				array.add(generateFieldValueForJson(value));
 			}
 			return array;
 		} else if (rawValue instanceof CharSequence) {
-			return rawValue.toString();
+			return new JsonPrimitive(rawValue.toString());
 		} else if (rawValue instanceof Number) {
-			return rawValue;
+			return new JsonPrimitive((Number) rawValue);
 		} else {
-			throw new JSONException("Cannot generate value - unknown type for me: " + rawValue.getClass());
+			throw new JsonParseException("Cannot generate value - unknown type for me: " + rawValue.getClass());
 		}
 	}
 }

@@ -17,8 +17,8 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.SecurityLevel;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
@@ -30,11 +30,11 @@ import java.net.URI;
 public class SecurityLevelJsonParser implements JsonObjectParser<SecurityLevel> {
 
 	@Override
-	public SecurityLevel parse(final JSONObject json) throws JSONException {
+	public SecurityLevel parse(final JsonObject json) throws JsonParseException {
 		final URI self = JsonParseUtil.getSelfUri(json);
-		final long id = json.getLong("id");
-		final String description = json.getString("description");
-		final String name = json.getString("name");
+		final long id = json.get("id").getAsLong();
+		final String description = json.get("description").getAsString();
+		final String name = json.get("name").getAsString();
 		return new SecurityLevel(self, id, name, description);
 	}
 }

@@ -19,7 +19,7 @@ package com.atlassian.jira.rest.client.internal.async;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.json.ResourceUtil;
 import com.google.common.collect.Iterators;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class AbstractAsynchronousRestClientTest {
 	private static final int BAD_REQUEST = 400;
 
 	@Test
-	public void testExtractErrors() throws JSONException {
+	public void testExtractErrors() throws JsonParseException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid.json");
 		final Collection<ErrorCollection> errors = AbstractAsynchronousRestClient.extractErrors(BAD_REQUEST, str);
 		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
@@ -39,7 +39,7 @@ public class AbstractAsynchronousRestClientTest {
 	}
 
 	@Test
-	public void testExtractErrors2() throws JSONException {
+	public void testExtractErrors2() throws JsonParseException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid2.json");
 		final Collection<ErrorCollection> errors = AbstractAsynchronousRestClient.extractErrors(BAD_REQUEST, str);
 		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
@@ -47,7 +47,7 @@ public class AbstractAsynchronousRestClientTest {
 	}
 
 	@Test
-	public void testExtractErrors3() throws JSONException {
+	public void testExtractErrors3() throws JsonParseException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid3.json");
 		final Collection<ErrorCollection> errors = AbstractAsynchronousRestClient.extractErrors(BAD_REQUEST, str);
 		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());
@@ -55,7 +55,7 @@ public class AbstractAsynchronousRestClientTest {
 	}
 
 	@Test
-	public void testExtractErrors4() throws JSONException {
+	public void testExtractErrors4() throws JsonParseException {
 		final String str = ResourceUtil.getStringFromResource("/json/error/valid4.json");
 		final Collection<ErrorCollection> errors = AbstractAsynchronousRestClient.extractErrors(BAD_REQUEST, str);
 		final ErrorCollection errorCollection = Iterators.getOnlyElement(errors.iterator());

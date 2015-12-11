@@ -17,17 +17,17 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
 public class BasicIssueJsonParser implements JsonObjectParser<BasicIssue> {
 	@Override
-	public BasicIssue parse(JSONObject json) throws JSONException {
+	public BasicIssue parse(JsonObject json) throws JsonParseException {
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String key = json.getString("key");
-		final Long id = json.getLong("id");
+		final String key = json.get("key").getAsString();
+		final Long id = json.get("id").getAsLong();
 		return new BasicIssue(selfUri, key, id);
 	}
 }

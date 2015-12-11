@@ -15,12 +15,12 @@
  */
 package com.atlassian.jira.rest.client.internal.async;
 
+import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.domain.Filter;
 import com.atlassian.jira.rest.client.internal.json.FilterJsonParser;
 import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.SearchResultJsonParser;
-import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
@@ -29,9 +29,9 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
@@ -87,7 +87,7 @@ public class AsynchronousSearchRestClient extends AbstractAsynchronousRestClient
 
 	public Promise<SearchResult> searchJql(@Nullable String jql, @Nullable Integer maxResults, @Nullable Integer startAt, @Nullable Set<String> fields) {
 		final Iterable<String> expandosValues = Iterables.transform(ImmutableList.of(SCHEMA, NAMES), EXPANDO_TO_PARAM);
-		final String notNullJql = StringUtils.defaultString(jql);
+		final String notNullJql = (jql == null)? "" : jql;
 		if (notNullJql.length() > MAX_JQL_LENGTH_FOR_HTTP_GET) {
 			return searchJqlImplPost(maxResults, startAt, expandosValues, notNullJql, fields);
 		} else {
@@ -116,18 +116,26 @@ public class AsynchronousSearchRestClient extends AbstractAsynchronousRestClient
 	}
 
 	private Promise<SearchResult> searchJqlImplPost(@Nullable Integer maxResults, @Nullable Integer startAt, Iterable<String> expandosValues, String jql, @Nullable Set<String> fields) {
-		final JSONObject postEntity = new JSONObject();
+		final JsonObject postEntity = new JsonObject();
 
 		try {
-			postEntity.put(JQL_ATTRIBUTE, jql)
-					.put(EXPAND_ATTRIBUTE, ImmutableList.copyOf(expandosValues))
-					.putOpt(START_AT_ATTRIBUTE, startAt)
-					.putOpt(MAX_RESULTS_ATTRIBUTE, maxResults);
+			postEntity.addProperty(JQL_ATTRIBUTE, jql);
+			JsonArray array = new JsonArray();
+			for (String value: expandosValues) {
+				array.add(value);
+			}
+			postEntity.add(EXPAND_ATTRIBUTE, array);
+			postEntity.addProperty(START_AT_ATTRIBUTE, startAt);
+			postEntity.addProperty(MAX_RESULTS_ATTRIBUTE, maxResults);
 
 			if (fields != null) {
-				postEntity.put(FIELDS_ATTRIBUTE, fields); // putOpt doesn't work with collections
+				JsonArray fieldsJson = new JsonArray();
+				for (String value: expandosValues) {
+					fieldsJson.add(value);
+				}
+				postEntity.add(FIELDS_ATTRIBUTE, fieldsJson); // putOpt doesn't work with collections
 			}
-		} catch (JSONException e) {
+		} catch (JsonParseException e) {
 			throw new RestClientException(e);
 		}
 		return postAndParse(searchUri, postEntity, searchResultJsonParser);

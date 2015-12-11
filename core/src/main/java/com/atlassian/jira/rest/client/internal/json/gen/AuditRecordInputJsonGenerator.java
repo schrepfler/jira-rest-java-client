@@ -3,9 +3,9 @@ package com.atlassian.jira.rest.client.internal.json.gen;
 import com.atlassian.jira.rest.client.api.domain.AuditAssociatedItem;
 import com.atlassian.jira.rest.client.api.domain.AuditChangedValue;
 import com.atlassian.jira.rest.client.api.domain.AuditRecordInput;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 
@@ -16,31 +16,33 @@ public class AuditRecordInputJsonGenerator implements JsonGenerator<AuditRecordI
     final AuditAssociatedItemJsonGenerator associatedItemJsonGenerator = new AuditAssociatedItemJsonGenerator();
 
     @Override
-    public JSONObject generate(AuditRecordInput bean) throws JSONException {
-        return new JSONObject()
-                .put("category", bean.getCategory())
-                .put("summary", bean.getSummary())
-                .put("objectItem", bean.getObjectItem() != null ? associatedItemJsonGenerator.generate(bean.getObjectItem()) : null)
-                .put("associatedItems", generateAssociatedItems(bean.getAssociatedItems()))
-                .put("changedValues", generateChangedValues(bean.getChangedValues()));
+    public JsonObject generate(AuditRecordInput bean) throws JsonParseException {
+        JsonObject obj = new JsonObject();
+
+        obj.addProperty("category", bean.getCategory());
+        obj.addProperty("summary", bean.getSummary());
+        obj.add("objectItem", bean.getObjectItem() != null ? associatedItemJsonGenerator.generate(bean.getObjectItem()) : null);
+        obj.add("associatedItems", generateAssociatedItems(bean.getAssociatedItems()));
+        obj.add("changedValues", generateChangedValues(bean.getChangedValues()));
+        return obj;
     }
 
-    private JSONArray generateChangedValues(@Nullable Iterable<AuditChangedValue> changedValues) throws JSONException {
+    private JsonArray generateChangedValues(@Nullable Iterable<AuditChangedValue> changedValues) throws JsonParseException {
         final AuditChangedValueJsonGenerator generator = new AuditChangedValueJsonGenerator();
-        final JSONArray array = new JSONArray();
+        final JsonArray array = new JsonArray();
         if (changedValues != null) {
             for(AuditChangedValue value : changedValues) {
-                array.put(generator.generate(value));
+                array.add(generator.generate(value));
             }
         }
         return array;
     }
 
-    protected JSONArray generateAssociatedItems(@Nullable Iterable<AuditAssociatedItem> associatedItems) throws JSONException {
-        final JSONArray array = new JSONArray();
+    protected JsonArray generateAssociatedItems(@Nullable Iterable<AuditAssociatedItem> associatedItems) throws JsonParseException {
+        final JsonArray array = new JsonArray();
         if (associatedItems != null) {
             for(AuditAssociatedItem item : associatedItems) {
-                array.put(associatedItemJsonGenerator.generate(item));
+                array.add(associatedItemJsonGenerator.generate(item));
             }
         }
         return array;

@@ -30,13 +30,15 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.InputStreamBody;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
@@ -76,7 +78,7 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 	private ServerInfo serverInfo;
 
 	public AsynchronousIssueRestClient(final URI baseUri, final HttpClient client, final SessionRestClient sessionRestClient,
-			final MetadataRestClient metadataRestClient) {
+									   final MetadataRestClient metadataRestClient) {
 		super(client);
 		this.baseUri = baseUri;
 		this.sessionRestClient = sessionRestClient;
@@ -177,25 +179,22 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 		return callAndParse(client().newRequest(transitionsUri).get(),
 				new AbstractAsynchronousRestClient.ResponseHandler<Iterable<Transition>>() {
 					@Override
-					public Iterable<Transition> handle(Response response) throws JSONException, IOException {
-						final JSONObject jsonObject = new JSONObject(response.getEntity());
+					public Iterable<Transition> handle(Response response) throws JsonParseException, IOException {
+						final JsonObject jsonObject = JsonParser.GSON_PARSER.parse(response.getEntity()).getAsJsonObject();
 						if (jsonObject.has("transitions")) {
-							return JsonParseUtil.parseJsonArray(jsonObject.getJSONArray("transitions"), transitionJsonParserV5);
+							return JsonParseUtil.parseJsonArray(jsonObject.getAsJsonArray("transitions"), transitionJsonParserV5);
 						} else {
-							final Collection<Transition> transitions = new ArrayList<Transition>(jsonObject.length());
-							@SuppressWarnings("unchecked")
-							final Iterator<String> iterator = jsonObject.keys();
-							while (iterator.hasNext()) {
-								final String key = iterator.next();
+							final Collection<Transition> transitions = new ArrayList<Transition>(jsonObject.entrySet().size());
+							for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 								try {
-									final int id = Integer.parseInt(key);
-									final Transition transition = transitionJsonParser.parse(jsonObject.getJSONObject(key), id);
+									final int id = Integer.parseInt(entry.getKey());
+									final Transition transition = transitionJsonParser.parse(entry.getValue().getAsJsonObject(), id);
 									transitions.add(transition);
-								} catch (JSONException e) {
+								} catch (JsonParseException e) {
 									throw new RestClientException(e);
 								} catch (NumberFormatException e) {
 									throw new RestClientException(
-											"Transition id should be an integer, but found [" + key + "]", e);
+											"Transition id should be an integer, but found [" + entry.getKey() + "]", e);
 								}
 							}
 							return transitions;
@@ -219,33 +218,42 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 	public Promise<Void> transition(final URI transitionsUri, final TransitionInput transitionInput) {
 		final int buildNumber = getVersionInfo().getBuildNumber();
 		try {
-			JSONObject jsonObject = new JSONObject();
+			JsonObject jsonObject = new JsonObject();
 			if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-				jsonObject.put("transition", new JSONObject().put("id", transitionInput.getId()));
+				JsonObject obj = new JsonObject();
+				obj.addProperty("id", transitionInput.getId());
+				jsonObject.add("transition", obj);
 			} else {
-				jsonObject.put("transition", transitionInput.getId());
+				jsonObject.addProperty("transition", transitionInput.getId());
 			}
 			if (transitionInput.getComment() != null) {
 				if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-					jsonObject.put("update", new JSONObject().put("comment",
-							new JSONArray().put(new JSONObject().put("add",
-									new CommentJsonGenerator(getVersionInfo())
-											.generate(transitionInput.getComment())))));
+					JsonObject add = new JsonObject();
+					add.add("add", new CommentJsonGenerator(getVersionInfo())
+							.generate(transitionInput.getComment()));
+
+					JsonArray comment = new JsonArray();
+					comment.add(add);
+
+					JsonObject update = new JsonObject();
+					update.add("comment", comment);
+
+					jsonObject.add("update", update);
 				} else {
-					jsonObject.put("comment", new CommentJsonGenerator(getVersionInfo())
+					jsonObject.add("comment", new CommentJsonGenerator(getVersionInfo())
 							.generate(transitionInput.getComment()));
 				}
 			}
 			final Iterable<FieldInput> fields = transitionInput.getFields();
-			final JSONObject fieldsJs = new IssueUpdateJsonGenerator().generate(fields);
-			if (fieldsJs.keys().hasNext()) {
-				jsonObject.put("fields", fieldsJs);
+			final JsonObject fieldsJs = new IssueUpdateJsonGenerator().generate(fields);
+			if (!fieldsJs.entrySet().isEmpty()) {
+				jsonObject.add("fields", fieldsJs);
 			}
-			if (fieldsJs.keys().hasNext()) {
-				jsonObject.put("fields", fieldsJs);
+			if (!fieldsJs.entrySet().isEmpty()) {
+				jsonObject.add("fields", fieldsJs);
 			}
 			return post(transitionsUri, jsonObject);
-		} catch (JSONException ex) {
+		} catch (JsonParseException ex) {
 			throw new RestClientException(ex);
 		}
 	}
@@ -283,7 +291,7 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 
 	@Override
 	public Promise<Void> addWatcher(final URI watchersUri, final String username) {
-		return post(watchersUri, JSONObject.quote(username));
+		return post(watchersUri, new JsonPrimitive("\"" + username + "\""));
 	}
 
 	@Override
@@ -338,7 +346,7 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 		return callAndParse(client().newRequest(attachmentUri).get(),
 				new ResponseHandler<InputStream>() {
 					@Override
-					public InputStream handle(final Response request) throws JSONException, IOException {
+					public InputStream handle(final Response request) throws JsonParseException, IOException {
 						return request.getEntityStream();
 					}
 				}

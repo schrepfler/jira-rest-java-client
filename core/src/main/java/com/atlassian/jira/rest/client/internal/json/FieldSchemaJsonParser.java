@@ -17,8 +17,8 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.FieldSchema;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
  * JSON parser for FieldSchema
@@ -28,7 +28,7 @@ import org.codehaus.jettison.json.JSONObject;
 public class FieldSchemaJsonParser implements JsonObjectParser<FieldSchema> {
 
 	@Override
-	public FieldSchema parse(JSONObject json) throws JSONException {
+	public FieldSchema parse(JsonObject json) throws JsonParseException {
 		final String type = JsonParseUtil.getOptionalString(json, "type");
 		final String items = JsonParseUtil.getOptionalString(json, "items");
 		final String system = JsonParseUtil.getOptionalString(json, "system");

@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,10 +28,10 @@ import org.junit.Test;
 public class CommentJsonParserTest {
 	@Test
 	public void testParse() throws Exception {
-		final JSONObject commentsJson = ResourceUtil.getJsonObjectFromResource("/json/comment/valid.json");
+		final JsonObject commentsJson = ResourceUtil.getJsonObjectFromResource("/json/comment/valid.json");
 		final CommentJsonParser parser = new CommentJsonParser();
 
-		final JSONObject comment1Json = commentsJson.getJSONArray("value").getJSONObject(0);
+		final JsonObject comment1Json = commentsJson.getAsJsonArray("value").get(0).getAsJsonObject();
 		final Comment comment1 = parser.parse(comment1Json);
 		Assert.assertEquals("some comment", comment1.getBody());
 		Assert.assertEquals(TestConstants.USER_ADMIN_BASIC_DEPRECATED, comment1.getAuthor());
@@ -42,12 +42,12 @@ public class CommentJsonParserTest {
 		Assert.assertEquals(Long.valueOf(10020), comment1.getId());
 		Assert.assertEquals(Visibility.role("Administrators"), comment1.getVisibility());
 
-		final JSONObject comment3Json = commentsJson.getJSONArray("value").getJSONObject(2);
+		final JsonObject comment3Json = commentsJson.getAsJsonArray("value").get(2).getAsJsonObject();
 		final Comment comment3 = parser.parse(comment3Json);
 		Assert.assertEquals(Long.valueOf(10022), comment3.getId());
 		Assert.assertEquals(Visibility.group("jira-users"), comment3.getVisibility());
 
-		final JSONObject comment2Json = commentsJson.getJSONArray("value").getJSONObject(1);
+		final JsonObject comment2Json = commentsJson.getAsJsonArray("value").get(1).getAsJsonObject();
 		final Comment comment2 = parser.parse(comment2Json);
 		Assert.assertEquals(Long.valueOf(10021), comment2.getId());
 		Assert.assertNull(comment2.getVisibility());
@@ -55,10 +55,10 @@ public class CommentJsonParserTest {
 
 	@Test
 	public void testParseWithoutId() throws Exception {
-		final JSONObject commentsJson = ResourceUtil.getJsonObjectFromResource("/json/comment/valid-without-id.json");
+		final JsonObject commentsJson = ResourceUtil.getJsonObjectFromResource("/json/comment/valid-without-id.json");
 		final CommentJsonParser parser = new CommentJsonParser();
 
-		final JSONObject comment1Json = commentsJson.getJSONArray("value").getJSONObject(0);
+		final JsonObject comment1Json = commentsJson.getAsJsonArray("value").get(0).getAsJsonObject();
 		final Comment comment1 = parser.parse(comment1Json);
 		Assert.assertEquals("some comment", comment1.getBody());
 		Assert.assertEquals(TestConstants.USER_ADMIN_BASIC_DEPRECATED, comment1.getAuthor());
@@ -69,12 +69,12 @@ public class CommentJsonParserTest {
 		Assert.assertEquals(null, comment1.getId());
 		Assert.assertEquals(Visibility.role("Administrators"), comment1.getVisibility());
 
-		final JSONObject comment3Json = commentsJson.getJSONArray("value").getJSONObject(2);
+		final JsonObject comment3Json = commentsJson.getAsJsonArray("value").get(2).getAsJsonObject();
 		final Comment comment3 = parser.parse(comment3Json);
 		Assert.assertEquals(null, comment3.getId());
 		Assert.assertEquals(Visibility.group("jira-users"), comment3.getVisibility());
 
-		final JSONObject comment2Json = commentsJson.getJSONArray("value").getJSONObject(1);
+		final JsonObject comment2Json = commentsJson.getAsJsonArray("value").get(1).getAsJsonObject();
 		final Comment comment2 = parser.parse(comment2Json);
 		Assert.assertEquals(null, comment2.getId());
 		Assert.assertNull(comment2.getVisibility());
@@ -82,10 +82,10 @@ public class CommentJsonParserTest {
 	}
 
 	@Test
-	public void testParseAnonymous() throws JSONException {
+	public void testParseAnonymous() throws JsonParseException {
 		final CommentJsonParser parser = new CommentJsonParser();
-		final JSONObject json = ResourceUtil.getJsonObjectFromResource("/json/comment/valid-anonymous.json");
-		final JSONObject commentJson = json.getJSONArray("value").getJSONObject(0);
+		final JsonObject json = ResourceUtil.getJsonObjectFromResource("/json/comment/valid-anonymous.json");
+		final JsonObject commentJson = json.getAsJsonArray("value").get(0).getAsJsonObject();
 		final Comment comment = parser.parse(commentJson);
 		Assert.assertNull(comment.getAuthor());
 		Assert.assertNull(comment.getUpdateAuthor());

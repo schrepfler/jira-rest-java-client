@@ -23,7 +23,7 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.internal.json.ResourceUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,8 +47,8 @@ public class IssueInputJsonGeneratorTest {
 				)))
 		);
 
-		final JSONObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/valid.json");
-		final JSONObject actual = generator.generate(issueInput);
+		final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/valid.json");
+		final JsonObject actual = generator.generate(issueInput);
 		Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
 	}
 
@@ -57,8 +57,8 @@ public class IssueInputJsonGeneratorTest {
 		final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
 		final IssueInput issueInput = new IssueInput(Maps.<String, FieldInput>newHashMap());
 
-		final JSONObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
-		final JSONObject actual = generator.generate(issueInput);
+		final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
+		final JsonObject actual = generator.generate(issueInput);
 		Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
 	}
 
@@ -67,8 +67,8 @@ public class IssueInputJsonGeneratorTest {
 		final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
 		final IssueInput issueInput = null;
 
-		final JSONObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
-		final JSONObject actual = generator.generate(issueInput);
+		final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
+		final JsonObject actual = generator.generate(issueInput);
 		Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
 	}
 }

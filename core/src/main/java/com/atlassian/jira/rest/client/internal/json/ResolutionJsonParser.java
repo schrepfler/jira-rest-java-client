@@ -17,8 +17,8 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Resolution;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
@@ -27,8 +27,8 @@ import java.net.URI;
  */
 public class ResolutionJsonParser implements JsonObjectParser<Resolution> {
 	@Override
-	public Resolution parse(JSONObject json) throws JSONException {
-		final String name = json.getString("name");
+	public Resolution parse(JsonObject json) throws JsonParseException {
+		final String name = json.get("name").getAsString();
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
 		final String description = JsonParseUtil.getOptionalString(json, "description");

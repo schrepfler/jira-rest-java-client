@@ -17,15 +17,16 @@
 package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.Visibility;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class VisibilityJsonGenerator implements JsonGenerator<Visibility> {
 
 	@Override
-	public JSONObject generate(Visibility visibility) throws JSONException {
-		return new JSONObject()
-				.put("type", visibility.getType().name().toLowerCase())
-				.put("value", visibility.getValue());
+	public JsonObject generate(Visibility visibility) throws JsonParseException {
+		JsonObject obj = new JsonObject();
+		obj.addProperty("type", visibility.getType().name().toLowerCase());
+		obj.addProperty("value", visibility.getValue());
+		return obj;
 	}
 }

@@ -18,8 +18,8 @@ package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
  * Json Generator for IssueInput
@@ -31,20 +31,20 @@ public class IssueInputJsonGenerator implements JsonGenerator<IssueInput> {
 	private final ComplexIssueInputFieldValueJsonGenerator complexIssueInputFieldValueJsonGenerator = new ComplexIssueInputFieldValueJsonGenerator();
 
 	@Override
-	public JSONObject generate(IssueInput issue) throws JSONException {
-		final JSONObject jsonObject = new JSONObject();
-		final JSONObject fields = new JSONObject();
+	public JsonObject generate(IssueInput issue) throws JsonParseException {
+		final JsonObject jsonObject = new JsonObject();
+		final JsonObject fields = new JsonObject();
 
 		if (issue != null && issue.getFields() != null) {
 			for (final FieldInput field : issue.getFields().values()) {
 				if (field.getValue() != null) {
-					fields.put(field.getId(), complexIssueInputFieldValueJsonGenerator.generateFieldValueForJson(field
+					fields.add(field.getId(), complexIssueInputFieldValueJsonGenerator.generateFieldValueForJson(field
 							.getValue()));
 				}
 			}
 		}
 
-		jsonObject.put("fields", fields);
+		jsonObject.add("fields", fields);
 		return jsonObject;
 	}
 }

@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
@@ -30,15 +30,15 @@ public class CommentJsonParser implements JsonObjectParser<Comment> {
 	private final VisibilityJsonParser visibilityJsonParser = new VisibilityJsonParser();
 
 	@Override
-	public Comment parse(JSONObject json) throws JSONException {
+	public Comment parse(JsonObject json) throws JsonParseException {
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String body = json.getString("body");
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.optJSONObject("author"));
-		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.optJSONObject("updateAuthor"));
+		final String body = json.get("body").getAsString();
+		final BasicUser author = JsonParseUtil.parseBasicUser(json.get("author").getAsJsonObject());
+		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.get("updateAuthor").getAsJsonObject());
 
 		final Visibility visibility = visibilityJsonParser.parseVisibility(json);
-		return new Comment(selfUri, body, author, updateAuthor, JsonParseUtil.parseDateTime(json.getString("created")),
-				JsonParseUtil.parseDateTime(json.getString("updated")), visibility, id);
+		return new Comment(selfUri, body, author, updateAuthor, JsonParseUtil.parseDateTime(json.get("created").getAsString()),
+				JsonParseUtil.parseDateTime(json.get("updated").getAsString()), visibility, id);
 	}
 }

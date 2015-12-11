@@ -19,18 +19,18 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.OperationGroup;
 import com.atlassian.jira.rest.client.api.domain.OperationHeader;
 import com.atlassian.jira.rest.client.api.domain.OperationLink;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class OperationGroupJsonParser implements JsonObjectParser<OperationGroup> {
 	final private OperationLinkJsonParser linkJsonParser = new OperationLinkJsonParser();
 	final private OperationHeaderJsonParser headerJsonParser = new OperationHeaderJsonParser();
 
 	@Override
-	public OperationGroup parse(final JSONObject json) throws JSONException {
+	public OperationGroup parse(final JsonObject json) throws JsonParseException {
 		final String id = JsonParseUtil.getOptionalString(json, "id");
-		final Iterable<OperationLink> links = JsonParseUtil.parseJsonArray(json.getJSONArray("links"), linkJsonParser);
-		final Iterable<OperationGroup> groups = JsonParseUtil.parseJsonArray(json.getJSONArray("groups"), this);
+		final Iterable<OperationLink> links = JsonParseUtil.parseJsonArray(json.getAsJsonArray("links"), linkJsonParser);
+		final Iterable<OperationGroup> groups = JsonParseUtil.parseJsonArray(json.getAsJsonArray("groups"), this);
 		final OperationHeader header = JsonParseUtil.parseOptionalJsonObject(json, "header", headerJsonParser);
 		final Integer weight = JsonParseUtil.parseOptionInteger(json, "weight");
 		return new OperationGroup(id, links, groups, header, weight);

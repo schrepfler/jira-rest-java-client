@@ -17,7 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.OperationLink;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public class OperationLinkJsonParserTest {
 				null, "Comment", null, "/secure/AddComment!default.jspa?id=10100", null, null)));
 	}
 
-	private void testParseResource(String resourcePath, Matcher<OperationLink> expected) throws JSONException {
+	private void testParseResource(String resourcePath, Matcher<OperationLink> expected) throws JsonParseException {
 		OperationLinkJsonParser parser = new OperationLinkJsonParser();
 		OperationLink actual = parser.parse(ResourceUtil.getJsonObjectFromResource(resourcePath));
 		assertThat(actual, expected);

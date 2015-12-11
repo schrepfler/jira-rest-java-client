@@ -18,8 +18,8 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicPriority;
 import com.atlassian.jira.rest.client.api.domain.Priority;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
@@ -27,11 +27,11 @@ public class PriorityJsonParser implements JsonObjectParser<Priority> {
 	private final BasicPriorityJsonParser basicPriorityJsonParser = new BasicPriorityJsonParser();
 
 	@Override
-	public Priority parse(JSONObject json) throws JSONException {
+	public Priority parse(JsonObject json) throws JsonParseException {
 		final BasicPriority basicPriority = basicPriorityJsonParser.parse(json);
-		final String statusColor = json.getString("statusColor");
-		final String description = json.getString("description");
-		final URI iconUri = JsonParseUtil.parseURI(json.getString("iconUrl"));
+		final String statusColor = json.get("statusColor").getAsString();
+		final String description = json.get("description").getAsString();
+		final URI iconUri = JsonParseUtil.parseURI(json.get("iconUrl").getAsString());
 		return new Priority(basicPriority.getSelf(), basicPriority.getId(), basicPriority
 				.getName(), statusColor, description, iconUri);
 	}

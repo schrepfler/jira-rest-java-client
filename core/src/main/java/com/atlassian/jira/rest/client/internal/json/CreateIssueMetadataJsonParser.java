@@ -17,8 +17,8 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.CimProject;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
  * JSON parser for REST action issue/createmeta result
@@ -30,7 +30,7 @@ public class CreateIssueMetadataJsonParser implements JsonObjectParser<Iterable<
 	private final GenericJsonArrayParser<CimProject> projectsParser = new GenericJsonArrayParser<CimProject>(new CimProjectJsonParser());
 
 	@Override
-	public Iterable<CimProject> parse(final JSONObject json) throws JSONException {
-		return projectsParser.parse(json.getJSONArray("projects"));
+	public Iterable<CimProject> parse(final JsonObject json) throws JsonParseException {
+		return projectsParser.parse(json.get("projects").getAsJsonArray());
 	}
 }

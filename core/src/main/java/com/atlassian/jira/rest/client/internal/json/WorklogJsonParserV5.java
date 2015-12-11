@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.net.URI;
@@ -35,17 +35,17 @@ public class WorklogJsonParserV5 implements JsonObjectParser<Worklog> {
 
 
 	@Override
-	public Worklog parse(JSONObject json) throws JSONException {
+	public Worklog parse(JsonObject json) throws JsonParseException {
 		final URI self = JsonParseUtil.getSelfUri(json);
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.optJSONObject("author"));
-		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.optJSONObject("updateAuthor"));
+		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
+		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
 		// comment is optional due to JRJC-49: JIRA can return worklog without comment
-		final String comment = json.optString("comment");
+		final String comment = json.get("comment").getAsString();
 		final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
 		final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
 		final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
 		// timeSpentSeconds is not required due to bug: JRADEV-8825 (fixed in 5.0, Iteration 14).
-		final int secondsSpent = json.optInt("timeSpentSeconds", 0);
+		final int secondsSpent = json.get("timeSpentSeconds").getAsInt();
 		final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
 		return new Worklog(self, issue, author, updateAuthor, comment, creationDate, updateDate, startDate,
 				secondsSpent / 60, visibility);

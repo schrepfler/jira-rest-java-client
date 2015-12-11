@@ -22,7 +22,7 @@ import com.atlassian.jira.rest.client.api.domain.BasicProjectRole;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.google.common.collect.Iterables;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.collection.IsEmptyIterable;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.joda.time.DateMidnight;
@@ -65,7 +65,7 @@ public class ProjectJsonParserTest {
 	}
 
 	@Test
-	public void testParseProjectWithNoUrl() throws JSONException {
+	public void testParseProjectWithNoUrl() throws JsonParseException {
 		final Project project = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/project/project-no-url.json"));
 		Assert.assertEquals("MYT", project.getKey());
 		Assert.assertNull(project.getUri());
@@ -73,7 +73,7 @@ public class ProjectJsonParserTest {
 	}
 
 	@Test
-	public void testParseProjectInJira5x0() throws JSONException, URISyntaxException {
+	public void testParseProjectInJira5x0() throws JsonParseException, URISyntaxException {
 		final Project project = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/project/project-jira-5-0.json"));
 		Assert.assertEquals("TST", project.getKey());
 		Assert.assertEquals(new DateMidnight(2010, 8, 25).toInstant(), Iterables.getLast(project.getVersions()).getReleaseDate()
@@ -101,7 +101,7 @@ public class ProjectJsonParserTest {
 	}
 
 	@Test
-	public void testParseProjectWithBasicRoles() throws JSONException, URISyntaxException {
+	public void testParseProjectWithBasicRoles() throws JsonParseException, URISyntaxException {
 		final Project project = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/project/project-jira-5-0.json"));
 		final Iterable<BasicProjectRole> projectRoles = project.getProjectRoles();
 		Assert.assertThat(projectRoles, IsIterableContainingInAnyOrder.containsInAnyOrder(

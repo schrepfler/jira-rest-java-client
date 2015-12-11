@@ -22,9 +22,11 @@ import com.atlassian.jira.rest.client.api.OptionalIterable;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -37,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class JsonParseUtil {
 	public static final String JIRA_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
@@ -44,17 +48,17 @@ public class JsonParseUtil {
 	public static final DateTimeFormatter JIRA_DATE_FORMATTER = ISODateTimeFormat.date();
 	public static final String SELF_ATTR = "self";
 
-	public static <T> Collection<T> parseJsonArray(final JSONArray jsonArray, final JsonObjectParser<T> jsonParser)
-			throws JSONException {
-		final Collection<T> res = new ArrayList<T>(jsonArray.length());
-		for (int i = 0; i < jsonArray.length(); i++) {
-			res.add(jsonParser.parse(jsonArray.getJSONObject(i)));
+	public static <T> Collection<T> parseJsonArray(final JsonArray jsonArray, final JsonObjectParser<T> jsonParser)
+			throws JsonParseException {
+		final Collection<T> res = new ArrayList<T>(jsonArray.size());
+		for (int i = 0; i < jsonArray.size(); i++) {
+			res.add(jsonParser.parse(jsonArray.get(i).getAsJsonObject()));
 		}
 		return res;
 	}
 
-	public static <T> OptionalIterable<T> parseOptionalJsonArray(final JSONArray jsonArray, final JsonObjectParser<T> jsonParser)
-			throws JSONException {
+	public static <T> OptionalIterable<T> parseOptionalJsonArray(final JsonArray jsonArray, final JsonObjectParser<T> jsonParser)
+			throws JsonParseException {
 		if (jsonArray == null) {
 			return OptionalIterable.absent();
 		} else {
@@ -62,27 +66,27 @@ public class JsonParseUtil {
 		}
 	}
 
-	public static <T> T parseOptionalJsonObject(final JSONObject json, final String attributeName, final JsonObjectParser<T> jsonParser)
-			throws JSONException {
-		JSONObject attributeObject = getOptionalJsonObject(json, attributeName);
+	public static <T> T parseOptionalJsonObject(final JsonObject json, final String attributeName, final JsonObjectParser<T> jsonParser)
+			throws JsonParseException {
+		JsonObject attributeObject = getOptionalJsonObject(json, attributeName);
 		return attributeObject != null ? jsonParser.parse(attributeObject) : null;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public static <T> ExpandableProperty<T> parseExpandableProperty(final JSONObject json, final JsonObjectParser<T> expandablePropertyBuilder)
-			throws JSONException {
+	public static <T> ExpandableProperty<T> parseExpandableProperty(final JsonObject json, final JsonObjectParser<T> expandablePropertyBuilder)
+			throws JsonParseException {
 		return parseExpandableProperty(json, false, expandablePropertyBuilder);
 	}
 
 	@Nullable
-	public static <T> ExpandableProperty<T> parseOptionalExpandableProperty(@Nullable final JSONObject json, final JsonObjectParser<T> expandablePropertyBuilder)
-			throws JSONException {
+	public static <T> ExpandableProperty<T> parseOptionalExpandableProperty(@Nullable final JsonObject json, final JsonObjectParser<T> expandablePropertyBuilder)
+			throws JsonParseException {
 		return parseExpandableProperty(json, true, expandablePropertyBuilder);
 	}
 
 	@Nullable
-	private static <T> ExpandableProperty<T> parseExpandableProperty(@Nullable final JSONObject json, final Boolean optional, final JsonObjectParser<T> expandablePropertyBuilder)
-			throws JSONException {
+	private static <T> ExpandableProperty<T> parseExpandableProperty(@Nullable final JsonObject json, final Boolean optional, final JsonObjectParser<T> expandablePropertyBuilder)
+			throws JsonParseException {
 		if (json == null) {
 			if (!optional) {
 				throw new IllegalArgumentException("json object cannot be null while optional is false");
@@ -90,14 +94,14 @@ public class JsonParseUtil {
 			return null;
 		}
 
-		final int numItems = json.getInt("size");
+		final int numItems = json.get("size").getAsInt();
 		final Collection<T> items;
-		JSONArray itemsJa = json.getJSONArray("items");
+		JsonArray itemsJa = json.get("items").getAsJsonArray();
 
-		if (itemsJa.length() > 0) {
+		if (itemsJa.size() > 0) {
 			items = new ArrayList<T>(numItems);
-			for (int i = 0; i < itemsJa.length(); i++) {
-				final T item = expandablePropertyBuilder.parse(itemsJa.getJSONObject(i));
+			for (int i = 0; i < itemsJa.size(); i++) {
+				final T item = expandablePropertyBuilder.parse(itemsJa.get(i).getAsJsonObject());
 				items.add(item);
 			}
 		} else {
@@ -108,65 +112,65 @@ public class JsonParseUtil {
 	}
 
 
-	public static URI getSelfUri(final JSONObject jsonObject) throws JSONException {
-		return parseURI(jsonObject.getString(SELF_ATTR));
+	public static URI getSelfUri(final JsonObject jsonObject) throws JsonParseException {
+		return parseURI(jsonObject.get(SELF_ATTR).getAsString());
 	}
 
-	public static URI optSelfUri(final JSONObject jsonObject, final URI defaultUri) throws JSONException {
-		final String selfUri = jsonObject.optString(SELF_ATTR, null);
+	public static URI optSelfUri(final JsonObject jsonObject, final URI defaultUri) throws JsonParseException {
+		final String selfUri = jsonObject.get(SELF_ATTR).getAsString();
 		return selfUri != null ? parseURI(selfUri) : defaultUri;
 	}
 
 	@SuppressWarnings("unused")
-	public static JSONObject getNestedObject(JSONObject json, final String... path) throws JSONException {
+	public static JsonObject getNestedObject(JsonObject json, final String... path) throws JsonParseException {
 		for (String s : path) {
-			json = json.getJSONObject(s);
+			json = json.get(s).getAsJsonObject();
 		}
 		return json;
 	}
 
 	@Nullable
-	public static JSONObject getNestedOptionalObject(JSONObject json, final String... path) throws JSONException {
+	public static JsonObject getNestedOptionalObject(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; i < path.length - 1; i++) {
 			String s = path[i];
-			json = json.getJSONObject(s);
+			json = json.get(s).getAsJsonObject();
 		}
-		return json.optJSONObject(path[path.length - 1]);
+		return json.get(path[path.length - 1]).getAsJsonObject();
 	}
 
 	@SuppressWarnings("unused")
-	public static JSONArray getNestedArray(JSONObject json, final String... path) throws JSONException {
+	public static JsonArray getNestedArray(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; i < path.length - 1; i++) {
 			String s = path[i];
-			json = json.getJSONObject(s);
+			json = json.get(s).getAsJsonObject();
 		}
-		return json.getJSONArray(path[path.length - 1]);
+		return json.get(path[path.length - 1]).getAsJsonArray();
 	}
 
-	public static JSONArray getNestedOptionalArray(JSONObject json, final String... path) throws JSONException {
+	public static JsonArray getNestedOptionalArray(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; json != null && i < path.length - 1; i++) {
 			String s = path[i];
-			json = json.optJSONObject(s);
+			json = json.get(s).getAsJsonObject();
 		}
-		return json == null ? null : json.optJSONArray(path[path.length - 1]);
+		return json == null ? null : json.get(path[path.length - 1]).getAsJsonArray();
 	}
 
 
-	public static String getNestedString(JSONObject json, final String... path) throws JSONException {
+	public static String getNestedString(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; i < path.length - 1; i++) {
 			String s = path[i];
-			json = json.getJSONObject(s);
+			json = json.get(s).getAsJsonObject();
 		}
-		return json.getString(path[path.length - 1]);
+		return json.get(path[path.length - 1]).getAsString();
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean getNestedBoolean(JSONObject json, final String... path) throws JSONException {
+	public static boolean getNestedBoolean(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; i < path.length - 1; i++) {
 			String s = path[i];
-			json = json.getJSONObject(s);
+			json = json.get(s).getAsJsonObject();
 		}
-		return json.getBoolean(path[path.length - 1]);
+		return json.get(path[path.length - 1]).getAsBoolean();
 	}
 
 
@@ -179,32 +183,32 @@ public class JsonParseUtil {
 	}
 
 	@Nullable
-	public static URI parseOptionalURI(final JSONObject jsonObject, final String attributeName) {
+	public static URI parseOptionalURI(final JsonObject jsonObject, final String attributeName) {
 		final String s = getOptionalString(jsonObject, attributeName);
 		return s != null ? parseURI(s) : null;
 	}
 
 	@Nullable
-	public static BasicUser parseBasicUser(@Nullable final JSONObject json) throws JSONException {
+	public static BasicUser parseBasicUser(@Nullable final JsonObject json) throws JsonParseException {
 		if (json == null) {
 			return null;
 		}
-		final String username = json.getString("name");
+		final String username = json.get("name").getAsString();
 		if (!json.has(JsonParseUtil.SELF_ATTR) && "Anonymous".equals(username)) {
 			return null; // insane representation for unassigned user - JRADEV-4262
 		}
 
 		// deleted user? BUG in REST API: JRA-30263
 		final URI selfUri = optSelfUri(json, BasicUser.INCOMPLETE_URI);
-		return new BasicUser(selfUri, username, json.optString("displayName", null));
+		return new BasicUser(selfUri, username, json.get("displayName").getAsString());
 	}
 
-	public static DateTime parseDateTime(final JSONObject jsonObject, final String attributeName) throws JSONException {
-		return parseDateTime(jsonObject.getString(attributeName));
+	public static DateTime parseDateTime(final JsonObject jsonObject, final String attributeName) throws JsonParseException {
+		return parseDateTime(jsonObject.get(attributeName).getAsString());
 	}
 
 	@Nullable
-	public static DateTime parseOptionalDateTime(final JSONObject jsonObject, final String attributeName) throws JSONException {
+	public static DateTime parseOptionalDateTime(final JsonObject jsonObject, final String attributeName) throws JsonParseException {
 		final String s = getOptionalString(jsonObject, attributeName);
 		return s != null ? parseDateTime(s) : null;
 	}
@@ -254,9 +258,9 @@ public class JsonParseUtil {
 
 
 	@Nullable
-	public static String getNullableString(final JSONObject jsonObject, final String attributeName) throws JSONException {
+	public static String getNullableString(final JsonObject jsonObject, final String attributeName) throws JsonParseException {
 		final Object o = jsonObject.get(attributeName);
-		if (o == JSONObject.NULL) {
+		if (o == null || o == new JsonNull()) {
 			return null;
 		}
 		return o.toString();
@@ -264,18 +268,18 @@ public class JsonParseUtil {
 
 
 	@Nullable
-	public static String getOptionalString(final JSONObject jsonObject, final String attributeName) {
-		final Object res = jsonObject.opt(attributeName);
-		if (res == JSONObject.NULL || res == null) {
+	public static String getOptionalString(final JsonObject jsonObject, final String attributeName) {
+		final Object res = jsonObject.get(attributeName);
+		if (res == new JsonNull() || res == null) {
 			return null;
 		}
 		return res.toString();
 	}
 
 	@Nullable
-	public static <T> T getOptionalJsonObject(final JSONObject jsonObject, final String attributeName, final JsonObjectParser<T> jsonParser) throws JSONException {
-		final JSONObject res = jsonObject.optJSONObject(attributeName);
-		if (res == JSONObject.NULL || res == null) {
+	public static <T> T getOptionalJsonObject(final JsonObject jsonObject, final String attributeName, final JsonObjectParser<T> jsonParser) throws JsonParseException {
+		final JsonObject res = jsonObject.get(attributeName).getAsJsonObject();
+		if (res == null || res.isJsonNull()) {
 			return null;
 		}
 		return jsonParser.parse(res);
@@ -283,66 +287,74 @@ public class JsonParseUtil {
 
     @SuppressWarnings("unused")
 	@Nullable
-	public static JSONObject getOptionalJsonObject(final JSONObject jsonObject, final String attributeName) {
-		final JSONObject res = jsonObject.optJSONObject(attributeName);
-		if (res == JSONObject.NULL || res == null) {
+	public static JsonObject getOptionalJsonObject(final JsonObject jsonObject, final String attributeName) {
+		final JsonObject res = jsonObject.get(attributeName).getAsJsonObject();
+		if (res == null || res.isJsonNull()) {
 			return null;
 		}
 		return res;
 	}
 
 
-	public static Collection<String> toStringCollection(final JSONArray jsonArray) throws JSONException {
-		final ArrayList<String> res = new ArrayList<String>(jsonArray.length());
-		for (int i = 0; i < jsonArray.length(); i++) {
-			res.add(jsonArray.getString(i));
+	public static Collection<String> toStringCollection(final JsonArray jsonArray) throws JsonParseException {
+		final ArrayList<String> res = new ArrayList<String>(jsonArray.size());
+		for (int i = 0; i < jsonArray.size(); i++) {
+			res.add(jsonArray.get(i).getAsString());
 		}
 		return res;
 	}
 
-	public static Integer parseOptionInteger(final JSONObject json, final String attributeName) throws JSONException {
-		return json.has(attributeName) ? json.getInt(attributeName) : null;
+	public static Integer parseOptionInteger(final JsonObject json, final String attributeName) throws JsonParseException {
+		return json.has(attributeName) ? json.get(attributeName).getAsInt() : null;
 	}
 
 	@Nullable
-	public static Long getOptionalLong(final JSONObject jsonObject, final String attributeName) throws JSONException {
-		return jsonObject.has(attributeName) ? jsonObject.getLong(attributeName) : null;
+	public static Long getOptionalLong(final JsonObject jsonObject, final String attributeName) throws JsonParseException {
+		return jsonObject.has(attributeName) ? jsonObject.get(attributeName).getAsLong() : null;
 	}
 
-	public static Optional<JSONArray> getOptionalArray(final JSONObject jsonObject, final String attributeName)
-			throws JSONException {
+	public static Optional<JsonArray> getOptionalArray(final JsonObject jsonObject, final String attributeName)
+			throws JsonParseException {
 		return jsonObject.has(attributeName) ?
-				Optional.of(jsonObject.getJSONArray(attributeName)) : Optional.<JSONArray>absent();
+				Optional.of(jsonObject.get(attributeName).getAsJsonArray()) : Optional.<JsonArray>absent();
 	}
 
-	public static Map<String, URI> getAvatarUris(final JSONObject jsonObject) throws JSONException {
+	public static Map<String, URI> getAvatarUris(final JsonObject jsonObject) throws JsonParseException {
 		Map<String, URI> uris = Maps.newHashMap();
 
-		final Iterator iterator = jsonObject.keys();
-		while (iterator.hasNext()) {
-			final Object o = iterator.next();
-			if (!(o instanceof String)) {
-				throw new JSONException(
-						"Cannot parse URIs: key is expected to be valid String. Got " + (o == null ? "null" : o.getClass())
-								+ " instead.");
-			}
-			final String key = (String) o;
-			uris.put(key, JsonParseUtil.parseURI(jsonObject.getString(key)));
-		}
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+            if (!(entry.getValue().isJsonPrimitive() && entry.getValue().getAsJsonPrimitive().isString())) {
+                throw new JsonParseException("Cannot parse URIs: key is expected to be valid String. Got " +
+                        (entry.getValue() == null ? "null" : entry.getValue().getClass()) + " instead.");
+            }
+            uris.put(entry.getKey(), JsonParseUtil.parseURI(entry.getValue().getAsString()));
+        }
 		return uris;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Iterator<String> getStringKeys(final JSONObject json) {
-		return json.keys();
+	public static Iterator<String> getStringKeys(final JsonObject json) {
+        Set<String> keys = new TreeSet<String>();
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+            keys.add(entry.getKey());
+        }
+		return keys.iterator();
 	}
 
-	public static Map<String, String> toStringMap(final JSONArray names, final JSONObject values) throws JSONException {
+	public static Map<String, String> toStringMap(final JsonArray names, final JsonObject values) throws JsonParseException {
 		final Map<String, String> result = Maps.newHashMap();
-		for (int i = 0; i < names.length(); i++) {
-			final String key = names.getString(i);
-			result.put(key, values.getString(key));
+		for (int i = 0; i < names.size(); i++) {
+			final String key = names.get(i).getAsString();
+			result.put(key, values.get(key).getAsString());
 		}
 		return result;
 	}
+
+    public static Map<String, String> toStringMap(final JsonObject values) throws JsonParseException {
+        final Map<String, String> result = Maps.newHashMap();
+        for (Map.Entry<String, JsonElement> entry : values.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getAsString());
+        }
+        return result;
+    }
 }

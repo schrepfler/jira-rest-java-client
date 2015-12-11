@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.Watchers;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.BasicWatchers;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 import java.util.Collection;
@@ -32,9 +32,9 @@ public class WatchersJsonParserBuilder {
 			private final BasicUserJsonParser userJsonParser = new BasicUserJsonParser();
 
 			@Override
-			public Watchers parse(JSONObject json) throws JSONException {
+			public Watchers parse(JsonObject json) throws JsonParseException {
 				final Collection<BasicUser> watchers = JsonParseUtil.parseJsonArray(json
-						.getJSONArray("watchers"), userJsonParser);
+						.getAsJsonArray("watchers"), userJsonParser);
 				return new Watchers(parseValueImpl(json), watchers);
 			}
 		};
@@ -43,17 +43,17 @@ public class WatchersJsonParserBuilder {
 	public static JsonObjectParser<BasicWatchers> createBasicWatchersParser() {
 		return new JsonObjectParser<BasicWatchers>() {
 			@Override
-			public BasicWatchers parse(JSONObject json) throws JSONException {
+			public BasicWatchers parse(JsonObject json) throws JsonParseException {
 				return parseValueImpl(json);
 			}
 		};
 	}
 
 
-	private static BasicWatchers parseValueImpl(JSONObject json) throws JSONException {
+	private static BasicWatchers parseValueImpl(JsonObject json) throws JsonParseException {
 		final URI self = JsonParseUtil.getSelfUri(json);
-		final boolean isWatching = json.getBoolean("isWatching");
-		final int numWatchers = json.getInt("watchCount");
+		final boolean isWatching = json.get("isWatching").getAsBoolean();
+		final int numWatchers = json.get("watchCount").getAsInt();
 		return new BasicWatchers(self, isWatching, numWatchers);
 	}
 

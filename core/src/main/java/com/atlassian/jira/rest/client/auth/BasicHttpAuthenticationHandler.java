@@ -18,7 +18,8 @@ package com.atlassian.jira.rest.client.auth;
 
 import com.atlassian.httpclient.api.Request;
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
-import org.apache.commons.codec.binary.Base64;
+
+import java.util.Base64;
 
 /**
  * Handler for HTTP basic authentication.
@@ -46,7 +47,7 @@ public class BasicHttpAuthenticationHandler implements AuthenticationHandler {
 
 	private String encodeCredentials() {
 		byte[] credentials = (username + ':' + password).getBytes();
-		return new String(Base64.encodeBase64(credentials));
+		return new String(Base64.getEncoder().encode(credentials));
 	}
 
 }

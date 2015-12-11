@@ -18,19 +18,16 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.domain.BasicVotes;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since v0.1
  */
 public class BasicVotesJsonParserTest {
 	@Test
-	public void testParse() throws JSONException {
+	public void testParse() throws JsonParseException {
 		final BasicVotesJsonParser parser = new BasicVotesJsonParser();
 		final BasicVotes basicVotes = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/votes/valid.json"));
 		Assert.assertEquals(1, basicVotes.getVotes());

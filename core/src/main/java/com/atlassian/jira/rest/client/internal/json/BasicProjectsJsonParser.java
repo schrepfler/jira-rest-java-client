@@ -17,8 +17,8 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
 
 import java.util.ArrayList;
 
@@ -27,10 +27,10 @@ public class BasicProjectsJsonParser implements JsonArrayParser<Iterable<BasicPr
 	private final BasicProjectJsonParser basicProjectJsonParser = new BasicProjectJsonParser();
 
 	@Override
-	public Iterable<BasicProject> parse(JSONArray json) throws JSONException {
-		ArrayList<BasicProject> res = new ArrayList<BasicProject>(json.length());
-		for (int i = 0; i < json.length(); i++) {
-			res.add(basicProjectJsonParser.parse(json.getJSONObject(i)));
+	public Iterable<BasicProject> parse(JsonArray json) throws JsonParseException {
+		ArrayList<BasicProject> res = new ArrayList<BasicProject>(json.size());
+		for (int i = 0; i < json.size(); i++) {
+			res.add(basicProjectJsonParser.parse(json.get(i).getAsJsonObject()));
 
 		}
 		return res;

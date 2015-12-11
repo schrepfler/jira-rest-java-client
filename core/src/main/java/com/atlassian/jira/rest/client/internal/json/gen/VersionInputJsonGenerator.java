@@ -18,23 +18,23 @@ package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.input.VersionInput;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class VersionInputJsonGenerator implements JsonGenerator<VersionInput> {
 	@Override
-	public JSONObject generate(VersionInput version) throws JSONException {
-		final JSONObject jsonObject = new JSONObject();
-		jsonObject.put("name", version.getName());
-		jsonObject.put("project", version.getProjectKey());
+	public JsonObject generate(VersionInput version) throws JsonParseException {
+		final JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("name", version.getName());
+		jsonObject.addProperty("project", version.getProjectKey());
 		if (version.getDescription() != null) {
-			jsonObject.put("description", version.getDescription());
+			jsonObject.addProperty("description", version.getDescription());
 		}
 		if (version.getReleaseDate() != null) {
-			jsonObject.put("releaseDate", JsonParseUtil.formatDate(version.getReleaseDate()));
+			jsonObject.addProperty("releaseDate", JsonParseUtil.formatDate(version.getReleaseDate()));
 		}
-		jsonObject.put("released", version.isReleased());
-		jsonObject.put("archived", version.isArchived());
+		jsonObject.addProperty("released", version.isReleased());
+		jsonObject.addProperty("archived", version.isArchived());
 		return jsonObject;
 	}
 }

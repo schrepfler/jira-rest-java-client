@@ -18,17 +18,16 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicWatchers;
 import com.atlassian.jira.rest.client.api.domain.Watchers;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.*;
 
 public class WatchersJsonParserTest {
 	@Test
-	public void testParseBasicWatchers() throws JSONException {
+	public void testParseBasicWatchers() throws JsonParseException {
 		final JsonObjectParser<BasicWatchers> parser = WatchersJsonParserBuilder.createBasicWatchersParser();
 		final BasicWatchers watcher = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/watcher/basic-valid.json"));
 		Assert.assertEquals(false, watcher.isWatching());
@@ -37,7 +36,7 @@ public class WatchersJsonParserTest {
 	}
 
 	@Test
-	public void testParseWatchers() throws JSONException {
+	public void testParseWatchers() throws JsonParseException {
 		final JsonObjectParser<Watchers> parser = WatchersJsonParserBuilder.createWatchersParser();
 		final Watchers watcher = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/watcher/complete-valid.json"));
 		assertEquals(false, watcher.isWatching());

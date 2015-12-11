@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json.gen;
 import com.atlassian.jira.rest.client.api.domain.input.LinkIssuesInput;
 import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class LinkIssuesInputGenerator implements JsonGenerator<LinkIssuesInput> {
 
@@ -31,21 +31,27 @@ public class LinkIssuesInputGenerator implements JsonGenerator<LinkIssuesInput> 
 	}
 
 	@Override
-	public JSONObject generate(LinkIssuesInput linkIssuesInput) throws JSONException {
-		JSONObject res = new JSONObject();
+	public JsonObject generate(LinkIssuesInput linkIssuesInput) throws JsonParseException {
+		JsonObject res = new JsonObject();
 
 		final int buildNumber = serverInfo.getBuildNumber();
 		if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-			res.put("type", new JSONObject().put("name", linkIssuesInput.getLinkType()));
-			res.put("inwardIssue", new JSONObject().put("key", linkIssuesInput.getFromIssueKey()));
-			res.put("outwardIssue", new JSONObject().put("key", linkIssuesInput.getToIssueKey()));
+			JsonObject name = new JsonObject();
+			name.addProperty("name", linkIssuesInput.getLinkType() );
+			res.add("type", name);
+			JsonObject inward = new JsonObject();
+			inward.addProperty("name", linkIssuesInput.getFromIssueKey() );
+			res.add("inwardIssue", inward);
+			JsonObject outward = new JsonObject();
+			outward.addProperty("name", linkIssuesInput.getToIssueKey() );
+			res.add("outwardIssue", outward);
 		} else {
-			res.put("linkType", linkIssuesInput.getLinkType());
-			res.put("fromIssueKey", linkIssuesInput.getFromIssueKey());
-			res.put("toIssueKey", linkIssuesInput.getToIssueKey());
+			res.addProperty("linkType", linkIssuesInput.getLinkType());
+			res.addProperty("fromIssueKey", linkIssuesInput.getFromIssueKey());
+			res.addProperty("toIssueKey", linkIssuesInput.getToIssueKey());
 		}
 		if (linkIssuesInput.getComment() != null) {
-			res.put("comment", new CommentJsonGenerator(serverInfo).generate(linkIssuesInput.getComment()));
+			res.add("comment", new CommentJsonGenerator(serverInfo).generate(linkIssuesInput.getComment()));
 		}
 		return res;
 	}

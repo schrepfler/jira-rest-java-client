@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.util.Collection;
@@ -29,10 +29,10 @@ public class ChangelogJsonParser implements JsonObjectParser<ChangelogGroup> {
 	private final ChangelogItemJsonParser changelogItemJsonParser = new ChangelogItemJsonParser();
 
 	@Override
-	public ChangelogGroup parse(JSONObject json) throws JSONException {
+	public ChangelogGroup parse(JsonObject json) throws JsonParseException {
 		final DateTime created = JsonParseUtil.parseDateTime(json, "created");
-		final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.getJSONObject("author")) : null;
-		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.getJSONArray("items"), changelogItemJsonParser);
+		final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.get("author").getAsJsonObject()) : null;
+		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.get("items").getAsJsonArray(), changelogItemJsonParser);
 		return new ChangelogGroup(author, created, items);
 	}
 }

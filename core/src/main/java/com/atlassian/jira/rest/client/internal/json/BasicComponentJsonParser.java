@@ -17,21 +17,21 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
 public class BasicComponentJsonParser implements JsonObjectParser<BasicComponent> {
 
 	@Override
-	public BasicComponent parse(JSONObject json) throws JSONException {
+	public BasicComponent parse(JsonObject json) throws JsonParseException {
 		return parseBasicComponent(json);
 	}
 
-	static BasicComponent parseBasicComponent(JSONObject json) throws JSONException {
+	static BasicComponent parseBasicComponent(JsonObject json) throws JsonParseException {
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String name = json.getString("name");
+		final String name = json.get("name").getAsString();
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
 		final String description = JsonParseUtil.getOptionalString(json, "description");
 		return new BasicComponent(selfUri, id, name, description);

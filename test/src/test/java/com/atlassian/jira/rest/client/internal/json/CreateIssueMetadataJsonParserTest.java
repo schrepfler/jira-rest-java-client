@@ -20,7 +20,7 @@ import com.atlassian.jira.rest.client.api.domain.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Assert;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 public class CreateIssueMetadataJsonParserTest {
 
 	@Test
-	public void testParse() throws JSONException {
+	public void testParse() throws JsonParseException {
 		final CreateIssueMetadataJsonParser parser = new CreateIssueMetadataJsonParser();
 		final Iterable<CimProject> createMetaProjects = parser.parse(
 				ResourceUtil.getJsonObjectFromResource("/json/createmeta/valid.json")
@@ -79,7 +79,7 @@ public class CreateIssueMetadataJsonParserTest {
 	}
 
 	@Test
-	public void testParseWithFieldsExpanded() throws JSONException {
+	public void testParseWithFieldsExpanded() throws JsonParseException {
 		final CreateIssueMetadataJsonParser parser = new CreateIssueMetadataJsonParser();
 		final Iterable<CimProject> createMetaProjects = parser.parse(
 				ResourceUtil.getJsonObjectFromResource("/json/createmeta/valid-with-fields-expanded.json")

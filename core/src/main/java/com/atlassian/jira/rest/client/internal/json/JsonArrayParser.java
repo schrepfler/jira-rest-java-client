@@ -16,7 +16,7 @@
 
 package com.atlassian.jira.rest.client.internal.json;
 
-import org.codehaus.jettison.json.JSONArray;
+import com.google.gson.JsonArray;
 
-public interface JsonArrayParser<T> extends JsonParser<JSONArray, T> {
+public interface JsonArrayParser<T> extends JsonParser<JsonArray, T> {
 }

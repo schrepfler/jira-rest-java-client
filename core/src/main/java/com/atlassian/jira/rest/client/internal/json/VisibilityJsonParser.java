@@ -17,8 +17,8 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Visibility;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 
@@ -27,28 +27,28 @@ public class VisibilityJsonParser implements JsonObjectParser<Visibility> {
 	private static final String GROUP_TYPE = "GROUP";
 
 	@Override
-	public Visibility parse(JSONObject json) throws JSONException {
-		final String type = json.getString("type");
+	public Visibility parse(JsonObject json) throws JsonParseException {
+		final String type = json.get("type").getAsString();
 		final Visibility.Type visibilityType;
 		if (ROLE_TYPE.equalsIgnoreCase(type)) {
 			visibilityType = Visibility.Type.ROLE;
 		} else if (GROUP_TYPE.equalsIgnoreCase(type)) {
 			visibilityType = Visibility.Type.GROUP;
 		} else {
-			throw new JSONException("[" + type + "] does not represent a valid visibility type. Expected ["
+			throw new JsonParseException("[" + type + "] does not represent a valid visibility type. Expected ["
 					+ ROLE_TYPE + "] or [" + GROUP_TYPE + "].");
 		}
-		final String value = json.getString("value");
+		final String value = json.get("value").getAsString();
 		return new Visibility(visibilityType, value);
 	}
 
 	@Nullable
-	public Visibility parseVisibility(JSONObject parentObject) throws JSONException {
+	public Visibility parseVisibility(JsonObject parentObject) throws JsonParseException {
 		if (parentObject.has(CommentJsonParser.VISIBILITY_KEY)) { // JIRA 4.3-rc1 and newer
-			return parse(parentObject.getJSONObject(CommentJsonParser.VISIBILITY_KEY));
+			return parse(parentObject.get(CommentJsonParser.VISIBILITY_KEY).getAsJsonObject());
 		}
 
-		String roleLevel = parentObject.optString("roleLevel", null);
+		String roleLevel = parentObject.get("roleLevel").getAsString();
 		// in JIRA 4.2 "role" was used instead
 		if (roleLevel == null) {
 			roleLevel = JsonParseUtil.getOptionalString(parentObject, "role");
@@ -58,7 +58,7 @@ public class VisibilityJsonParser implements JsonObjectParser<Visibility> {
 			return Visibility.role(roleLevel);
 		}
 
-		final String groupLevel = parentObject.optString("groupLevel", null);
+		final String groupLevel = parentObject.get("groupLevel").getAsString();
 		if (groupLevel != null) {
 			return Visibility.group(groupLevel);
 		}

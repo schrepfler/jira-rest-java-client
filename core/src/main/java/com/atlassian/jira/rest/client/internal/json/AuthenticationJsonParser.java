@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.LoginInfo;
 import com.atlassian.jira.rest.client.api.domain.SessionCookie;
 import com.atlassian.jira.rest.client.api.domain.Authentication;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class AuthenticationJsonParser implements JsonObjectParser<Authentication> {
 
@@ -28,9 +28,9 @@ public class AuthenticationJsonParser implements JsonObjectParser<Authentication
 	private final LoginInfoJsonParser loginInfoJsonParser = new LoginInfoJsonParser();
 
 	@Override
-	public Authentication parse(JSONObject json) throws JSONException {
-		final SessionCookie sessionCookie = sessionCookieJsonParser.parse(json.getJSONObject("session"));
-		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getJSONObject("loginInfo"));
+	public Authentication parse(JsonObject json) throws JsonParseException {
+		final SessionCookie sessionCookie = sessionCookieJsonParser.parse(json.get("session").getAsJsonObject());
+		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.get("loginInfo").getAsJsonObject());
 		return new Authentication(loginInfo, sessionCookie);
 	}
 }

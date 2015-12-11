@@ -15,6 +15,7 @@
  */
 package com.atlassian.jira.rest.client.internal.async;
 
+import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.jira.rest.client.api.VersionRestClient;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.atlassian.jira.rest.client.api.domain.VersionRelatedIssuesCount;
@@ -25,11 +26,10 @@ import com.atlassian.jira.rest.client.internal.json.VersionRelatedIssueCountJson
 import com.atlassian.jira.rest.client.internal.json.gen.JsonGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.VersionInputJsonGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.VersionPositionInputGenerator;
-import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.jira.rest.client.api.domain.input.VersionPosition;
 import com.atlassian.util.concurrent.Promise;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
@@ -88,8 +88,8 @@ public class AsynchronousVersionRestClient extends AbstractAsynchronousRestClien
 		final URI unresolvedIssueCountUri = UriBuilder.fromUri(versionUri).path("unresolvedIssueCount").build();
 		return getAndParse(unresolvedIssueCountUri, new JsonObjectParser<Integer>() {
 			@Override
-			public Integer parse(JSONObject json) throws JSONException {
-				return json.getInt("issuesUnresolvedCount");
+			public Integer parse(JsonObject json) throws JsonParseException {
+				return json.get("issuesUnresolvedCount").getAsInt();
 			}
 		});
 	}
@@ -100,9 +100,9 @@ public class AsynchronousVersionRestClient extends AbstractAsynchronousRestClien
 
 		return postAndParse(moveUri, afterVersionUri, new JsonGenerator<URI>() {
 			@Override
-			public JSONObject generate(final URI uri) throws JSONException {
-				final JSONObject res = new JSONObject();
-				res.put("after", uri);
+			public JsonObject generate(final URI uri) throws JsonParseException {
+				final JsonObject res = new JsonObject();
+				res.addProperty("after", uri.toString());
 				return res;
 			}
 		}, new VersionJsonParser());

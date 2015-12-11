@@ -17,17 +17,17 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.VersionRelatedIssuesCount;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
 public class VersionRelatedIssueCountJsonParser implements JsonObjectParser<VersionRelatedIssuesCount> {
 	@Override
-	public VersionRelatedIssuesCount parse(JSONObject json) throws JSONException {
+	public VersionRelatedIssuesCount parse(JsonObject json) throws JsonParseException {
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final int issuesFixedCount = json.getInt("issuesFixedCount");
-		final int issuesAffectedCount = json.getInt("issuesAffectedCount");
+		final int issuesFixedCount = json.get("issuesFixedCount").getAsInt();
+		final int issuesAffectedCount = json.get("issuesAffectedCount").getAsInt();
 		return new VersionRelatedIssuesCount(selfUri, issuesFixedCount, issuesAffectedCount);
 	}
 }

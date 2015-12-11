@@ -4,16 +4,17 @@ import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.httpclient.api.Request;
 
 import java.net.URI;
+import java.net.URLConnection;
 import java.util.regex.Pattern;
 
 /**
  * Abstract wrapper for an Atlassian HttpClient.
  */
-public abstract class AtlassianHttpClientDecorator implements DisposableHttpClient {
+public abstract class AtlassianHttpClientDecorator extends DisposableHttpClient {
 
-	private final HttpClient httpClient;
+	private final URLConnection httpClient;
 
-	public AtlassianHttpClientDecorator(HttpClient httpClient) {
+	public AtlassianHttpClientDecorator(URLConnection httpClient) {
 		this.httpClient = httpClient;
 	}
 

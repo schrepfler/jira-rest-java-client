@@ -19,9 +19,9 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.CimIssueType;
 import com.atlassian.jira.rest.client.api.domain.CimProject;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 import java.util.Collections;
@@ -40,13 +40,13 @@ public class CimProjectJsonParser implements JsonObjectParser<CimProject> {
 	private final BasicProjectJsonParser basicProjectJsonParser = new BasicProjectJsonParser();
 
 	@Override
-	public CimProject parse(final JSONObject json) throws JSONException {
+	public CimProject parse(final JsonObject json) throws JsonParseException {
 		final BasicProject basicProject = basicProjectJsonParser.parse(json);
-		final JSONArray issueTypesArray = json.optJSONArray("issuetypes");
+		final JsonArray issueTypesArray = json.get("issuetypes").getAsJsonArray();
 		final Iterable<CimIssueType> issueTypes = (issueTypesArray != null) ?
 				issueTypesParser.parse(issueTypesArray) : Collections.<CimIssueType>emptyList();
 
-		final Map<String, URI> avatarUris = JsonParseUtil.getAvatarUris(json.getJSONObject("avatarUrls"));
+		final Map<String, URI> avatarUris = JsonParseUtil.getAvatarUris(json.get("avatarUrls").getAsJsonObject());
 		return new CimProject(basicProject.getSelf(), basicProject.getKey(), basicProject.getId(),
 				basicProject.getName(), avatarUris, issueTypes);
 	}

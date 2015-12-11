@@ -53,9 +53,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.joda.time.DateTime;
@@ -96,7 +96,7 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 
 	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
-	public void testCreateIssue() throws JSONException {
+	public void testCreateIssue() throws JsonParseException {
 		// collect CreateIssueMetadata for project with key TST
 		final IssueRestClient issueClient = client.getIssueClient();
 		final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
@@ -180,12 +180,12 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		// check value of MultiUserSelect field
 		final Object multiUserValue = createdIssue.getField(multiUserCustomFieldId).getValue();
 		// ideally this should be Iterable<User>, but for now it's just an JSONArray...
-		assertThat(multiUserValue, Matchers.instanceOf(JSONArray.class));
-		final JSONArray multiUserArray = (JSONArray) multiUserValue;
-		final List<String> actualMultiUserNames = Lists.newArrayListWithCapacity(multiUserArray.length());
-		for (int i = 0; i<multiUserArray.length(); i++) {
-			final JSONObject jsonUser = (JSONObject) multiUserArray.get(i);
-			actualMultiUserNames.add((String) jsonUser.get("name"));
+		assertThat(multiUserValue, Matchers.instanceOf(JsonArray.class));
+		final JsonArray multiUserArray = (JsonArray) multiUserValue;
+		final List<String> actualMultiUserNames = Lists.newArrayListWithCapacity(multiUserArray.size());
+		for (int i = 0; i<multiUserArray.size(); i++) {
+			final JsonObject jsonUser = (JsonObject) multiUserArray.get(i);
+			actualMultiUserNames.add(jsonUser.get("name").getAsString());
 		}
 		assertThat(actualMultiUserNames, containsInAnyOrder(
 				toArray(EntityHelper.toNamesList(multiUserCustomFieldValues), String.class)));

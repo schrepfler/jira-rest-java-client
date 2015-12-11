@@ -19,9 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.BulkOperationErrorResult;
 import com.atlassian.jira.rest.client.api.domain.BulkOperationResult;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import java.util.Collection;
 
 /**
@@ -30,12 +29,12 @@ import java.util.Collection;
 public class BasicIssuesJsonParser implements JsonObjectParser<BulkOperationResult<BasicIssue>> {
 
 	@Override
-	public BulkOperationResult<BasicIssue> parse(final JSONObject json) throws JSONException {
+	public BulkOperationResult<BasicIssue> parse(final JsonObject json) throws JsonParseException {
 		final Collection<BasicIssue> issues =
-				JsonParseUtil.parseJsonArray(json.getJSONArray("issues"), new BasicIssueJsonParser());
+				JsonParseUtil.parseJsonArray(json.get("issues").getAsJsonArray(), new BasicIssueJsonParser());
 
 		final Collection<BulkOperationErrorResult> errors =
-				JsonParseUtil.parseJsonArray(json.getJSONArray("errors"), new IssueErrorJsonParser());
+				JsonParseUtil.parseJsonArray(json.get("errors").getAsJsonArray(), new IssueErrorJsonParser());
 
 		return new BulkOperationResult<BasicIssue>(issues, errors);
 	}

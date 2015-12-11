@@ -16,7 +16,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.RoleActor;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class RoleActorJsonParserTest {
 	}
 
 	@Test
-	public void testParseValidActorWithoutOptionalParams() throws JSONException {
+	public void testParseValidActorWithoutOptionalParams() throws JsonParseException {
 		final RoleActor actor = roleActorJsonParser
 				.parse(getJsonObjectFromResource("/json/actor/valid-actor-without-avatar.json"));
 		Assert.assertEquals(10020l, actor.getId().longValue());
@@ -59,7 +59,7 @@ public class RoleActorJsonParserTest {
 
 	@Test
 	public void testParseInvalidActor() throws Exception {
-		exception.expect(JSONException.class);
+		exception.expect(JsonParseException.class);
 		exception.expectMessage("JSONObject[\"type\"] not found.");
 		roleActorJsonParser.parse(getJsonObjectFromResource("/json/actor/invalid-actor-without-required-fields.json"));
 	}

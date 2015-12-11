@@ -19,9 +19,9 @@ import com.atlassian.jira.rest.client.api.domain.ProjectRole;
 import com.atlassian.jira.rest.client.api.domain.RoleActor;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 import java.util.Collection;
@@ -35,12 +35,12 @@ public class ProjectRoleJsonParser implements JsonObjectParser<ProjectRole> {
 	}
 
 	@Override
-	public ProjectRole parse(final JSONObject json) throws JSONException {
+	public ProjectRole parse(final JsonObject json) throws JsonParseException {
 		final URI self = JsonParseUtil.getSelfUri(json);
-		final long id = json.getLong("id");
-		final String name = json.getString("name");
-		final String description = json.getString("description");
-		final Optional<JSONArray> roleActorsOpt = JsonParseUtil.getOptionalArray(json, "actors");
+		final long id = json.get("id").getAsLong();
+		final String name = json.get("name").getAsString();
+		final String description = json.get("description").getAsString();
+		final Optional<JsonArray> roleActorsOpt = JsonParseUtil.getOptionalArray(json, "actors");
 		final Collection<RoleActor> roleActors = roleActorsOpt.isPresent() ?
 				JsonParseUtil.parseJsonArray(roleActorsOpt.get(), roleActorJsonParser) : ImmutableSet.<RoleActor>of();
 		return new ProjectRole(id, self, name, description, roleActors);

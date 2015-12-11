@@ -7,7 +7,7 @@ import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Test;
 import samples.Example1;
 
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 public class ExamplesTest extends AbstractAsynchronousRestClientTest {
 
 	@Test
-	public void testExample1() throws URISyntaxException, JSONException, IOException {
+	public void testExample1() throws URISyntaxException, JsonParseException, IOException {
 		// -- run the example
 		Example1.main(new String[]{environmentData.getBaseUrl().toString(), "-q"});
 

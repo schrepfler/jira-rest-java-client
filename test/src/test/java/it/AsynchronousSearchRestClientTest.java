@@ -361,7 +361,7 @@ public class AsynchronousSearchRestClientTest extends AbstractAsynchronousRestCl
 						missingField, fieldsToRetrieve, REQUIRED_ISSUE_FIELDS));
 			} catch (RestClientException e) {
 				final String expectedMessage = String.format(
-						"org.codehaus.jettison.json.JSONException: JSONObject[\"%s\"] not found.", missingField);
+						"org.codehaus.jettison.json.JsonParseException: JSONObject[\"%s\"] not found.", missingField);
 				assertEquals(expectedMessage, e.getMessage());
 			}
 		}

@@ -21,8 +21,8 @@ import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.internal.json.CommentJsonParser;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class CommentJsonGenerator implements JsonGenerator<Comment> {
 
@@ -33,10 +33,10 @@ public class CommentJsonGenerator implements JsonGenerator<Comment> {
 	}
 
 	@Override
-	public JSONObject generate(Comment comment) throws JSONException {
-		JSONObject res = new JSONObject();
+	public JsonObject generate(Comment comment) throws JsonParseException {
+		JsonObject res = new JsonObject();
 		if (comment.getBody() != null) {
-			res.put("body", comment.getBody());
+			res.addProperty("body", comment.getBody());
 		}
 
 		final Visibility commentVisibility = comment.getVisibility();
@@ -44,21 +44,21 @@ public class CommentJsonGenerator implements JsonGenerator<Comment> {
 
 			final int buildNumber = serverInfo.getBuildNumber();
 			if (buildNumber >= ServerVersionConstants.BN_JIRA_4_3) {
-				JSONObject visibilityJson = new JSONObject();
+				JsonObject visibilityJson = new JsonObject();
 				final String commentVisibilityType;
 				if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
 					commentVisibilityType = commentVisibility.getType() == Visibility.Type.GROUP ? "group" : "role";
 				} else {
 					commentVisibilityType = commentVisibility.getType() == Visibility.Type.GROUP ? "GROUP" : "ROLE";
 				}
-				visibilityJson.put("type", commentVisibilityType);
-				visibilityJson.put("value", commentVisibility.getValue());
-				res.put(CommentJsonParser.VISIBILITY_KEY, visibilityJson);
+				visibilityJson.addProperty("type", commentVisibilityType);
+				visibilityJson.addProperty("value", commentVisibility.getValue());
+				res.add(CommentJsonParser.VISIBILITY_KEY, visibilityJson);
 			} else {
 				if (commentVisibility.getType() == Visibility.Type.ROLE) {
-					res.put("role", commentVisibility.getValue());
+					res.addProperty("role", commentVisibility.getValue());
 				} else {
-					res.put("group", commentVisibility.getValue());
+					res.addProperty("group", commentVisibility.getValue());
 				}
 			}
 		}

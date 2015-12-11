@@ -18,7 +18,7 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.test.matchers.DateTimeMatcher;
 import com.atlassian.jira.rest.client.api.domain.Version;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNull;
 public class VersionJsonParserTest {
 
 	@Test
-	public void testParse() throws JSONException, URISyntaxException {
+	public void testParse() throws JsonParseException, URISyntaxException {
 		VersionJsonParser parser = new VersionJsonParser();
 		final Version version = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/version/valid.json"));
 
@@ -48,7 +48,7 @@ public class VersionJsonParserTest {
 	}
 
 	@Test
-	public void testParseNoReleaseDate() throws JSONException, URISyntaxException {
+	public void testParseNoReleaseDate() throws JsonParseException, URISyntaxException {
 		VersionJsonParser parser = new VersionJsonParser();
 		final Version version = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/version/valid2-no-releaseDate.json"));
 
@@ -62,7 +62,7 @@ public class VersionJsonParserTest {
 	}
 
 	@Test
-	public void testParseNoId() throws JSONException, URISyntaxException {
+	public void testParseNoId() throws JsonParseException, URISyntaxException {
 		VersionJsonParser parser = new VersionJsonParser();
 		final Version version = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/version/valid-no-id.json"));
 
@@ -77,7 +77,7 @@ public class VersionJsonParserTest {
 	}
 
 	@Test
-	public void testParseNoDescription() throws JSONException, URISyntaxException {
+	public void testParseNoDescription() throws JsonParseException, URISyntaxException {
 		VersionJsonParser parser = new VersionJsonParser();
 		final Version version = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/version/valid-no-description.json"));
 

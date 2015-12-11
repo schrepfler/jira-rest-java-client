@@ -17,13 +17,13 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.SessionCookie;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class SessionCookieJsonParser implements JsonObjectParser<SessionCookie> {
 	@Override
-	public SessionCookie parse(JSONObject json) throws JSONException {
-		return new SessionCookie(json.getString("name"), json.getString("value"));
+	public SessionCookie parse(JsonObject json) throws JsonParseException {
+		return new SessionCookie(json.get("name").getAsString(), json.get("value").getAsString());
 	}
 
 }

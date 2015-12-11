@@ -21,25 +21,25 @@ import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Component;
 import com.atlassian.jira.rest.client.internal.domain.AssigneeTypeConstants;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class ComponentJsonParser implements JsonObjectParser<Component> {
 	@Override
-	public Component parse(JSONObject json) throws JSONException {
+	public Component parse(JsonObject json) throws JsonParseException {
 		final BasicComponent basicComponent = BasicComponentJsonParser.parseBasicComponent(json);
-		final JSONObject leadJson = json.optJSONObject("lead");
+		final JsonObject leadJson = json.get("lead").getAsJsonObject();
 		final BasicUser lead = leadJson != null ? JsonParseUtil.parseBasicUser(leadJson) : null;
 		final String assigneeTypeStr = JsonParseUtil.getOptionalString(json, "assigneeType");
 		final Component.AssigneeInfo assigneeInfo;
 		if (assigneeTypeStr != null) {
 			final AssigneeType assigneeType = parseAssigneeType(assigneeTypeStr);
-			final JSONObject assigneeJson = json.optJSONObject("assignee");
+			final JsonObject assigneeJson = json.get("assignee").getAsJsonObject();
 			final BasicUser assignee = assigneeJson != null ? JsonParseUtil.parseBasicUser(assigneeJson) : null;
-			final AssigneeType realAssigneeType = parseAssigneeType(json.getString("realAssigneeType"));
-			final JSONObject realAssigneeJson = json.optJSONObject("realAssignee");
+			final AssigneeType realAssigneeType = parseAssigneeType(json.get("realAssigneeType").getAsString());
+			final JsonObject realAssigneeJson = json.get("realAssignee").getAsJsonObject();
 			final BasicUser realAssignee = realAssigneeJson != null ? JsonParseUtil.parseBasicUser(realAssigneeJson) : null;
-			final boolean isAssigneeTypeValid = json.getBoolean("isAssigneeTypeValid");
+			final boolean isAssigneeTypeValid = json.get("isAssigneeTypeValid").getAsBoolean();
 			assigneeInfo = new Component.AssigneeInfo(assignee, assigneeType, realAssignee, realAssigneeType, isAssigneeTypeValid);
 		} else {
 			assigneeInfo = null;
@@ -49,7 +49,7 @@ public class ComponentJsonParser implements JsonObjectParser<Component> {
 				.getDescription(), lead, assigneeInfo);
 	}
 
-	AssigneeType parseAssigneeType(String str) throws JSONException {
+	AssigneeType parseAssigneeType(String str) throws JsonParseException {
 		// JIRA 4.4+ adds full assignee info to component resource
 		if (AssigneeTypeConstants.COMPONENT_LEAD.equals(str)) {
 			return AssigneeType.COMPONENT_LEAD;
@@ -63,6 +63,6 @@ public class ComponentJsonParser implements JsonObjectParser<Component> {
 		if (AssigneeTypeConstants.UNASSIGNED.equals(str)) {
 			return AssigneeType.UNASSIGNED;
 		}
-		throw new JSONException("Unexpected value of assignee type [" + str + "]");
+		throw new JsonParseException("Unexpected value of assignee type [" + str + "]");
 	}
 }

@@ -15,12 +15,12 @@
  */
 package com.atlassian.jira.rest.client.internal.async;
 
+import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.jira.rest.client.api.ProjectRolesRestClient;
 import com.atlassian.jira.rest.client.api.domain.BasicProjectRole;
 import com.atlassian.jira.rest.client.api.domain.ProjectRole;
 import com.atlassian.jira.rest.client.internal.json.BasicProjectRoleJsonParser;
 import com.atlassian.jira.rest.client.internal.json.ProjectRoleJsonParser;
-import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.util.concurrent.Promise;
 import com.atlassian.util.concurrent.Promises;
 import com.google.common.base.Function;

@@ -18,8 +18,8 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.LoginInfo;
 import com.atlassian.jira.rest.client.api.domain.Session;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
@@ -27,10 +27,10 @@ public class SessionJsonParser implements JsonObjectParser<Session> {
 	private final LoginInfoJsonParser loginInfoJsonParser = new LoginInfoJsonParser();
 
 	@Override
-	public Session parse(JSONObject json) throws JSONException {
+	public Session parse(JsonObject json) throws JsonParseException {
 		final URI userUri = JsonParseUtil.getSelfUri(json);
-		final String username = json.getString("name");
-		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getJSONObject("loginInfo"));
+		final String username = json.get("name").getAsString();
+		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getAsJsonObject("loginInfo"));
 		return new Session(userUri, username, loginInfo);
 	}
 }

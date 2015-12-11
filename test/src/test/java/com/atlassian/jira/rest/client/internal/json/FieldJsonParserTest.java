@@ -18,7 +18,7 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 import com.atlassian.jira.rest.client.api.domain.FieldType;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class FieldJsonParserTest {
 	public final ExpectedException expectedException = ExpectedException.none();
 
 	@Test
-	public void testParseValidSingleField() throws JSONException {
+	public void testParseValidSingleField() throws JsonParseException {
 		final Field field = fieldJsonParser.parse(ResourceUtil.getJsonObjectFromResource("/json/field/valid-system-field.json"));
 		final FieldSchema schema = new FieldSchema("status", null, "status", null, null);
 		final Field expectedField = new Field("status", "Status", FieldType.JIRA, false, true, true, schema);
@@ -43,7 +43,7 @@ public class FieldJsonParserTest {
 	}
 
 	@Test
-	public void testParseValidCustomField() throws JSONException {
+	public void testParseValidCustomField() throws JsonParseException {
 		final Field field = fieldJsonParser.parse(ResourceUtil.getJsonObjectFromResource("/json/field/valid-custom-field.json"));
 		final FieldSchema schema = new FieldSchema("array", "string", null, "com.atlassian.jira.plugin.system.customfieldtypes:multiselect", 10000l);
 		final Field expectedField = new Field("customfield_10000", "MultiSelect Custom IssueField", FieldType.CUSTOM, true, true, true, schema);
@@ -51,7 +51,7 @@ public class FieldJsonParserTest {
 	}
 
 	@Test
-	public void testParseMultipleCustomFields() throws JSONException {
+	public void testParseMultipleCustomFields() throws JsonParseException {
 		JsonArrayParser<Iterable<Field>> fieldsParser = FieldJsonParser.createFieldsArrayParser();
 		final Iterable<Field> fields = fieldsParser.parse(ResourceUtil.getJsonArrayFromResource("/json/field/valid-multiple-fields.json"));
 
@@ -72,8 +72,8 @@ public class FieldJsonParserTest {
 	}
 
 	@Test
-	public void testParseFieldWithoutSomeFields() throws JSONException {
-		expectedException.expect(JSONException.class);
+	public void testParseFieldWithoutSomeFields() throws JsonParseException {
+		expectedException.expect(JsonParseException.class);
 		expectedException.expectMessage("JSONObject[\"orderable\"] not found.");
 		fieldJsonParser.parse(ResourceUtil.getJsonObjectFromResource("/json/field/invalid-field.json"));
 	}

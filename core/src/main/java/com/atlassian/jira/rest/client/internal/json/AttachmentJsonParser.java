@@ -18,8 +18,8 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Attachment;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.net.URI;
@@ -29,14 +29,14 @@ public class AttachmentJsonParser implements JsonObjectParser<Attachment> {
 	private static final String THUMBNAIL = "thumbnail";
 
 	@Override
-	public Attachment parse(JSONObject json) throws JSONException {
+	public Attachment parse(JsonObject json) throws JsonParseException {
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String filename = json.getString("filename");
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.optJSONObject("author"));
-		final DateTime creationDate = JsonParseUtil.parseDateTime(json.getString("created"));
-		final int size = json.getInt("size");
-		final String mimeType = json.getString("mimeType");
-		final URI contentURI = JsonParseUtil.parseURI(json.getString("content"));
+		final String filename = json.get("filename").getAsString();
+		final BasicUser author = JsonParseUtil.parseBasicUser(json.get("author").getAsJsonObject());
+		final DateTime creationDate = JsonParseUtil.parseDateTime(json.get("created").getAsString());
+		final int size = json.get("size").getAsInt();
+		final String mimeType = json.get("mimeType").getAsString();
+		final URI contentURI = JsonParseUtil.parseURI(json.get("content").getAsString());
 		final URI thumbnailURI = JsonParseUtil.parseOptionalURI(json, THUMBNAIL);
 		return new Attachment(selfUri, filename, author, creationDate, size, mimeType, contentURI, thumbnailURI);
 	}

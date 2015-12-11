@@ -18,24 +18,24 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.util.Collections;
 
 public class SearchResultJsonParser implements JsonObjectParser<SearchResult> {
 
 	@Override
-	public SearchResult parse(JSONObject json) throws JSONException {
-		final int startAt = json.getInt("startAt");
-		final int maxResults = json.getInt("maxResults");
-		final int total = json.getInt("total");
-		final JSONArray issuesJsonArray = json.getJSONArray("issues");
+	public SearchResult parse(JsonObject json) throws JsonParseException {
+		final int startAt = json.get("startAt").getAsInt();
+		final int maxResults = json.get("maxResults").getAsInt();
+		final int total = json.get("total").getAsInt();
+		final JsonArray issuesJsonArray = json.getAsJsonArray("issues");
 
 		final Iterable<Issue> issues;
-		if (issuesJsonArray.length() > 0) {
-			final IssueJsonParser issueParser = new IssueJsonParser(json.getJSONObject("names"), json.getJSONObject("schema"));
+		if (issuesJsonArray.size() > 0) {
+			final IssueJsonParser issueParser = new IssueJsonParser(json.getAsJsonObject("names"), json.getAsJsonObject("schema"));
 			final GenericJsonArrayParser<Issue> issuesParser = GenericJsonArrayParser.create(issueParser);
 			issues = issuesParser.parse(issuesJsonArray);
 		} else {

@@ -18,25 +18,23 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.Permission;
 import com.atlassian.jira.rest.client.api.domain.Permissions;
 import com.google.common.collect.Lists;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class PermissionsJsonParser implements JsonObjectParser<Permissions> {
 	private final PermissionJsonParser permissionJsonParser = new PermissionJsonParser();
 
 	@Override
-	public Permissions parse(final JSONObject json) throws JSONException {
-		final JSONObject permissionsObject = json.getJSONObject("permissions");
+	public Permissions parse(final JsonObject json) throws JsonParseException {
+		final JsonObject permissionsObject = json.getAsJsonObject("permissions");
 
 		final List<Permission> permissions = Lists.newArrayList();
-		final Iterator it = permissionsObject.keys();
-		while (it.hasNext()) {
-			final String key = it.next().toString();
-			final JSONObject permissionObject = permissionsObject.getJSONObject(key);
-			final Permission permission = permissionJsonParser.parse(permissionObject);
+		for (Map.Entry<String, JsonElement> entry : permissionsObject.entrySet()) {
+			final Permission permission = permissionJsonParser.parse(entry.getValue().getAsJsonObject());
 			permissions.add(permission);
 		}
 		return new Permissions(permissions);

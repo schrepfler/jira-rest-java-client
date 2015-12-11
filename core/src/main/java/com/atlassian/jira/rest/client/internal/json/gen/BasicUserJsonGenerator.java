@@ -17,15 +17,16 @@
 package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class BasicUserJsonGenerator implements JsonGenerator<BasicUser> {
 	@Override
-	public JSONObject generate(BasicUser user) throws JSONException {
-		return new JSONObject()
-				.put("self", user.getSelf())
-				.put("name", user.getName())
-				.put("displayName", user.getDisplayName());
+	public JsonObject generate(BasicUser user) throws JsonParseException {
+		JsonObject obj = new JsonObject();
+		obj.addProperty("self", user.getSelf().toString());
+		obj.addProperty("name", user.getName());
+		obj.addProperty("displayName", user.getDisplayName());
+		return obj;
 	}
 }

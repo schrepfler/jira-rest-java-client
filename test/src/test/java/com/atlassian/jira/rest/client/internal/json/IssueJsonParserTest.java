@@ -42,9 +42,9 @@ import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.hamcrest.collection.IsEmptyIterable;
 import org.joda.time.format.ISODateTimeFormat;
@@ -164,40 +164,40 @@ public class IssueJsonParserTest {
 		// TODO: add assertions for more custom field types after fixing JRJC-122
 	}
 
-	private Issue parseIssue(final String resourcePath) throws JSONException {
-		final JSONObject issueJson = ResourceUtil.getJsonObjectFromResource(resourcePath);
+	private Issue parseIssue(final String resourcePath) throws JsonParseException {
+		final JsonObject issueJson = ResourceUtil.getJsonObjectFromResource(resourcePath);
 		final IssueJsonParser parser = new IssueJsonParser();
 		return parser.parse(issueJson);
 	}
 
 	@Test
-	public void testParseIssueWithResolution() throws JSONException {
+	public void testParseIssueWithResolution() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-all-expanded-with-resolution.json");
 		assertEquals("Incomplete", issue.getResolution().getName());
 
 	}
 
 	@Test
-	public void testParseIssueWhenWatchersAndVotersAreSwitchedOff() throws JSONException {
+	public void testParseIssueWhenWatchersAndVotersAreSwitchedOff() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-no-votes-no-watchers.json");
 		assertNull(issue.getWatchers());
 		assertNull(issue.getVotes());
 	}
 
 	@Test
-	public void testParseUnassignedIssue() throws JSONException {
+	public void testParseUnassignedIssue() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-unassigned-no-time-tracking.json");
 		assertNull(issue.getAssignee());
 	}
 
 	@Test
-	public void testParseNoTimeTrackingInfo() throws JSONException {
+	public void testParseNoTimeTrackingInfo() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-unassigned-no-time-tracking.json");
 		assertNull(issue.getTimeTracking());
 	}
 
 	@Test
-	public void testParseIssueWithAnonymousComment() throws JSONException {
+	public void testParseIssueWithAnonymousComment() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-anonymous-comment.json");
 		assertEquals(1, Iterables.size(issue.getComments()));
 		final Comment comment = issue.getComments().iterator().next();
@@ -207,7 +207,7 @@ public class IssueJsonParserTest {
 	}
 
 	@Test
-	public void testParseIssueWithVisibility() throws JSONException {
+	public void testParseIssueWithVisibility() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-visibility.json");
 		assertEquals(Visibility.role("Administrators"), issue.getComments().iterator().next().getVisibility());
 		assertEquals(Visibility.role("Developers"), Iterables.get(issue.getWorklogs(), 1).getVisibility());
@@ -216,7 +216,7 @@ public class IssueJsonParserTest {
 
 	// TODO: temporary disabled as we want to run integration tests. Fix JRJC-122 and re-enable this test
 //	@Test
-//	public void testParseIssueWithUserPickerCustomFieldFilledOut() throws JSONException {
+//	public void testParseIssueWithUserPickerCustomFieldFilledOut() throws JsonParseException {
 //		final Issue issue = parseIssue("/json/issue/valid-user-picker-custom-field-filled-out.json");
 //		final IssueField extraUserField = issue.getFieldByName("Extra User");
 //		assertNotNull(extraUserField);
@@ -225,7 +225,7 @@ public class IssueJsonParserTest {
 //	}
 
 	@Test
-	public void testParseIssueWithUserPickerCustomFieldEmpty() throws JSONException {
+	public void testParseIssueWithUserPickerCustomFieldEmpty() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-user-picker-custom-field-empty.json");
 		final IssueField extraUserIssueField = issue.getFieldByName("Extra User");
 		assertNotNull(extraUserIssueField);
@@ -233,7 +233,7 @@ public class IssueJsonParserTest {
 	}
 
 	@Test
-	public void testParseIssueJira5x0Representation() throws JSONException {
+	public void testParseIssueJira5x0Representation() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0.json");
 		assertEquals(3, Iterables.size(issue.getComments()));
 		final BasicPriority priority = issue.getPriority();
@@ -260,7 +260,7 @@ public class IssueJsonParserTest {
 	}
 
 	@Test
-	public void testParseIssueJira50Representation() throws JSONException {
+	public void testParseIssueJira50Representation() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0-1.json");
 		assertEquals(Long.valueOf(10001), issue.getId());
 		assertEquals(0, Iterables.size(issue.getComments()));
@@ -285,13 +285,13 @@ public class IssueJsonParserTest {
 	}
 
 	@Test
-	public void testParseIssueWithProjectNamePresentInRepresentation() throws JSONException {
+	public void testParseIssueWithProjectNamePresentInRepresentation() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/issue-with-project-name-present.json");
 		assertEquals("My Test Project", issue.getProject().getName());
 	}
 
 	@Test
-	public void testParseIssueJiraRepresentationJrjc49() throws JSONException {
+	public void testParseIssueJiraRepresentationJrjc49() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/jrjc49.json");
 		final Iterable<Worklog> worklogs = issue.getWorklogs();
 		assertEquals(1, Iterables.size(worklogs));
@@ -303,14 +303,14 @@ public class IssueJsonParserTest {
 	}
 
 	@Test
-	public void testParseIssueJira5x0RepresentationNullCustomField() throws JSONException {
+	public void testParseIssueJira5x0RepresentationNullCustomField() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0-null-custom-field.json");
 		assertEquals(null, issue.getField("customfield_10000").getValue());
 		assertNull(issue.getIssueLinks());
 	}
 
 	@Test
-	public void issueWithSubtasks() throws JSONException {
+	public void issueWithSubtasks() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/subtasks-5.json");
 		Iterable<Subtask> subtasks = issue.getSubtasks();
 		assertEquals(1, Iterables.size(subtasks));
@@ -322,7 +322,7 @@ public class IssueJsonParserTest {
 	}
 
 	@Test
-	public void issueWithChangelog() throws JSONException {
+	public void issueWithChangelog() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0-with-changelog.json");
 		assertEquals("HST-1", issue.getKey());
 
@@ -379,25 +379,25 @@ public class IssueJsonParserTest {
 	}
 
 	@Test
-	public void testParseIssueWithLabelsForJira5x0() throws JSONException {
+	public void testParseIssueWithLabelsForJira5x0() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0-with-labels.json");
 		assertThat(issue.getLabels(), containsInAnyOrder("a", "bcds"));
 	}
 
 	@Test
-	public void testParseIssueWithLabels() throws JSONException {
+	public void testParseIssueWithLabels() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0-with-labels.json");
 		assertThat(issue.getLabels(), containsInAnyOrder("a", "bcds"));
 	}
 
 	@Test
-	public void testParseIssueWithoutLabelsForJira5x0() throws JSONException {
+	public void testParseIssueWithoutLabelsForJira5x0() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0-without-labels.json");
 		assertThat(issue.getLabels(), IsEmptyCollection.<String>empty());
 	}
 
 	@Test
-	public void testParseIssueWithOperations() throws JSONException {
+	public void testParseIssueWithOperations() throws JsonParseException {
 		final Issue issue = parseIssue("/json/issue/valid-5.0-with-operations.json");
 		assertThat(issue.getOperations(), is(new Operations(Collections.singleton(new OperationGroup(
 				"opsbar-transitions",

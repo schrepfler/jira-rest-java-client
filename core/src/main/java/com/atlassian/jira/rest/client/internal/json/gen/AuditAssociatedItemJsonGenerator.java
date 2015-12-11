@@ -1,8 +1,8 @@
 package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.AuditAssociatedItem;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
  *
@@ -10,12 +10,13 @@ import org.codehaus.jettison.json.JSONObject;
  */
 public class AuditAssociatedItemJsonGenerator implements JsonGenerator<AuditAssociatedItem> {
     @Override
-    public JSONObject generate(AuditAssociatedItem bean) throws JSONException {
-        return new JSONObject()
-                .put("id", bean.getId())
-                .put("name", bean.getName())
-                .put("typeName", bean.getTypeName())
-                .put("parentId", bean.getParentId())
-                .put("parentName", bean.getParentName());
+    public JsonObject generate(AuditAssociatedItem bean) throws JsonParseException {
+        JsonObject object = new JsonObject();
+        object.addProperty("id", bean.getId());
+        object.addProperty("name", bean.getName());
+        object.addProperty("typeName", bean.getTypeName());
+        object.addProperty("parentId", bean.getParentId());
+        object.addProperty("parentName", bean.getParentName());
+        return object;
     }
 }

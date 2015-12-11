@@ -27,7 +27,7 @@ public class TimeTrackingJsonParserTest {
 	public void testParse() throws Exception {
 		final TimeTrackingJsonParser parser = new TimeTrackingJsonParser();
 		final TimeTracking timeTracking = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/timeTracking/valid.json")
-				.getJSONObject("value"));
+				.getAsJsonObject("value"));
 		Assert.assertEquals(new TimeTracking(1500, 70, 190), timeTracking);
 	}
 
@@ -35,7 +35,7 @@ public class TimeTrackingJsonParserTest {
 	public void testParseNoEstimation() throws Exception {
 		final TimeTrackingJsonParser parser = new TimeTrackingJsonParser();
 		final TimeTracking timeTracking = parser.parse(ResourceUtil
-				.getJsonObjectFromResource("/json/timeTracking/valid-no-estimation.json").getJSONObject("value"));
+				.getJsonObjectFromResource("/json/timeTracking/valid-no-estimation.json").getAsJsonObject("value"));
 		Assert.assertEquals(new TimeTracking(null, 170, 9), timeTracking);
 	}
 
@@ -43,7 +43,7 @@ public class TimeTrackingJsonParserTest {
 	public void testParseJustLoggedTime() throws Exception {
 		final TimeTrackingJsonParser parser = new TimeTrackingJsonParser();
 		final TimeTracking timeTracking = parser.parse(ResourceUtil
-				.getJsonObjectFromResource("/json/timeTracking/valid-just-timespent.json").getJSONObject("value"));
+				.getJsonObjectFromResource("/json/timeTracking/valid-just-timespent.json").getAsJsonObject("value"));
 		Assert.assertEquals(new TimeTracking(null, null, 840), timeTracking);
 	}
 

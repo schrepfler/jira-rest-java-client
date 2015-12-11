@@ -15,6 +15,7 @@
  */
 package com.atlassian.jira.rest.client.internal.async;
 
+import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.jira.rest.client.api.ComponentRestClient;
 import com.atlassian.jira.rest.client.api.domain.Component;
 import com.atlassian.jira.rest.client.api.domain.input.ComponentInput;
@@ -22,10 +23,9 @@ import com.atlassian.jira.rest.client.internal.domain.input.ComponentInputWithPr
 import com.atlassian.jira.rest.client.internal.json.ComponentJsonParser;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.gen.ComponentInputWithProjectKeyJsonGenerator;
-import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.util.concurrent.Promise;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
@@ -77,8 +77,8 @@ public class AsynchronousComponentRestClient extends AbstractAsynchronousRestCli
 		final URI relatedIssueCountsUri = UriBuilder.fromUri(componentUri).path("relatedIssueCounts").build();
 		return getAndParse(relatedIssueCountsUri, new JsonObjectParser<Integer>() {
 			@Override
-			public Integer parse(JSONObject json) throws JSONException {
-				return json.getInt("issueCount");
+			public Integer parse(JsonObject json) throws JsonParseException {
+				return json.get("issueCount").getAsInt();
 			}
 		});
 	}

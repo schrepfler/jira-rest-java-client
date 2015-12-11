@@ -20,25 +20,25 @@ import com.atlassian.jira.rest.client.api.domain.AssigneeType;
 import com.atlassian.jira.rest.client.internal.domain.AssigneeTypeConstants;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.internal.domain.input.ComponentInputWithProjectKey;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class ComponentInputWithProjectKeyJsonGenerator implements JsonGenerator<ComponentInputWithProjectKey> {
 
 	@Override
-	public JSONObject generate(ComponentInputWithProjectKey componentInput) throws JSONException {
-		JSONObject res = new JSONObject();
+	public JsonObject generate(ComponentInputWithProjectKey componentInput) throws JsonParseException {
+		JsonObject res = new JsonObject();
 		if (componentInput.getProjectKey() != null) {
-			res.put("project", componentInput.getProjectKey());
+			res.addProperty("project", componentInput.getProjectKey());
 		}
 		if (componentInput.getName() != null) {
-			res.put("name", componentInput.getName());
+			res.addProperty("name", componentInput.getName());
 		}
 		if (componentInput.getDescription() != null) {
-			res.put("description", componentInput.getDescription());
+			res.addProperty("description", componentInput.getDescription());
 		}
 		if (componentInput.getLeadUsername() != null) {
-			res.put("leadUserName", componentInput.getLeadUsername());
+			res.addProperty("leadUserName", componentInput.getLeadUsername());
 		}
 		final AssigneeType assigneeType = componentInput.getAssigneeType();
 		if (assigneeType != null) {
@@ -59,7 +59,7 @@ public class ComponentInputWithProjectKeyJsonGenerator implements JsonGenerator<
 				default:
 					throw new RestClientException("Unexpected assignee type [" + assigneeType + "]", null);
 			}
-			res.put("assigneeType", assigneeTypeStr);
+			res.addProperty("assigneeType", assigneeTypeStr);
 		}
 		return res;
 	}

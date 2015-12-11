@@ -16,29 +16,29 @@
 
 package com.atlassian.jira.rest.client.test.matchers;
 
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
 import org.hamcrest.Description;
 import org.junit.internal.matchers.TypeSafeMatcher;
 
-public class JSONObjectMatcher extends TypeSafeMatcher<JSONObject> {
+public class JSONObjectMatcher extends TypeSafeMatcher<JsonObject> {
 
-	private final JSONObject jsonObject;
+	private final JsonObject jsonObject;
 
-	public JSONObjectMatcher(JSONObject jsonObject) {
+	public JSONObjectMatcher(JsonObject jsonObject) {
 		this.jsonObject = jsonObject;
 	}
 
-	public static JSONObjectMatcher isEqual(JSONObject jsonObject) {
+	public static JSONObjectMatcher isEqual(JsonObject jsonObject) {
 		return new JSONObjectMatcher(jsonObject);
 	}
 
 	@Override
-	public boolean matchesSafely(JSONObject item) {
+	public boolean matchesSafely(JsonObject item) {
 		return item.toString().equals(jsonObject.toString());
 	}
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("JSONObject " + jsonObject.toString());
+		description.appendText("JsonObject " + jsonObject.toString());
 	}
 }

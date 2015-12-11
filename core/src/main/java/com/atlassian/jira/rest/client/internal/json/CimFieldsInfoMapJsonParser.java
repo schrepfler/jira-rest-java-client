@@ -23,9 +23,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 import java.net.URI;
@@ -57,39 +58,37 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 	}};
 
 	@Override
-	public Map<String, CimFieldInfo> parse(JSONObject json) throws JSONException {
-		final Map<String, CimFieldInfo> res = Maps.newHashMapWithExpectedSize(json.length());
-		final Iterator keysIterator = json.keys();
-		while (keysIterator.hasNext()) {
-			final String id = (String) keysIterator.next();
-			res.put(id, parseIssueFieldInfo(json.getJSONObject(id), id));
+	public Map<String, CimFieldInfo> parse(JsonObject json) throws JsonParseException {
+		final Map<String, CimFieldInfo> res = Maps.newHashMapWithExpectedSize(json.entrySet().size());
+		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+			res.put(entry.getKey(), parseIssueFieldInfo(entry.getValue().getAsJsonObject(), entry.getKey()));
 		}
 		return res;
 	}
 
-	private CimFieldInfo parseIssueFieldInfo(JSONObject json, String id) throws JSONException {
-		final boolean required = json.getBoolean("required");
+	private CimFieldInfo parseIssueFieldInfo(JsonObject json, String id) throws JsonParseException {
+		final boolean required = json.get("required").getAsBoolean();
 		final String name = JsonParseUtil.getOptionalString(json, "name");
-		final FieldSchema schema = fieldSchemaJsonParser.parse(json.getJSONObject("schema"));
-		final Set<StandardOperation> operations = parseOperations(json.getJSONArray("operations"));
-		final Iterable<Object> allowedValues = parseAllowedValues(json.optJSONArray("allowedValues"), schema);
+		final FieldSchema schema = fieldSchemaJsonParser.parse(json.get("schema").getAsJsonObject());
+		final Set<StandardOperation> operations = parseOperations(json.get("operations").getAsJsonArray());
+		final Iterable<Object> allowedValues = parseAllowedValues(json.get("allowedValues").getAsJsonArray(), schema);
 		final URI autoCompleteUri = JsonParseUtil.parseOptionalURI(json, "autoCompleteUrl");
 
 		return new CimFieldInfo(id, required, name, schema, operations, allowedValues, autoCompleteUri);
 	}
 
-	private Iterable<Object> parseAllowedValues(@Nullable JSONArray allowedValues, FieldSchema fieldSchema) throws JSONException {
-		if (allowedValues == null || allowedValues.equals(JSONObject.NULL)) {
+	private Iterable<Object> parseAllowedValues(@Nullable JsonArray allowedValues, FieldSchema fieldSchema) throws JsonParseException {
+		if (allowedValues == null || allowedValues.isJsonNull()) {
 			return null;
 		}
 
-		if (allowedValues.length() == 0) {
+		if (allowedValues.size() == 0) {
 			return Collections.emptyList();
 		}
 
 		final JsonObjectParser<Object> allowedValuesJsonParser = getParserFor(fieldSchema);
 		if (allowedValuesJsonParser != null) {
-			JSONArray valuesToParse;
+			JsonArray valuesToParse;
 			// fixes for JRADEV-12999
 			final boolean isProjectCF = "project".equals(fieldSchema.getType())
 					&& "com.atlassian.jira.plugin.system.customfieldtypes:project".equals(fieldSchema.getCustom());
@@ -99,15 +98,15 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 					&& "version".equals(fieldSchema.getItems())
 					&& "com.atlassian.jira.plugin.system.customfieldtypes:multiversion".equals(fieldSchema.getCustom());
 
-			if ((isProjectCF || isVersionCF || isMultiVersionCF) && allowedValues.get(0) instanceof JSONArray) {
-				valuesToParse = allowedValues.getJSONArray(0);
+			if ((isProjectCF || isVersionCF || isMultiVersionCF) && allowedValues.get(0).isJsonArray()) {
+				valuesToParse = allowedValues.get(0).getAsJsonArray();
 			} else {
 				valuesToParse = allowedValues;
 			}
 			return GenericJsonArrayParser.create(allowedValuesJsonParser).parse(valuesToParse);
 		} else {
 			// fallback - just return collection of JSONObjects
-			final int itemsLength = allowedValues.length();
+			final int itemsLength = allowedValues.size();
 			final List<Object> res = Lists.newArrayListWithExpectedSize(itemsLength);
 			for (int i = 0; i < itemsLength; i++) {
 				res.add(allowedValues.get(i));
@@ -116,11 +115,11 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 		}
 	}
 
-	private Set<StandardOperation> parseOperations(JSONArray operations) throws JSONException {
-		final int operationsCount = operations.length();
+	private Set<StandardOperation> parseOperations(JsonArray operations) throws JsonParseException {
+		final int operationsCount = operations.size();
 		final Set<StandardOperation> res = Sets.newHashSetWithExpectedSize(operationsCount);
 		for (int i = 0; i < operationsCount; i++) {
-			String opName = operations.getString(i);
+			String opName = operations.get(i).getAsString();
 			StandardOperation op = StandardOperation.valueOf(opName.toUpperCase());
 			res.add(op);
 		}
@@ -128,7 +127,7 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 	}
 
 	@Nullable
-	private JsonObjectParser<Object> getParserFor(FieldSchema fieldSchema) throws JSONException {
+	private JsonObjectParser<Object> getParserFor(FieldSchema fieldSchema) throws JsonParseException {
 		final Set<String> customFieldsTypesWithFieldOption = ImmutableSet.of(
 				"com.atlassian.jira.plugin.system.customfieldtypes:multicheckboxes",
 				"com.atlassian.jira.plugin.system.customfieldtypes:radiobuttons",

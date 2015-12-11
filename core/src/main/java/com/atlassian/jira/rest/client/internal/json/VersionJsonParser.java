@@ -17,21 +17,21 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Version;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.net.URI;
 
 public class VersionJsonParser implements JsonObjectParser<Version> {
 	@Override
-	public Version parse(JSONObject json) throws JSONException {
+	public Version parse(JsonObject json) throws JsonParseException {
 		final URI self = JsonParseUtil.getSelfUri(json);
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String name = json.getString("name");
+		final String name = json.get("name").getAsString();
 		final String description = JsonParseUtil.getOptionalString(json, "description");
-		final boolean isArchived = json.getBoolean("archived");
-		final boolean isReleased = json.getBoolean("released");
+		final boolean isArchived = json.get("archived").getAsBoolean();
+		final boolean isReleased = json.get("released").getAsBoolean();
 		final String releaseDateStr = JsonParseUtil.getOptionalString(json, "releaseDate");
 		final DateTime releaseDate = parseReleaseDate(releaseDateStr);
 		return new Version(self, id, name, description, isArchived, isReleased, releaseDate);

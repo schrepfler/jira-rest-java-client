@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
@@ -28,20 +28,20 @@ public class IssueLinkJsonParserV5 implements JsonObjectParser<IssueLink> {
 	private final IssuelinksTypeJsonParserV5 issuelinksTypeJsonParserV5 = new IssuelinksTypeJsonParserV5();
 
 	@Override
-	public IssueLink parse(JSONObject json) throws JSONException {
-		final IssuelinksType issuelinksType = issuelinksTypeJsonParserV5.parse(json.getJSONObject("type"));
+	public IssueLink parse(JsonObject json) throws JsonParseException {
+		final IssuelinksType issuelinksType = issuelinksTypeJsonParserV5.parse(json.getAsJsonObject("type"));
 		final IssueLinkType.Direction direction;
-		final JSONObject link;
+		final JsonObject link;
 		if (json.has("inwardIssue")) {
-			link = json.getJSONObject("inwardIssue");
+			link = json.getAsJsonObject("inwardIssue");
 			direction = IssueLinkType.Direction.INBOUND;
 		} else {
-			link = json.getJSONObject("outwardIssue");
+			link = json.getAsJsonObject("outwardIssue");
 			direction = IssueLinkType.Direction.OUTBOUND;
 		}
 
-		final String key = link.getString("key");
-		final URI targetIssueUri = JsonParseUtil.parseURI(link.getString("self"));
+		final String key = link.get("key").getAsString();
+		final URI targetIssueUri = JsonParseUtil.parseURI(link.get("self").getAsString());
 		final IssueLinkType issueLinkType = new IssueLinkType(issuelinksType.getName(),
 				direction.equals(IssueLinkType.Direction.INBOUND) ? issuelinksType.getInward()
 						: issuelinksType.getOutward(), direction);

@@ -19,7 +19,7 @@ import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.domain.ProjectRole;
 import com.atlassian.jira.rest.client.api.domain.RoleActor;
 import com.google.common.collect.Iterables;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -81,7 +81,7 @@ public class ProjectRoleJsonParserTest {
 
 	@Test
 	public void testInvalidRole() throws Exception {
-		exception.expect(JSONException.class);
+		exception.expect(JsonParseException.class);
 		exception.expectMessage("JSONObject[\"self\"] not found.");
 		parser.parse(ResourceUtil.getJsonObjectFromResource("/json/role/invalid-role.json"));
 	}
@@ -89,7 +89,7 @@ public class ProjectRoleJsonParserTest {
 	// This test checks the special "admin" case.
 	// Id field should not be optional, unfortunately it is not returned for an admin role actor.
 	@Test
-	public void testParseProjectRoleContainingActorWithoutIdField() throws JSONException, MalformedURLException {
+	public void testParseProjectRoleContainingActorWithoutIdField() throws JsonParseException, MalformedURLException {
 		final ProjectRole role = parser.parse(ResourceUtil
 				.getJsonObjectFromResource("/json/role/valid-role-without-user-actor-id.json"));
 		Assert.assertNotNull(role);

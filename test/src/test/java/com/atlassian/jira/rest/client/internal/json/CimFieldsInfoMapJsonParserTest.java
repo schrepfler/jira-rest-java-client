@@ -19,7 +19,7 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.CimFieldInfo;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.SecurityLevel;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 public class CimFieldsInfoMapJsonParserTest {
 
 	@Test
-	public void testParseWithArrayOfArrayAllowedValuesBug() throws JSONException {
+	public void testParseWithArrayOfArrayAllowedValuesBug() throws JsonParseException {
 		final CimFieldsInfoMapJsonParser parser = new CimFieldsInfoMapJsonParser();
 		final Map<String, CimFieldInfo> fieldsInfo = parser.parse(
 				getJsonObjectFromResource("/json/createmeta/fieldsinfo/valid-with-array-of-array-bug.json")
@@ -50,7 +50,7 @@ public class CimFieldsInfoMapJsonParserTest {
 	}
 
 	@Test
-	public void testParseWithAllowedValuesForSecurityLevels() throws JSONException {
+	public void testParseWithAllowedValuesForSecurityLevels() throws JsonParseException {
 		final CimFieldsInfoMapJsonParser parser = new CimFieldsInfoMapJsonParser();
 		final Map<String, CimFieldInfo> fieldsInfo = parser.parse(
 				getJsonObjectFromResource("/json/createmeta/fieldsinfo/valid-with-all-issue-types.json")
@@ -65,7 +65,7 @@ public class CimFieldsInfoMapJsonParserTest {
 	}
 
 	@Test
-	public void testParseWithAllowedValuesForResolution() throws JSONException {
+	public void testParseWithAllowedValuesForResolution() throws JsonParseException {
 		final CimFieldsInfoMapJsonParser parser = new CimFieldsInfoMapJsonParser();
 		final Map<String, CimFieldInfo> fieldsInfo = parser.parse(
 				getJsonObjectFromResource("/json/createmeta/fieldsinfo/valid-with-all-issue-types.json")
@@ -81,7 +81,7 @@ public class CimFieldsInfoMapJsonParserTest {
 	}
 
 	@Test
-	public void testParseWithArrayOfArrayAllowedValuesBugFixed() throws JSONException {
+	public void testParseWithArrayOfArrayAllowedValuesBugFixed() throws JsonParseException {
 		final CimFieldsInfoMapJsonParser parser = new CimFieldsInfoMapJsonParser();
 		final Map<String, CimFieldInfo> fieldsInfo = parser.parse(
 				getJsonObjectFromResource("/json/createmeta/fieldsinfo/valid-with-array-of-array-bug-fixed.json")
@@ -93,7 +93,7 @@ public class CimFieldsInfoMapJsonParserTest {
 	}
 
 	@Test
-	public void testParseWithAllIssueTypesShouldReturnFieldsWithNames() throws JSONException {
+	public void testParseWithAllIssueTypesShouldReturnFieldsWithNames() throws JsonParseException {
 		final CimFieldsInfoMapJsonParser parser = new CimFieldsInfoMapJsonParser();
 		final Map<String, CimFieldInfo> fieldsInfo = parser.parse(
 				getJsonObjectFromResource("/json/createmeta/fieldsinfo/valid-with-all-issue-types.json")

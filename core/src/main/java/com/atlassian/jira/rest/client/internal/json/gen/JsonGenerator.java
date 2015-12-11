@@ -16,9 +16,9 @@
 
 package com.atlassian.jira.rest.client.internal.json.gen;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public interface JsonGenerator<T> {
-	public JSONObject generate(T bean) throws JSONException;
+	public JsonObject generate(T bean)  throws JsonParseException;
 }

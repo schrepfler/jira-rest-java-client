@@ -18,9 +18,9 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BulkOperationErrorResult;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,14 +34,14 @@ import java.util.Map;
 public class IssueErrorJsonParser implements JsonObjectParser<BulkOperationErrorResult> {
 
 	@Override
-	public BulkOperationErrorResult parse(final JSONObject json) throws JSONException {
+	public BulkOperationErrorResult parse(final JsonObject json) throws JsonParseException {
 
-		final Integer status = json.getInt("status");
-		final Integer issueNumber = json.getInt("failedElementNumber");
+		final Integer status = json.get("status").getAsInt();
+		final Integer issueNumber = json.get("failedElementNumber").getAsInt();
 
-		final JSONObject elementErrors = json.optJSONObject("elementErrors");
-		final JSONObject jsonErrors = elementErrors.optJSONObject("errors");
-		final JSONArray jsonErrorMessages = elementErrors.optJSONArray("errorMessages");
+		final JsonObject elementErrors = json.getAsJsonObject("elementErrors");
+		final JsonObject jsonErrors = elementErrors.getAsJsonObject("errors");
+		final JsonArray jsonErrorMessages = elementErrors.getAsJsonArray("errorMessages");
 
 		final Collection<String> errorMessages;
 		if (jsonErrorMessages != null) {
@@ -52,7 +52,7 @@ public class IssueErrorJsonParser implements JsonObjectParser<BulkOperationError
 
 		final Map<String, String> errors;
 		if (jsonErrors != null) {
-			errors = JsonParseUtil.toStringMap(jsonErrors.names(), jsonErrors);
+			errors = JsonParseUtil.toStringMap(jsonErrors);
 		} else {
 			errors = Collections.emptyMap();
 		}

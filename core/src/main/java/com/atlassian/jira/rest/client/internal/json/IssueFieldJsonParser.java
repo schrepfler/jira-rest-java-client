@@ -18,8 +18,8 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +34,10 @@ public class IssueFieldJsonParser {
 	}};
 
 	@SuppressWarnings("unchecked")
-	public IssueField parse(JSONObject jsonObject, String id) throws JSONException {
-		String type = jsonObject.getString("type");
-		final String name = jsonObject.getString("name");
-		final Object valueObject = jsonObject.opt(VALUE_ATTRIBUTE);
+	public IssueField parse(JsonObject jsonObject, String id) throws JsonParseException {
+		String type = jsonObject.get("type").getAsString();
+		final String name = jsonObject.get("name").getAsString();
+		final Object valueObject = jsonObject.get(VALUE_ATTRIBUTE);
 		final Object value;
 		// @todo ugly hack until https://jdog.atlassian.com/browse/JRADEV-3220 is fixed
 		if ("comment".equals(name)) {
@@ -65,10 +65,10 @@ public class IssueFieldJsonParser {
 		}
 
 		@Override
-		public T parse(JSONObject json) throws JSONException {
-			final JSONObject valueObject = json.optJSONObject(VALUE_ATTRIBUTE);
+		public T parse(JsonObject json) throws JsonParseException {
+			final JsonObject valueObject = json.getAsJsonObject(VALUE_ATTRIBUTE);
 			if (valueObject == null) {
-				throw new JSONException("Expected JSONObject with [" + VALUE_ATTRIBUTE + "] attribute present.");
+				throw new JsonParseException("Expected JsonObject with [" + VALUE_ATTRIBUTE + "] attribute present.");
 			}
 			return jsonParser.parse(valueObject);
 		}
@@ -78,7 +78,7 @@ public class IssueFieldJsonParser {
 	static class FloatingPointFieldValueParser implements JsonObjectParser<Double> {
 
 		@Override
-		public Double parse(JSONObject jsonObject) throws JSONException {
+		public Double parse(JsonObject jsonObject) throws JsonParseException {
 			final String s = JsonParseUtil.getNullableString(jsonObject, VALUE_ATTRIBUTE);
 			if (s == null) {
 				return null;
@@ -86,7 +86,7 @@ public class IssueFieldJsonParser {
 			try {
 				return Double.parseDouble(s);
 			} catch (NumberFormatException e) {
-				throw new JSONException("[" + s + "] is not a valid floating point number");
+				throw new JsonParseException("[" + s + "] is not a valid floating point number");
 			}
 		}
 	}
@@ -94,7 +94,7 @@ public class IssueFieldJsonParser {
 	static class StringFieldValueParser implements JsonObjectParser<String> {
 
 		@Override
-		public String parse(JSONObject jsonObject) throws JSONException {
+		public String parse(JsonObject jsonObject) throws JsonParseException {
 			return JsonParseUtil.getNullableString(jsonObject, VALUE_ATTRIBUTE);
 		}
 	}

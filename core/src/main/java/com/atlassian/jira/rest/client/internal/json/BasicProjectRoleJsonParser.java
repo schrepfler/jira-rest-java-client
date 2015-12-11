@@ -20,8 +20,8 @@ import com.atlassian.jira.rest.client.api.domain.BasicProjectRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.Collection;
 public class BasicProjectRoleJsonParser implements JsonObjectParser<Collection<BasicProjectRole>> {
 
 	@Override
-	public Collection<BasicProjectRole> parse(@Nullable final JSONObject json) throws JSONException {
+	public Collection<BasicProjectRole> parse(@Nullable final JsonObject json) throws JsonParseException {
 		return json == null ?
 				ImmutableSet.<BasicProjectRole>of() :
 				ImmutableSet.copyOf(Iterators.transform(
@@ -38,8 +38,8 @@ public class BasicProjectRoleJsonParser implements JsonObjectParser<Collection<B
 							@Override
 							public BasicProjectRole apply(@Nullable final String key) {
 								try {
-									return new BasicProjectRole(JsonParseUtil.parseURI(json.getString(key)), key);
-								} catch (JSONException e) {
+									return new BasicProjectRole(JsonParseUtil.parseURI(json.get(key).getAsString()), key);
+								} catch (JsonParseException e) {
 									throw new RestClientException(e);
 								}
 							}

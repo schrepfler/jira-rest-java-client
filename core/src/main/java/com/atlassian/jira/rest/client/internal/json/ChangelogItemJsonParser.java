@@ -18,12 +18,12 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
 import com.atlassian.jira.rest.client.api.domain.FieldType;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class ChangelogItemJsonParser implements JsonObjectParser<ChangelogItem> {
 	@Override
-	public ChangelogItem parse(JSONObject json) throws JSONException {
+	public ChangelogItem parse(JsonObject json) throws JsonParseException {
 		final String fieldTypeStr = JsonParseUtil.getNestedString(json, "fieldtype");
 		final FieldType fieldType;
 		if ("jira".equalsIgnoreCase(fieldTypeStr)) {
@@ -31,7 +31,7 @@ public class ChangelogItemJsonParser implements JsonObjectParser<ChangelogItem> 
 		} else if ("custom".equalsIgnoreCase(fieldTypeStr)) {
 			fieldType = FieldType.CUSTOM;
 		} else {
-			throw new JSONException("[" + fieldTypeStr + "] does not represent a valid field type. Expected [jira] or [custom].");
+			throw new JsonParseException("[" + fieldTypeStr + "] does not represent a valid field type. Expected [jira] or [custom].");
 		}
 		final String field = JsonParseUtil.getNestedString(json, "field");
 		final String from = JsonParseUtil.getNullableString(json, "from");

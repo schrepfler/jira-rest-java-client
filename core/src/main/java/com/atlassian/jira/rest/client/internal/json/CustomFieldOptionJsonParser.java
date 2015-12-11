@@ -17,9 +17,9 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.CustomFieldOption;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.net.URI;
 import java.util.Collections;
@@ -34,17 +34,17 @@ public class CustomFieldOptionJsonParser implements JsonObjectParser<CustomField
 	private final JsonArrayParser<Iterable<CustomFieldOption>> childrenParser = GenericJsonArrayParser.create(this);
 
 	@Override
-	public CustomFieldOption parse(JSONObject json) throws JSONException {
+	public CustomFieldOption parse(JsonObject json) throws JsonParseException {
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final long id = json.getLong("id");
-		final String value = json.getString("value");
+		final long id = json.get("id").getAsLong();
+		final String value = json.get("value").getAsString();
 
-		final JSONArray childrenArray = json.optJSONArray("children");
+		final JsonArray childrenArray = json.get("children").getAsJsonArray();
 		final Iterable<CustomFieldOption> children = (childrenArray != null)
 				? childrenParser.parse(childrenArray)
 				: Collections.<CustomFieldOption>emptyList();
 
-		final JSONObject childObject = json.optJSONObject("child");
+		final JsonObject childObject = json.getAsJsonObject("child");
 		final CustomFieldOption child = (childObject != null) ? parse(childObject) : null;
 
 		return new CustomFieldOption(id, selfUri, value, children, child);

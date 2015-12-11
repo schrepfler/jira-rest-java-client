@@ -18,16 +18,15 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import static com.atlassian.jira.rest.client.TestUtil.toUri;
-import static org.junit.Assert.assertEquals;
 
 public class IssueTypeJsonParserTest {
 	@Test
-	public void testParse() throws JSONException {
+	public void testParse() throws JsonParseException {
 		IssueTypeJsonParser parser = new IssueTypeJsonParser();
 		final IssueType issueType = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/issueType/complete.json"));
 		Assert.assertEquals(new IssueType(toUri("http://localhost:8090/jira/rest/api/latest/issueType/1"), 1L, "Bug", true,

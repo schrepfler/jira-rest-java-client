@@ -17,14 +17,14 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.OperationHeader;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class OperationHeaderJsonParser implements JsonObjectParser<OperationHeader> {
 	@Override
-	public OperationHeader parse(final JSONObject json) throws JSONException {
+	public OperationHeader parse(final JsonObject json) throws JsonParseException {
 		final String id = JsonParseUtil.getOptionalString(json, "id");
-		final String label = json.getString("label");
+		final String label = json.get("label").getAsString();
 		final String title = JsonParseUtil.getOptionalString(json, "title");
 		final String iconClass = JsonParseUtil.getOptionalString(json, "iconClass");
 		return new OperationHeader(id, label, title, iconClass);

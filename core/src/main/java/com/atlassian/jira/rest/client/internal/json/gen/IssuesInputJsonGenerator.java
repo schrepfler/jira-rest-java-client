@@ -18,8 +18,9 @@ package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.google.common.collect.Lists;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.util.List;
 
@@ -33,14 +34,14 @@ public class IssuesInputJsonGenerator implements JsonGenerator<Iterable<IssueInp
 	private final IssueInputJsonGenerator issueInputJsonGenerator = new IssueInputJsonGenerator();
 
 	@Override
-	public JSONObject generate(final Iterable<IssueInput> issues) throws JSONException {
-		final JSONObject issueUpdates = new JSONObject();
-		final List<JSONObject> obj = Lists.newArrayList();
+	public JsonObject generate(final Iterable<IssueInput> issues) throws JsonParseException {
+		final JsonObject issueUpdates = new JsonObject();
+		final JsonArray obj = new JsonArray();
 
 		for (final IssueInput issue : issues) {
 			obj.add(issueInputJsonGenerator.generate(issue));
 		}
-		issueUpdates.put("issueUpdates", obj);
+		issueUpdates.add("issueUpdates", obj);
 		return issueUpdates;
 	}
 }

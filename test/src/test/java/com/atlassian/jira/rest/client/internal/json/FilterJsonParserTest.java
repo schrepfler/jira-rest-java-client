@@ -17,9 +17,9 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Filter;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
@@ -93,8 +93,8 @@ public class FilterJsonParserTest {
 		assertThat(actual, anyOf(is(expectedOld), is(expectedNew)));
 	}
 
-	private Filter parseFilter(String resourcePath) throws JSONException {
-		final JSONObject issueJson = ResourceUtil.getJsonObjectFromResource(resourcePath);
+	private Filter parseFilter(String resourcePath) throws JsonParseException {
+		final JsonObject issueJson = ResourceUtil.getJsonObjectFromResource(resourcePath);
 		final FilterJsonParser parser = new FilterJsonParser();
 		return parser.parse(issueJson);
 	}

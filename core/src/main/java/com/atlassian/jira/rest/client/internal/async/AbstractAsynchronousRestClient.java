@@ -15,24 +15,24 @@
  */
 package com.atlassian.jira.rest.client.internal.async;
 
+import com.atlassian.httpclient.api.EntityBuilder;
+import com.atlassian.httpclient.api.HttpClient;
+import com.atlassian.httpclient.api.Response;
+import com.atlassian.httpclient.api.ResponsePromise;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.atlassian.jira.rest.client.internal.json.JsonParser;
-import com.atlassian.httpclient.api.EntityBuilder;
-import com.atlassian.httpclient.api.HttpClient;
-import com.atlassian.httpclient.api.Response;
-import com.atlassian.httpclient.api.ResponsePromise;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.internal.json.gen.JsonGenerator;
 import com.atlassian.util.concurrent.Promise;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -60,7 +60,7 @@ public abstract class AbstractAsynchronousRestClient {
 	}
 
 	protected interface ResponseHandler<T> {
-		T handle(Response request) throws JSONException, IOException;
+		T handle(Response request) throws IOException;
 	}
 
 	protected final <T> Promise<T> getAndParse(final URI uri, final JsonParser<?, T> parser) {
@@ -75,7 +75,7 @@ public abstract class AbstractAsynchronousRestClient {
 		return callAndParse(responsePromise, parser);
 	}
 
-	protected final <T> Promise<T> postAndParse(final URI uri, final JSONObject entity, final JsonObjectParser<T> parser) {
+	protected final <T> Promise<T> postAndParse(final URI uri, final JsonObject entity, final JsonObjectParser<T> parser) {
 		final ResponsePromise responsePromise = client.newRequest(uri)
 				.setEntity(entity.toString())
 				.setContentType(JSON_CONTENT_TYPE)
@@ -91,7 +91,7 @@ public abstract class AbstractAsynchronousRestClient {
 		return call(responsePromise);
 	}
 
-	protected final Promise<Void> post(final URI uri, final JSONObject entity) {
+	protected final Promise<Void> post(final URI uri, final JsonElement entity) {
 		return post(uri, entity.toString());
 	}
 
@@ -103,7 +103,7 @@ public abstract class AbstractAsynchronousRestClient {
 	}
 
 	protected final Promise<Void> post(final URI uri) {
-		return post(uri, StringUtils.EMPTY);
+		return post(uri, "");
 	}
 
 	protected final <I, T> Promise<T> putAndParse(final URI uri, I entity, final JsonGenerator<I> jsonGenerator,
@@ -140,11 +140,11 @@ public abstract class AbstractAsynchronousRestClient {
 	protected final <T> Promise<T> callAndParse(final ResponsePromise responsePromise, final JsonParser<?, T> parser) {
 		final ResponseHandler<T> responseHandler = new ResponseHandler<T>() {
 			@Override
-			public T handle(Response response) throws JSONException, IOException {
+			public T handle(Response response) throws JsonParseException, IOException {
 				final String body = response.getEntity();
 				return (T) (parser instanceof JsonObjectParser ?
-						((JsonObjectParser) parser).parse(new JSONObject(body)) :
-						((JsonArrayParser) parser).parse(new JSONArray(body)));
+						((JsonObjectParser) parser).parse(JsonParser.GSON_PARSER.parse(body)) :
+						((JsonArrayParser) parser).parse(JsonParser.GSON_PARSER.parse(body)));
 			}
 		};
 		return callAndParse(responsePromise, responseHandler);
@@ -171,7 +171,7 @@ public abstract class AbstractAsynchronousRestClient {
 					final String body = response.getEntity();
 					final Collection<ErrorCollection> errorMessages = extractErrors(response.getStatusCode(), body);
 					throw new RestClientException(errorMessages, response.getStatusCode());
-				} catch (JSONException e) {
+				} catch (JsonParseException e) {
 					throw new RestClientException(e, response.getStatusCode());
 				}
 			}
@@ -184,7 +184,7 @@ public abstract class AbstractAsynchronousRestClient {
 			public T apply(@Nullable Response input) {
 				try {
 					return responseHandler.handle(input);
-				} catch (JSONException e) {
+				} catch (JsonParseException e) {
 					throw new RestClientException(e);
 				} catch (IOException e) {
 					throw new RestClientException(e);
@@ -202,19 +202,19 @@ public abstract class AbstractAsynchronousRestClient {
 		};
 	}
 
-	static Collection<ErrorCollection> extractErrors(final int status, final String body) throws JSONException {
+	static Collection<ErrorCollection> extractErrors(final int status, final String body) throws JsonParseException {
 		if (body == null) {
 			return Collections.emptyList();
 		}
-		final JSONObject jsonObject = new JSONObject(body);
-		final JSONArray issues = jsonObject.optJSONArray("issues");
+		final JsonObject jsonObject = JsonParser.GSON_PARSER.parse(body).getAsJsonObject();
+		final JsonArray issues = jsonObject.getAsJsonArray("issues");
 		final ImmutableList.Builder<ErrorCollection> results = ImmutableList.builder();
-		if (issues != null && issues.length() == 0) {
-			final JSONArray errors = jsonObject.optJSONArray("errors");
-			for (int i = 0; i < errors.length(); i++) {
-				final JSONObject currentJsonObject = errors.getJSONObject(i);
-				results.add(getErrorsFromJson(currentJsonObject.getInt("status"), currentJsonObject
-						.optJSONObject("elementErrors")));
+		if (issues != null && issues.size() == 0) {
+			final JsonArray errors = jsonObject.getAsJsonArray("errors");
+			for (int i = 0; i < errors.size(); i++) {
+				final JsonObject currentJsonObject = errors.get(i).getAsJsonObject();
+				results.add(getErrorsFromJson(currentJsonObject.get("status").getAsInt(), currentJsonObject
+						.getAsJsonObject("elementErrors")));
 			}
 		} else {
 			results.add(getErrorsFromJson(status, jsonObject));
@@ -222,9 +222,9 @@ public abstract class AbstractAsynchronousRestClient {
 		return results.build();
 	}
 
-	private static ErrorCollection getErrorsFromJson(final int status, final JSONObject jsonObject) throws JSONException {
-		final JSONObject jsonErrors = jsonObject.optJSONObject("errors");
-		final JSONArray jsonErrorMessages = jsonObject.optJSONArray("errorMessages");
+	private static ErrorCollection getErrorsFromJson(final int status, final JsonObject jsonObject) throws JsonParseException {
+		final JsonObject jsonErrors = jsonObject.getAsJsonObject("errors");
+		final JsonArray jsonErrorMessages = jsonObject.getAsJsonArray("errorMessages");
 
 		final Collection<String> errorMessages;
 		if (jsonErrorMessages != null) {
@@ -234,8 +234,8 @@ public abstract class AbstractAsynchronousRestClient {
 		}
 
 		final Map<String, String> errors;
-		if (jsonErrors != null && jsonErrors.length() > 0) {
-			errors = JsonParseUtil.toStringMap(jsonErrors.names(), jsonErrors);
+		if (jsonErrors != null && jsonErrors.entrySet().size() > 0) {
+			errors = JsonParseUtil.toStringMap(jsonErrors);
 		} else {
 			errors = Collections.emptyMap();
 		}
@@ -258,7 +258,7 @@ public abstract class AbstractAsynchronousRestClient {
 						try {
 							return new ByteArrayInputStream(generator.generate(bean).toString().getBytes(Charset
 									.forName("UTF-8")));
-						} catch (JSONException e) {
+						} catch (JsonParseException e) {
 							throw new RestClientException(e);
 						}
 					}

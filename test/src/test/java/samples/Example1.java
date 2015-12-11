@@ -30,7 +30,7 @@ import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.collect.Lists;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -49,7 +49,7 @@ public class Example1 {
 	private static URI jiraServerUri = URI.create("http://localhost:2990/jira");
 	private static boolean quiet = false;
 
-	public static void main(String[] args) throws URISyntaxException, JSONException, IOException {
+	public static void main(String[] args) throws URISyntaxException, JsonParseException, IOException {
 		parseArgs(args);
 
 		final AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();

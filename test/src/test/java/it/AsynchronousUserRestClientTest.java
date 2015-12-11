@@ -25,7 +25,7 @@ import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.collect.ImmutableList;
-import org.codehaus.jettison.json.JSONException;
+import com.google.gson.JsonParseException;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;
@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClientTest {
 
 	@Test
-	public void testGetUser() throws JSONException {
+	public void testGetUser() throws JsonParseException {
 		final User user = client.getUserClient().getUser(ADMIN_USERNAME).claim();
 		assertEquals("wojciech.seliga@spartez.com", user.getEmailAddress());
 		assertEquals("admin", user.getName());
@@ -88,7 +88,7 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 	// Email Visibility is respected in REST since 4.3
 	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
-	public void testGetUserWhenEmailVisibilityIsHidden() throws JSONException {
+	public void testGetUserWhenEmailVisibilityIsHidden() throws JsonParseException {
 		administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.HIDDEN);
 
 		try {
@@ -113,7 +113,7 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 	// Email Visibility is respected in REST since 4.3
 	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
-	public void testGetUserWhenEmailVisibilityIsMasked() throws JSONException {
+	public void testGetUserWhenEmailVisibilityIsMasked() throws JsonParseException {
 		administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.MASKED);
 
 		try {

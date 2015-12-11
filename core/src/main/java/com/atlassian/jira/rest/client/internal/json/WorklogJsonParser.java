@@ -19,8 +19,8 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.net.URI;
@@ -28,17 +28,17 @@ import java.net.URI;
 public class WorklogJsonParser implements JsonObjectParser<Worklog> {
 
 	@Override
-	public Worklog parse(JSONObject json) throws JSONException {
+	public Worklog parse(JsonObject json) throws JsonParseException {
 		final URI self = JsonParseUtil.getSelfUri(json);
-		final URI issueUri = JsonParseUtil.parseURI(json.getString("issue"));
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.optJSONObject("author"));
-		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.optJSONObject("updateAuthor"));
+		final URI issueUri = JsonParseUtil.parseURI(json.get("issue").getAsString());
+		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
+		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
 		// it turns out that somehow it can be sometimes omitted in the resource representation - JRJC-49
 		final String comment = JsonParseUtil.getOptionalString(json, "comment");
 		final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
 		final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
 		final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
-		final int minutesSpent = json.getInt("minutesSpent");
+		final int minutesSpent = json.get("minutesSpent").getAsInt();
 		final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
 		return new Worklog(self, issueUri, author, updateAuthor, comment, creationDate, updateDate, startDate, minutesSpent, visibility);
 	}
