@@ -25,7 +25,6 @@ public class PermissionJsonParser implements JsonElementParser<Permission> {
 	public Permission parse(final JsonElement jsonElement) throws JsonParseException {
 		final JsonObject json = jsonElement.getAsJsonObject();
 
-		System.out.println(json);
 		final Integer id = JsonParseUtil.getAsInt(json, "id");
 		final String key = JsonParseUtil.getAsString(json, "key");
 		final String name = JsonParseUtil.getAsString(json, "name");
