@@ -25,12 +25,14 @@ import com.google.gson.JsonParseException;
 import java.util.Collection;
 import java.util.Map;
 
-public class TransitionJsonParserV5 implements JsonObjectParser<Transition> {
+public class TransitionJsonParserV5 implements JsonElementParser<Transition> {
 	private final TransitionFieldJsonParser transitionFieldJsonParser = new TransitionFieldJsonParser();
 
-	public Transition parse(JsonObject json) throws JsonParseException {
-		final int id = json.get("id").getAsInt();
-		final String name = json.get("name").getAsString();
+	public Transition parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		final int id = JsonParseUtil.getAsInt(json, "id");
+		final String name = JsonParseUtil.getAsString(json, "name");
 		final JsonObject fieldsObj = json.getAsJsonObject("fields");
 		final Collection<Transition.Field> fields = Lists.newArrayList();
 		for (Map.Entry<String, JsonElement> entry: fieldsObj.entrySet()) {
@@ -42,7 +44,7 @@ public class TransitionJsonParserV5 implements JsonObjectParser<Transition> {
 	public static class TransitionFieldJsonParser {
 		public Transition.Field parse(JsonObject json, final String id) throws JsonParseException {
 			final boolean isRequired = json.get("required").getAsBoolean();
-			final String type = json.getAsJsonObject("schema").get("type").getAsString();
+			final String type = JsonParseUtil.getAsString(json.getAsJsonObject("schema"), "type");
 			return new Transition.Field(id, isRequired, type);
 		}
 	}

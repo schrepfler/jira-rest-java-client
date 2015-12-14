@@ -20,6 +20,7 @@ import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.CimIssueType;
 import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -32,7 +33,7 @@ import java.util.Map;
  *
  * @since v1.0
  */
-public class CimProjectJsonParser implements JsonObjectParser<CimProject> {
+public class CimProjectJsonParser implements JsonElementParser<CimProject> {
 
 	private final JsonArrayParser<Iterable<CimIssueType>> issueTypesParser = GenericJsonArrayParser
 			.create(new CimIssueTypeJsonParser());
@@ -40,7 +41,9 @@ public class CimProjectJsonParser implements JsonObjectParser<CimProject> {
 	private final BasicProjectJsonParser basicProjectJsonParser = new BasicProjectJsonParser();
 
 	@Override
-	public CimProject parse(final JsonObject json) throws JsonParseException {
+	public CimProject parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final BasicProject basicProject = basicProjectJsonParser.parse(json);
 		final JsonArray issueTypesArray = json.get("issuetypes").getAsJsonArray();
 		final Iterable<CimIssueType> issueTypes = (issueTypesArray != null) ?

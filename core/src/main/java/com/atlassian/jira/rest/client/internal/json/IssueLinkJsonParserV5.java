@@ -19,16 +19,19 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
-public class IssueLinkJsonParserV5 implements JsonObjectParser<IssueLink> {
+public class IssueLinkJsonParserV5 implements JsonElementParser<IssueLink> {
 	private final IssuelinksTypeJsonParserV5 issuelinksTypeJsonParserV5 = new IssuelinksTypeJsonParserV5();
 
 	@Override
-	public IssueLink parse(JsonObject json) throws JsonParseException {
+	public IssueLink parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final IssuelinksType issuelinksType = issuelinksTypeJsonParserV5.parse(json.getAsJsonObject("type"));
 		final IssueLinkType.Direction direction;
 		final JsonObject link;
@@ -40,8 +43,8 @@ public class IssueLinkJsonParserV5 implements JsonObjectParser<IssueLink> {
 			direction = IssueLinkType.Direction.OUTBOUND;
 		}
 
-		final String key = link.get("key").getAsString();
-		final URI targetIssueUri = JsonParseUtil.parseURI(link.get("self").getAsString());
+		final String key = JsonParseUtil.getAsString(link, "key");
+		final URI targetIssueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(link, "self"));
 		final IssueLinkType issueLinkType = new IssueLinkType(issuelinksType.getName(),
 				direction.equals(IssueLinkType.Direction.INBOUND) ? issuelinksType.getInward()
 						: issuelinksType.getOutward(), direction);

@@ -25,11 +25,13 @@ import com.google.gson.JsonParseException;
 import java.util.List;
 import java.util.Map;
 
-public class PermissionsJsonParser implements JsonObjectParser<Permissions> {
+public class PermissionsJsonParser implements JsonElementParser<Permissions> {
 	private final PermissionJsonParser permissionJsonParser = new PermissionJsonParser();
 
 	@Override
-	public Permissions parse(final JsonObject json) throws JsonParseException {
+	public Permissions parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final JsonObject permissionsObject = json.getAsJsonObject("permissions");
 
 		final List<Permission> permissions = Lists.newArrayList();

@@ -21,9 +21,11 @@ import com.atlassian.jira.rest.client.api.domain.Component;
 import com.atlassian.jira.rest.client.api.domain.input.ComponentInput;
 import com.atlassian.jira.rest.client.internal.domain.input.ComponentInputWithProjectKey;
 import com.atlassian.jira.rest.client.internal.json.ComponentJsonParser;
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import com.atlassian.jira.rest.client.internal.json.JsonElementParser;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.atlassian.jira.rest.client.internal.json.gen.ComponentInputWithProjectKeyJsonGenerator;
 import com.atlassian.util.concurrent.Promise;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -75,10 +77,10 @@ public class AsynchronousComponentRestClient extends AbstractAsynchronousRestCli
 	@Override
 	public Promise<Integer> getComponentRelatedIssuesCount(URI componentUri) {
 		final URI relatedIssueCountsUri = UriBuilder.fromUri(componentUri).path("relatedIssueCounts").build();
-		return getAndParse(relatedIssueCountsUri, new JsonObjectParser<Integer>() {
+		return getAndParse(relatedIssueCountsUri, new JsonElementParser<Integer>() {
 			@Override
-			public Integer parse(JsonObject json) throws JsonParseException {
-				return json.get("issueCount").getAsInt();
+			public Integer parse(JsonElement json) throws JsonParseException {
+				return JsonParseUtil.getAsInt(json.getAsJsonObject(), "issueCount");
 			}
 		});
 	}

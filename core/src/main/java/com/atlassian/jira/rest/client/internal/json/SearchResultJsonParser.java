@@ -19,18 +19,21 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.util.Collections;
 
-public class SearchResultJsonParser implements JsonObjectParser<SearchResult> {
+public class SearchResultJsonParser implements JsonElementParser<SearchResult> {
 
 	@Override
-	public SearchResult parse(JsonObject json) throws JsonParseException {
-		final int startAt = json.get("startAt").getAsInt();
-		final int maxResults = json.get("maxResults").getAsInt();
-		final int total = json.get("total").getAsInt();
+	public SearchResult parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		final int startAt = JsonParseUtil.getAsInt(json, "startAt");
+		final int maxResults = JsonParseUtil.getAsInt(json, "maxResults");
+		final int total = JsonParseUtil.getAsInt(json, "total");
 		final JsonArray issuesJsonArray = json.getAsJsonArray("issues");
 
 		final Iterable<Issue> issues;

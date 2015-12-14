@@ -21,7 +21,7 @@ import com.atlassian.httpclient.api.Response;
 import com.atlassian.httpclient.api.ResponsePromise;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
 import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import com.atlassian.jira.rest.client.internal.json.JsonElementParser;
 import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.atlassian.jira.rest.client.internal.json.JsonParser;
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -68,14 +68,14 @@ public abstract class AbstractAsynchronousRestClient {
 	}
 
 	protected final <I, T> Promise<T> postAndParse(final URI uri, I entity, final JsonGenerator<I> jsonGenerator,
-			final JsonObjectParser<T> parser) {
+			final JsonElementParser<T> parser) {
 		final ResponsePromise responsePromise = client.newRequest(uri)
 				.setEntity(toEntity(jsonGenerator, entity))
 				.post();
 		return callAndParse(responsePromise, parser);
 	}
 
-	protected final <T> Promise<T> postAndParse(final URI uri, final JsonObject entity, final JsonObjectParser<T> parser) {
+	protected final <T> Promise<T> postAndParse(final URI uri, final JsonObject entity, final JsonElementParser<T> parser) {
 		final ResponsePromise responsePromise = client.newRequest(uri)
 				.setEntity(entity.toString())
 				.setContentType(JSON_CONTENT_TYPE)
@@ -107,7 +107,7 @@ public abstract class AbstractAsynchronousRestClient {
 	}
 
 	protected final <I, T> Promise<T> putAndParse(final URI uri, I entity, final JsonGenerator<I> jsonGenerator,
-			final JsonObjectParser<T> parser) {
+			final JsonElementParser<T> parser) {
 		final ResponsePromise responsePromise = client.newRequest(uri)
 				.setEntity(toEntity(jsonGenerator, entity))
 				.put();
@@ -142,8 +142,8 @@ public abstract class AbstractAsynchronousRestClient {
 			@Override
 			public T handle(Response response) throws JsonParseException, IOException {
 				final String body = response.getEntity();
-				return (T) (parser instanceof JsonObjectParser ?
-						((JsonObjectParser) parser).parse(JsonParser.GSON_PARSER.parse(body)) :
+				return (T) (parser instanceof JsonElementParser ?
+						((JsonElementParser) parser).parse(JsonParser.GSON_PARSER.parse(body)) :
 						((JsonArrayParser) parser).parse(JsonParser.GSON_PARSER.parse(body)));
 			}
 		};

@@ -21,9 +21,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 class JsonWeakParserForJsonObject<T> implements JsonWeakParser<T> {
-	private final JsonObjectParser<T> jsonParser;
+	private final JsonElementParser<T> jsonParser;
 
-	public JsonWeakParserForJsonObject(JsonObjectParser<T> jsonParser) {
+	public JsonWeakParserForJsonObject(JsonElementParser<T> jsonParser) {
 		this.jsonParser = jsonParser;
 	}
 

@@ -17,6 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicVotes;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -25,11 +26,13 @@ import java.net.URI;
 /**
  * @since v0.1
  */
-public class BasicVotesJsonParser implements JsonObjectParser<BasicVotes> {
+public class BasicVotesJsonParser implements JsonElementParser<BasicVotes> {
 	@Override
-	public BasicVotes parse(JsonObject json) throws JsonParseException {
+	public BasicVotes parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final URI self = JsonParseUtil.getSelfUri(json);
-		final int voteCount = json.get("votes").getAsInt();
+		final int voteCount = JsonParseUtil.getAsInt(json, "votes");
 		final boolean hasVoted = json.get("hasVoted").getAsBoolean();
 		return new BasicVotes(self, voteCount, hasVoted);
 	}

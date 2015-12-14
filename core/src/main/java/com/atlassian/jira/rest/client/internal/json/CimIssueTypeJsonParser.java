@@ -19,6 +19,7 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.CimIssueType;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.CimFieldInfo;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -30,15 +31,17 @@ import java.util.Map;
  *
  * @since v1.0
  */
-public class CimIssueTypeJsonParser implements JsonObjectParser<CimIssueType> {
+public class CimIssueTypeJsonParser implements JsonElementParser<CimIssueType> {
 
 	final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
 	final CimFieldsInfoMapJsonParser fieldsParser = new CimFieldsInfoMapJsonParser();
 
 	@Override
-	public CimIssueType parse(final JsonObject json) throws JsonParseException {
+	public CimIssueType parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final IssueType issueType = issueTypeJsonParser.parse(json);
-		final JsonObject jsonFieldsMap = json.get("fields").getAsJsonObject();
+		final JsonObject jsonFieldsMap = json.getAsJsonObject("fields");
 
 		final Map<String, CimFieldInfo> fields = (jsonFieldsMap == null) ?
 				Collections.<String, CimFieldInfo>emptyMap() : fieldsParser.parse(jsonFieldsMap);

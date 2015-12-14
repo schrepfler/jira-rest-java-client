@@ -18,6 +18,7 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.CustomFieldOption;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -29,17 +30,19 @@ import java.util.Collections;
  *
  * @since v1.0
  */
-public class CustomFieldOptionJsonParser implements JsonObjectParser<CustomFieldOption> {
+public class CustomFieldOptionJsonParser implements JsonElementParser<CustomFieldOption> {
 
 	private final JsonArrayParser<Iterable<CustomFieldOption>> childrenParser = GenericJsonArrayParser.create(this);
 
 	@Override
-	public CustomFieldOption parse(JsonObject json) throws JsonParseException {
+	public CustomFieldOption parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
 		final long id = json.get("id").getAsLong();
-		final String value = json.get("value").getAsString();
+		final String value = JsonParseUtil.getAsString(json, "value");
 
-		final JsonArray childrenArray = json.get("children").getAsJsonArray();
+		final JsonArray childrenArray = json.getAsJsonArray("children");
 		final Iterable<CustomFieldOption> children = (childrenArray != null)
 				? childrenParser.parse(childrenArray)
 				: Collections.<CustomFieldOption>emptyList();

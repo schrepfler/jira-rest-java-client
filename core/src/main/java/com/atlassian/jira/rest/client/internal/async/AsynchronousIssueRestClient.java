@@ -68,9 +68,9 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 
 	private final IssueJsonParser issueParser = new IssueJsonParser();
 	private final BasicIssueJsonParser basicIssueParser = new BasicIssueJsonParser();
-	private final JsonObjectParser<Watchers> watchersParser = WatchersJsonParserBuilder.createWatchersParser();
+	private final JsonElementParser<Watchers> watchersParser = WatchersJsonParserBuilder.createWatchersParser();
 	private final TransitionJsonParser transitionJsonParser = new TransitionJsonParser();
-	private final JsonObjectParser<Transition> transitionJsonParserV5 = new TransitionJsonParserV5();
+	private final JsonElementParser<Transition> transitionJsonParserV5 = new TransitionJsonParserV5();
 	private final VotesJsonParser votesJsonParser = new VotesJsonParser();
 	private final CreateIssueMetadataJsonParser createIssueMetadataJsonParser = new CreateIssueMetadataJsonParser();
 	private static final String FILE_BODY_TYPE = "file";

@@ -32,7 +32,6 @@ import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,11 +41,11 @@ import java.util.Set;
  *
  * @since v1.0
  */
-public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, CimFieldInfo>> {
+public class CimFieldsInfoMapJsonParser implements JsonElementParser<Map<String, CimFieldInfo>> {
 
 	private final FieldSchemaJsonParser fieldSchemaJsonParser = new FieldSchemaJsonParser();
 
-	protected final Map<String, JsonObjectParser> registeredAllowedValueParsers = new HashMap<String, JsonObjectParser>() {{
+	protected final Map<String, JsonElementParser> registeredAllowedValueParsers = new HashMap<String, JsonElementParser>() {{
 		put("project", new BasicProjectJsonParser());
 		put("version", new VersionJsonParser());
 		put("issuetype", new IssueTypeJsonParser());
@@ -58,7 +57,9 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 	}};
 
 	@Override
-	public Map<String, CimFieldInfo> parse(JsonObject json) throws JsonParseException {
+	public Map<String, CimFieldInfo> parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final Map<String, CimFieldInfo> res = Maps.newHashMapWithExpectedSize(json.entrySet().size());
 		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
 			res.put(entry.getKey(), parseIssueFieldInfo(entry.getValue().getAsJsonObject(), entry.getKey()));
@@ -69,9 +70,9 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 	private CimFieldInfo parseIssueFieldInfo(JsonObject json, String id) throws JsonParseException {
 		final boolean required = json.get("required").getAsBoolean();
 		final String name = JsonParseUtil.getOptionalString(json, "name");
-		final FieldSchema schema = fieldSchemaJsonParser.parse(json.get("schema").getAsJsonObject());
-		final Set<StandardOperation> operations = parseOperations(json.get("operations").getAsJsonArray());
-		final Iterable<Object> allowedValues = parseAllowedValues(json.get("allowedValues").getAsJsonArray(), schema);
+		final FieldSchema schema = fieldSchemaJsonParser.parse(json.getAsJsonObject("schema"));
+		final Set<StandardOperation> operations = parseOperations(json.getAsJsonArray("operations"));
+		final Iterable<Object> allowedValues = parseAllowedValues(json.getAsJsonArray("allowedValues"), schema);
 		final URI autoCompleteUri = JsonParseUtil.parseOptionalURI(json, "autoCompleteUrl");
 
 		return new CimFieldInfo(id, required, name, schema, operations, allowedValues, autoCompleteUri);
@@ -86,7 +87,7 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 			return Collections.emptyList();
 		}
 
-		final JsonObjectParser<Object> allowedValuesJsonParser = getParserFor(fieldSchema);
+		final JsonElementParser<Object> allowedValuesJsonParser = getParserFor(fieldSchema);
 		if (allowedValuesJsonParser != null) {
 			JsonArray valuesToParse;
 			// fixes for JRADEV-12999
@@ -127,7 +128,7 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 	}
 
 	@Nullable
-	private JsonObjectParser<Object> getParserFor(FieldSchema fieldSchema) throws JsonParseException {
+	private JsonElementParser<Object> getParserFor(FieldSchema fieldSchema) throws JsonParseException {
 		final Set<String> customFieldsTypesWithFieldOption = ImmutableSet.of(
 				"com.atlassian.jira.plugin.system.customfieldtypes:multicheckboxes",
 				"com.atlassian.jira.plugin.system.customfieldtypes:radiobuttons",
@@ -141,7 +142,7 @@ public class CimFieldsInfoMapJsonParser implements JsonObjectParser<Map<String, 
 			type = "customFieldOption";
 		}
 		@SuppressWarnings("unchecked")
-		final JsonObjectParser<Object> jsonParser = registeredAllowedValueParsers.get(type);
+		final JsonElementParser<Object> jsonParser = registeredAllowedValueParsers.get(type);
 		if (jsonParser == null) {
 			return null;
 		} else {

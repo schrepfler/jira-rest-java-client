@@ -17,6 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.CimProject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -25,12 +26,14 @@ import com.google.gson.JsonParseException;
  *
  * @since v1.0
  */
-public class CreateIssueMetadataJsonParser implements JsonObjectParser<Iterable<CimProject>> {
+public class CreateIssueMetadataJsonParser implements JsonElementParser<Iterable<CimProject>> {
 
 	private final GenericJsonArrayParser<CimProject> projectsParser = new GenericJsonArrayParser<CimProject>(new CimProjectJsonParser());
 
 	@Override
-	public Iterable<CimProject> parse(final JsonObject json) throws JsonParseException {
+	public Iterable<CimProject> parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		return projectsParser.parse(json.get("projects").getAsJsonArray());
 	}
 }

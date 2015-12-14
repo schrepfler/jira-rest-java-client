@@ -16,14 +16,15 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.RoleActor;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 
-public class RoleActorJsonParser implements JsonObjectParser<RoleActor> {
+public class RoleActorJsonParser implements JsonElementParser<RoleActor> {
 
 	private final URI baseJiraUri;
 
@@ -32,19 +33,27 @@ public class RoleActorJsonParser implements JsonObjectParser<RoleActor> {
 	}
 
 	@Override
-	public RoleActor parse(final JsonObject json) throws JsonParseException {
+	public RoleActor parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		// Workaround for a bug in API. Id field should not be optional, unfortunately it is not returned for an admin role actor.
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String displayName = json.get("displayName").getAsString();
-		final String type = json.get("type").getAsString();
-		final String name = json.get("name").getAsString();
+		final String displayName = JsonParseUtil.getAsString(json, "displayName");
+		final String type = JsonParseUtil.getAsString(json, "type");
+		final String name = JsonParseUtil.getAsString(json, "name");
 		return new RoleActor(id, displayName, type, name, parseAvatarUrl(json));
 	}
 
 	private URI parseAvatarUrl(final JsonObject json) {
 		final String pathToAvatar = JsonParseUtil.getOptionalString(json, "avatarUrl");
 		if (pathToAvatar != null) {
-			final URI avatarUri = UriBuilder.fromUri(pathToAvatar).build();
+			final URI avatarUri;
+			try {
+				avatarUri = new URI(pathToAvatar);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				return null;
+			}
 			return avatarUri.isAbsolute() ? avatarUri : baseJiraUri.resolve(pathToAvatar);
 		} else {
 			return null;

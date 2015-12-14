@@ -17,12 +17,9 @@
 package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-
-import java.util.List;
 
 /**
  * Json Generator for IssuesInput

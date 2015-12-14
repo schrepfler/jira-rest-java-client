@@ -17,17 +17,20 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class IssueLinkTypeJsonParser implements JsonObjectParser<IssueLinkType> {
+public class IssueLinkTypeJsonParser implements JsonElementParser<IssueLinkType> {
 	private static final String KEY_DIRECTION = "direction";
 
 	@Override
-	public IssueLinkType parse(JsonObject json) throws JsonParseException {
-		final String name = json.get("name").getAsString();
-		final String description = json.get("description").getAsString();
-		final String dirStr = json.get(KEY_DIRECTION).getAsString();
+	public IssueLinkType parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		final String name = JsonParseUtil.getAsString(json, "name");
+		final String description = JsonParseUtil.getAsString(json, "description");
+		final String dirStr = JsonParseUtil.getAsString(json, KEY_DIRECTION);
 		final IssueLinkType.Direction direction;
 		if ("OUTBOUND".equals(dirStr)) {
 			direction = IssueLinkType.Direction.OUTBOUND;

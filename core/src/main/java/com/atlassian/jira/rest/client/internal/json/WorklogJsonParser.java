@@ -19,18 +19,21 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.net.URI;
 
-public class WorklogJsonParser implements JsonObjectParser<Worklog> {
+public class WorklogJsonParser implements JsonElementParser<Worklog> {
 
 	@Override
-	public Worklog parse(JsonObject json) throws JsonParseException {
+	public Worklog parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final URI self = JsonParseUtil.getSelfUri(json);
-		final URI issueUri = JsonParseUtil.parseURI(json.get("issue").getAsString());
+		final URI issueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "issue"));
 		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
 		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
 		// it turns out that somehow it can be sometimes omitted in the resource representation - JRJC-49
@@ -38,7 +41,7 @@ public class WorklogJsonParser implements JsonObjectParser<Worklog> {
 		final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
 		final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
 		final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
-		final int minutesSpent = json.get("minutesSpent").getAsInt();
+		final int minutesSpent = JsonParseUtil.getAsInt(json, "minutesSpent");
 		final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
 		return new Worklog(self, issueUri, author, updateAuthor, comment, creationDate, updateDate, startDate, minutesSpent, visibility);
 	}

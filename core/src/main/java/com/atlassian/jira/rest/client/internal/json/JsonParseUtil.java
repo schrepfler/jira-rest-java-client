@@ -48,7 +48,7 @@ public class JsonParseUtil {
 	public static final DateTimeFormatter JIRA_DATE_FORMATTER = ISODateTimeFormat.date();
 	public static final String SELF_ATTR = "self";
 
-	public static <T> Collection<T> parseJsonArray(final JsonArray jsonArray, final JsonObjectParser<T> jsonParser)
+	public static <T> Collection<T> parseJsonArray(final JsonArray jsonArray, final JsonElementParser<T> jsonParser)
 			throws JsonParseException {
 		final Collection<T> res = new ArrayList<T>(jsonArray.size());
 		for (int i = 0; i < jsonArray.size(); i++) {
@@ -57,7 +57,7 @@ public class JsonParseUtil {
 		return res;
 	}
 
-	public static <T> OptionalIterable<T> parseOptionalJsonArray(final JsonArray jsonArray, final JsonObjectParser<T> jsonParser)
+	public static <T> OptionalIterable<T> parseOptionalJsonArray(final JsonArray jsonArray, final JsonElementParser<T> jsonParser)
 			throws JsonParseException {
 		if (jsonArray == null) {
 			return OptionalIterable.absent();
@@ -66,26 +66,26 @@ public class JsonParseUtil {
 		}
 	}
 
-	public static <T> T parseOptionalJsonObject(final JsonObject json, final String attributeName, final JsonObjectParser<T> jsonParser)
+	public static <T> T parseOptionalJsonObject(final JsonObject json, final String attributeName, final JsonElementParser<T> jsonParser)
 			throws JsonParseException {
 		JsonObject attributeObject = getOptionalJsonObject(json, attributeName);
 		return attributeObject != null ? jsonParser.parse(attributeObject) : null;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public static <T> ExpandableProperty<T> parseExpandableProperty(final JsonObject json, final JsonObjectParser<T> expandablePropertyBuilder)
+	public static <T> ExpandableProperty<T> parseExpandableProperty(final JsonObject json, final JsonElementParser<T> expandablePropertyBuilder)
 			throws JsonParseException {
 		return parseExpandableProperty(json, false, expandablePropertyBuilder);
 	}
 
 	@Nullable
-	public static <T> ExpandableProperty<T> parseOptionalExpandableProperty(@Nullable final JsonObject json, final JsonObjectParser<T> expandablePropertyBuilder)
+	public static <T> ExpandableProperty<T> parseOptionalExpandableProperty(@Nullable final JsonObject json, final JsonElementParser<T> expandablePropertyBuilder)
 			throws JsonParseException {
 		return parseExpandableProperty(json, true, expandablePropertyBuilder);
 	}
 
 	@Nullable
-	private static <T> ExpandableProperty<T> parseExpandableProperty(@Nullable final JsonObject json, final Boolean optional, final JsonObjectParser<T> expandablePropertyBuilder)
+	private static <T> ExpandableProperty<T> parseExpandableProperty(@Nullable final JsonObject json, final Boolean optional, final JsonElementParser<T> expandablePropertyBuilder)
 			throws JsonParseException {
 		if (json == null) {
 			if (!optional) {
@@ -94,7 +94,7 @@ public class JsonParseUtil {
 			return null;
 		}
 
-		final int numItems = json.get("size").getAsInt();
+		final int numItems = JsonParseUtil.getAsInt(json, "size");
 		final Collection<T> items;
 		JsonArray itemsJa = json.get("items").getAsJsonArray();
 
@@ -113,16 +113,16 @@ public class JsonParseUtil {
 
 
 	public static URI getSelfUri(final JsonObject jsonObject) throws JsonParseException {
-		return parseURI(jsonObject.get(SELF_ATTR).getAsString());
+		return parseURI(JsonParseUtil.getAsString(jsonObject, SELF_ATTR));
 	}
 
 	public static URI optSelfUri(final JsonObject jsonObject, final URI defaultUri) throws JsonParseException {
-		final String selfUri = jsonObject.get(SELF_ATTR).getAsString();
+		final String selfUri = JsonParseUtil.getOptionalString(jsonObject, SELF_ATTR);
 		return selfUri != null ? parseURI(selfUri) : defaultUri;
 	}
 
 	@SuppressWarnings("unused")
-	public static JsonObject getNestedObject(JsonObject json, final String... path) throws JsonParseException {
+	public static JsonElement getNestedObject(JsonObject json, final String... path) throws JsonParseException {
 		for (String s : path) {
 			json = json.get(s).getAsJsonObject();
 		}
@@ -130,12 +130,12 @@ public class JsonParseUtil {
 	}
 
 	@Nullable
-	public static JsonObject getNestedOptionalObject(JsonObject json, final String... path) throws JsonParseException {
+	public static JsonElement getNestedOptionalObject(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; i < path.length - 1; i++) {
 			String s = path[i];
 			json = json.get(s).getAsJsonObject();
 		}
-		return json.get(path[path.length - 1]).getAsJsonObject();
+		return json.get(path[path.length - 1]);
 	}
 
 	@SuppressWarnings("unused")
@@ -144,15 +144,21 @@ public class JsonParseUtil {
 			String s = path[i];
 			json = json.get(s).getAsJsonObject();
 		}
-		return json.get(path[path.length - 1]).getAsJsonArray();
+		return json.getAsJsonArray(path[path.length - 1]);
 	}
 
 	public static JsonArray getNestedOptionalArray(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; json != null && i < path.length - 1; i++) {
 			String s = path[i];
-			json = json.get(s).getAsJsonObject();
+			if (json == null || !json.isJsonObject() || (json.has(s) && !json.get(s).isJsonObject())) {
+				return null;
+			}
+			json = json.getAsJsonObject(s);
+			if (json == null || json.isJsonNull()) {
+				return null;
+			}
 		}
-		return json == null ? null : json.get(path[path.length - 1]).getAsJsonArray();
+		return json.getAsJsonArray(path[path.length - 1]);
 	}
 
 
@@ -161,7 +167,7 @@ public class JsonParseUtil {
 			String s = path[i];
 			json = json.get(s).getAsJsonObject();
 		}
-		return json.get(path[path.length - 1]).getAsString();
+		return getAsString(json, path[path.length - 1]);
 	}
 
 	@SuppressWarnings("unused")
@@ -193,14 +199,14 @@ public class JsonParseUtil {
 		if (json == null) {
 			return null;
 		}
-		final String username = json.get("name").getAsString();
+		final String username = JsonParseUtil.getAsString(json, "name");
 		if (!json.has(JsonParseUtil.SELF_ATTR) && "Anonymous".equals(username)) {
 			return null; // insane representation for unassigned user - JRADEV-4262
 		}
 
 		// deleted user? BUG in REST API: JRA-30263
 		final URI selfUri = optSelfUri(json, BasicUser.INCOMPLETE_URI);
-		return new BasicUser(selfUri, username, json.get("displayName").getAsString());
+		return new BasicUser(selfUri, username, JsonParseUtil.getOptionalString(json, "displayName"));
 	}
 
 	public static DateTime parseDateTime(final JsonObject jsonObject, final String attributeName) throws JsonParseException {
@@ -259,25 +265,25 @@ public class JsonParseUtil {
 
 	@Nullable
 	public static String getNullableString(final JsonObject jsonObject, final String attributeName) throws JsonParseException {
-		final Object o = jsonObject.get(attributeName);
-		if (o == null || o == new JsonNull()) {
+		final JsonElement o = jsonObject.get(attributeName);
+		if (o == null || o.isJsonNull()) {
 			return null;
 		}
-		return o.toString();
+		return o.getAsString();
 	}
 
 
 	@Nullable
 	public static String getOptionalString(final JsonObject jsonObject, final String attributeName) {
-		final Object res = jsonObject.get(attributeName);
-		if (res == new JsonNull() || res == null) {
+		final JsonElement res = jsonObject.get(attributeName);
+		if (res == null || res.isJsonNull()) {
 			return null;
 		}
-		return res.toString();
+		return res.getAsString();
 	}
 
 	@Nullable
-	public static <T> T getOptionalJsonObject(final JsonObject jsonObject, final String attributeName, final JsonObjectParser<T> jsonParser) throws JsonParseException {
+	public static <T> T getOptionalJsonObject(final JsonObject jsonObject, final String attributeName, final JsonElementParser<T> jsonParser) throws JsonParseException {
 		final JsonObject res = jsonObject.get(attributeName).getAsJsonObject();
 		if (res == null || res.isJsonNull()) {
 			return null;
@@ -288,7 +294,7 @@ public class JsonParseUtil {
     @SuppressWarnings("unused")
 	@Nullable
 	public static JsonObject getOptionalJsonObject(final JsonObject jsonObject, final String attributeName) {
-		final JsonObject res = jsonObject.get(attributeName).getAsJsonObject();
+		final JsonObject res = jsonObject.getAsJsonObject(attributeName);
 		if (res == null || res.isJsonNull()) {
 			return null;
 		}
@@ -305,7 +311,7 @@ public class JsonParseUtil {
 	}
 
 	public static Integer parseOptionInteger(final JsonObject json, final String attributeName) throws JsonParseException {
-		return json.has(attributeName) ? json.get(attributeName).getAsInt() : null;
+		return json.has(attributeName) ? JsonParseUtil.getAsInt(json, attributeName) : null;
 	}
 
 	@Nullable
@@ -335,9 +341,11 @@ public class JsonParseUtil {
 	@SuppressWarnings("unchecked")
 	public static Iterator<String> getStringKeys(final JsonObject json) {
         Set<String> keys = new TreeSet<String>();
-        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-            keys.add(entry.getKey());
-        }
+		if (json != null) {
+			for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+				keys.add(entry.getKey());
+			}
+		}
 		return keys.iterator();
 	}
 
@@ -357,4 +365,33 @@ public class JsonParseUtil {
         }
         return result;
     }
+
+	public static String getAsString(JsonObject obj, String fieldName) throws JsonParseException {
+		JsonElement res = obj.get(fieldName);
+		if (res == null) {
+			// JSONObject[\"self\"] not found.
+			throw new JsonParseException("JSONObject[\"" + fieldName + "\"] not found.");
+		}
+		return res.getAsString();
+	}
+
+	public static boolean getAsBoolean(JsonObject obj, String fieldName) throws JsonParseException {
+		JsonElement res = obj.get(fieldName);
+		if (res == null) {
+			throw new JsonParseException("JSONObject[\"" + fieldName + "\"] not found.");
+		}
+		return res.getAsBoolean();
+	}
+
+	public static int getAsInt(JsonObject obj, String fieldName) throws JsonParseException {
+		JsonElement res = obj.get(fieldName);
+		if (res == null) {
+			throw new JsonParseException("JSONObject[\"" + fieldName + "\"] not found.");
+		}
+		try {
+			return res.getAsInt();
+		} catch (ClassCastException | NumberFormatException e) {
+			throw new JsonParseException("JSONObject[\"" + fieldName + "\"] is not a number.");
+		}
+	}
 }

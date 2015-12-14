@@ -16,6 +16,9 @@
 
 package com.atlassian.jira.rest.client.internal.json;
 
+import javax.annotation.Nullable;
+import javax.ws.rs.core.UriBuilder;
+
 import com.atlassian.jira.rest.client.api.domain.Attachment;
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
@@ -47,8 +50,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
-import javax.annotation.Nullable;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,10 +84,8 @@ import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.VOTES_FIELD
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.WATCHER_FIELD;
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.WORKLOGS_FIELD;
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.WORKLOG_FIELD;
-import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.getStringKeys;
-import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOptionalJsonObject;
 
-public class IssueJsonParser implements JsonObjectParser<Issue> {
+public class IssueJsonParser implements JsonElementParser<Issue> {
 
 	private static Set<String> SPECIAL_FIELDS = Sets.newHashSet(IssueFieldId.ids());
 
@@ -97,7 +96,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 	private final IssueLinkJsonParserV5 issueLinkJsonParserV5 = new IssueLinkJsonParserV5();
 	private final BasicVotesJsonParser votesJsonParser = new BasicVotesJsonParser();
 	private final StatusJsonParser statusJsonParser = new StatusJsonParser();
-	private final JsonObjectParser<BasicWatchers> watchersJsonParser = WatchersJsonParserBuilder.createBasicWatchersParser();
+	private final JsonElementParser<BasicWatchers> watchersJsonParser = WatchersJsonParserBuilder.createBasicWatchersParser();
 	private final VersionJsonParser versionJsonParser = new VersionJsonParser();
 	private final BasicComponentJsonParser basicComponentJsonParser = new BasicComponentJsonParser();
 	private final AttachmentJsonParser attachmentJsonParser = new AttachmentJsonParser();
@@ -129,7 +128,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 	}
 
 	static Iterable<String> parseExpandos(final JsonObject json) throws JsonParseException {
-		final String expando = json.get("expand").getAsString();
+		final String expando = JsonParseUtil.getAsString(json, "expand");
 		return Splitter.on(',').split(expando);
 	}
 
@@ -164,7 +163,11 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 		}
 		final Collection<T> res = new ArrayList<T>(jsonArray.size());
 		for (int i = 0; i < jsonArray.size(); i++) {
-			res.add(jsonParser.parse(jsonArray.get(i)));
+			if (jsonArray.get(i).isJsonPrimitive() && jsonArray.get(i).getAsJsonPrimitive().isString()) {
+				res.add(jsonParser.parse(jsonArray.get(i).getAsString()));
+			} else {
+				res.add(jsonParser.parse(jsonArray.get(i)));
+			}
 		}
 		return res;
 	}
@@ -172,12 +175,12 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 	private String getFieldStringValue(final JsonObject json, final String attributeName) throws JsonParseException {
 		final JsonObject fieldsJson = json.getAsJsonObject(FIELDS);
 
-		final Object summaryObject = fieldsJson.get(attributeName);
-		if (summaryObject instanceof JsonObject) { // pre JIRA 5.0 way
-			return ((JsonObject) summaryObject).get(VALUE_ATTR).getAsString();
+		final JsonElement summaryObject = fieldsJson.get(attributeName);
+		if (summaryObject.isJsonObject()) { // pre JIRA 5.0 way
+			return JsonParseUtil.getAsString(summaryObject.getAsJsonObject(), VALUE_ATTR);
 		}
-		if (summaryObject instanceof String) { // JIRA 5.0 way
-			return (String) summaryObject;
+		if (summaryObject.isJsonPrimitive() && summaryObject.getAsJsonPrimitive().isString()) { // JIRA 5.0 way
+			return summaryObject.getAsString();
 		}
 		throw new JsonParseException("Cannot parse [" + attributeName + "] from available fields");
 	}
@@ -203,13 +206,15 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 		final JsonObject fieldsJson = json.getAsJsonObject(FIELDS);
 		final JsonElement fieldJson = fieldsJson.get(attributeName);
 		if (fieldJson.isJsonObject()) {
-			return fieldJson.getAsJsonObject().get(VALUE_ATTR).getAsString(); // pre 5.0 way
+			return JsonParseUtil.getAsString(fieldJson.getAsJsonObject(), VALUE_ATTR); // pre 5.0 way
 		}
-		return fieldJson.toString(); // JIRA 5.0 way
+		return fieldJson.getAsString(); // JIRA 5.0 way
 	}
 
 	@Override
-	public Issue parse(final JsonObject issueJson) throws JsonParseException {
+	public Issue parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject issueJson = jsonElement.getAsJsonObject();
+
 		final BasicIssue basicIssue = basicIssueJsonParser.parse(issueJson);
 		final Iterable<String> expandos = parseExpandos(issueJson);
 		final JsonObject jsonFields = issueJson.getAsJsonObject(FIELDS);
@@ -277,7 +282,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 
 		final Collection<ChangelogGroup> changelog = parseOptionalArray(
 				issueJson, new JsonWeakParserForJsonObject<ChangelogGroup>(changelogJsonParser), "changelog", "histories");
-		final Operations operations = parseOptionalJsonObject(issueJson, "operations", operationsJsonParser);
+		final Operations operations = JsonParseUtil.parseOptionalJsonObject(issueJson, "operations", operationsJsonParser);
 
 		return new Issue(summary, selfUri, basicIssue.getKey(), basicIssue.getId(), project, issueType, status,
 				description, priority, resolution, attachments, reporter, assignee, creationDate, updateDate,
@@ -293,12 +298,12 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 	}
 
 	@Nullable
-	private <T> T getOptionalNestedField(final JsonObject s, final String fieldId, final JsonObjectParser<T> jsonParser)
+	private <T> T getOptionalNestedField(final JsonObject s, final String fieldId, final JsonElementParser<T> jsonParser)
 			throws JsonParseException {
-		final JsonObject fieldJson = JsonParseUtil.getNestedOptionalObject(s, FIELDS, fieldId);
+		final JsonElement fieldJson = JsonParseUtil.getNestedOptionalObject(s, FIELDS, fieldId);
 		// for fields like assignee (when unassigned) value attribute may be missing completely
-		if (fieldJson != null) {
-			return jsonParser.parse(fieldJson);
+		if (fieldJson != null && !fieldJson.isJsonNull()) {
+			return jsonParser.parse(fieldJson.getAsJsonObject());
 		}
 		return null;
 	}
@@ -320,7 +325,8 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 				// TODO: JRJC-122
 				// we should use fieldParser here (some new version as the old one probably won't work)
 				// enable IssueJsonParserTest#testParseIssueWithUserPickerCustomFieldFilledOut after fixing this
-				res.add(new IssueField(key, namesMap.get(key), typesMap.get("key"), !entry.getValue().isJsonNull() ? entry.getValue() : null));
+				CustomFieldJsonParser customFieldJsonParser = new CustomFieldJsonParser();
+				res.add(new IssueField(key, namesMap.get(key), typesMap.get("key"), !entry.getValue().isJsonNull() ? customFieldJsonParser.parse(entry.getValue()) : null));
 			} catch (final Exception e) {
 				throw new JsonParseException("Error while parsing [" + key + "] field: " + e.getMessage()) {
 					@Override
@@ -339,7 +345,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 		while (it.hasNext()) {
 			final String fieldId = it.next();
 			JsonObject fieldDefinition = json.getAsJsonObject(fieldId);
-			res.put(fieldId, fieldDefinition.get("type").getAsString());
+			res.put(fieldId, JsonParseUtil.getAsString(fieldDefinition, "type"));
 
 		}
 		return res;
@@ -347,10 +353,10 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 
 	private Map<String, String> parseNames(final JsonObject json) throws JsonParseException {
 		final HashMap<String, String> res = Maps.newHashMap();
-		final Iterator<String> iterator = getStringKeys(json);
+		final Iterator<String> iterator = JsonParseUtil.getStringKeys(json);
 		while (iterator.hasNext()) {
 			final String key = iterator.next();
-			res.put(key, json.get(key).getAsString());
+			res.put(key, JsonParseUtil.getAsString(json, key));
 		}
 		return res;
 	}

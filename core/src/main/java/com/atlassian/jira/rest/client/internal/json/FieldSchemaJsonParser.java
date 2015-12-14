@@ -17,6 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.FieldSchema;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -25,10 +26,12 @@ import com.google.gson.JsonParseException;
  *
  * @since v1.0
  */
-public class FieldSchemaJsonParser implements JsonObjectParser<FieldSchema> {
+public class FieldSchemaJsonParser implements JsonElementParser<FieldSchema> {
 
 	@Override
-	public FieldSchema parse(JsonObject json) throws JsonParseException {
+	public FieldSchema parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final String type = JsonParseUtil.getOptionalString(json, "type");
 		final String items = JsonParseUtil.getOptionalString(json, "items");
 		final String system = JsonParseUtil.getOptionalString(json, "system");

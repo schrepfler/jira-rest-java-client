@@ -18,6 +18,7 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -27,7 +28,7 @@ import java.util.Map;
 public class IssueFieldJsonParser {
 	private static final String VALUE_ATTRIBUTE = "value";
 
-	private Map<String, JsonObjectParser> registeredValueParsers = new HashMap<String, JsonObjectParser>() {{
+	private Map<String, JsonElementParser> registeredValueParsers = new HashMap<String, JsonElementParser>() {{
 		put("com.atlassian.jira.plugin.system.customfieldtypes:float", new FloatingPointFieldValueParser());
 		put("com.atlassian.jira.plugin.system.customfieldtypes:userpicker", new FieldValueJsonParser<BasicUser>(new BasicUserJsonParser()));
 		put("java.lang.String", new StringFieldValueParser());
@@ -35,9 +36,9 @@ public class IssueFieldJsonParser {
 
 	@SuppressWarnings("unchecked")
 	public IssueField parse(JsonObject jsonObject, String id) throws JsonParseException {
-		String type = jsonObject.get("type").getAsString();
-		final String name = jsonObject.get("name").getAsString();
-		final Object valueObject = jsonObject.get(VALUE_ATTRIBUTE);
+		String type = JsonParseUtil.getAsString(jsonObject, "type");
+		final String name = JsonParseUtil.getAsString(jsonObject, "name");
+		final JsonElement valueObject = jsonObject.get(VALUE_ATTRIBUTE);
 		final Object value;
 		// @todo ugly hack until https://jdog.atlassian.com/browse/JRADEV-3220 is fixed
 		if ("comment".equals(name)) {
@@ -47,25 +48,27 @@ public class IssueFieldJsonParser {
 		if (valueObject == null) {
 			value = null;
 		} else {
-			final JsonObjectParser valueParser = registeredValueParsers.get(type);
+			final JsonElementParser valueParser = registeredValueParsers.get(type);
 			if (valueParser != null) {
 				value = valueParser.parse(jsonObject);
 			} else {
-				value = valueObject.toString();
+				value = valueObject.getAsString();
 			}
 		}
 		return new IssueField(id, name, type, value);
 	}
 
-	static class FieldValueJsonParser<T> implements JsonObjectParser<T> {
-		private final JsonObjectParser<T> jsonParser;
+	static class FieldValueJsonParser<T> implements JsonElementParser<T> {
+		private final JsonElementParser<T> jsonParser;
 
-		public FieldValueJsonParser(JsonObjectParser<T> jsonParser) {
+		public FieldValueJsonParser(JsonElementParser<T> jsonParser) {
 			this.jsonParser = jsonParser;
 		}
 
 		@Override
-		public T parse(JsonObject json) throws JsonParseException {
+		public T parse(JsonElement jsonElement) throws JsonParseException {
+			final JsonObject json = jsonElement.getAsJsonObject();
+
 			final JsonObject valueObject = json.getAsJsonObject(VALUE_ATTRIBUTE);
 			if (valueObject == null) {
 				throw new JsonParseException("Expected JsonObject with [" + VALUE_ATTRIBUTE + "] attribute present.");
@@ -75,11 +78,13 @@ public class IssueFieldJsonParser {
 	}
 
 
-	static class FloatingPointFieldValueParser implements JsonObjectParser<Double> {
+	static class FloatingPointFieldValueParser implements JsonElementParser<Double> {
 
 		@Override
-		public Double parse(JsonObject jsonObject) throws JsonParseException {
-			final String s = JsonParseUtil.getNullableString(jsonObject, VALUE_ATTRIBUTE);
+		public Double parse(JsonElement jsonElement) throws JsonParseException {
+			final JsonObject json = jsonElement.getAsJsonObject();
+
+			final String s = JsonParseUtil.getNullableString(json, VALUE_ATTRIBUTE);
 			if (s == null) {
 				return null;
 			}
@@ -91,11 +96,13 @@ public class IssueFieldJsonParser {
 		}
 	}
 
-	static class StringFieldValueParser implements JsonObjectParser<String> {
+	static class StringFieldValueParser implements JsonElementParser<String> {
 
 		@Override
-		public String parse(JsonObject jsonObject) throws JsonParseException {
-			return JsonParseUtil.getNullableString(jsonObject, VALUE_ATTRIBUTE);
+		public String parse(JsonElement jsonElement) throws JsonParseException {
+			final JsonObject json = jsonElement.getAsJsonObject();
+
+			return JsonParseUtil.getNullableString(json, VALUE_ATTRIBUTE);
 		}
 	}
 

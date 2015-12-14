@@ -21,14 +21,17 @@ import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Component;
 import com.atlassian.jira.rest.client.internal.domain.AssigneeTypeConstants;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class ComponentJsonParser implements JsonObjectParser<Component> {
+public class ComponentJsonParser implements JsonElementParser<Component> {
 	@Override
-	public Component parse(JsonObject json) throws JsonParseException {
+	public Component parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final BasicComponent basicComponent = BasicComponentJsonParser.parseBasicComponent(json);
-		final JsonObject leadJson = json.get("lead").getAsJsonObject();
+		final JsonObject leadJson = json.getAsJsonObject("lead");
 		final BasicUser lead = leadJson != null ? JsonParseUtil.parseBasicUser(leadJson) : null;
 		final String assigneeTypeStr = JsonParseUtil.getOptionalString(json, "assigneeType");
 		final Component.AssigneeInfo assigneeInfo;
@@ -36,7 +39,7 @@ public class ComponentJsonParser implements JsonObjectParser<Component> {
 			final AssigneeType assigneeType = parseAssigneeType(assigneeTypeStr);
 			final JsonObject assigneeJson = json.get("assignee").getAsJsonObject();
 			final BasicUser assignee = assigneeJson != null ? JsonParseUtil.parseBasicUser(assigneeJson) : null;
-			final AssigneeType realAssigneeType = parseAssigneeType(json.get("realAssigneeType").getAsString());
+			final AssigneeType realAssigneeType = parseAssigneeType(JsonParseUtil.getAsString(json, "realAssigneeType"));
 			final JsonObject realAssigneeJson = json.get("realAssignee").getAsJsonObject();
 			final BasicUser realAssignee = realAssigneeJson != null ? JsonParseUtil.parseBasicUser(realAssigneeJson) : null;
 			final boolean isAssigneeTypeValid = json.get("isAssigneeTypeValid").getAsBoolean();

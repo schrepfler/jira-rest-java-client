@@ -17,19 +17,22 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
-public class StatusJsonParser implements JsonObjectParser<Status> {
+public class StatusJsonParser implements JsonElementParser<Status> {
 	@Override
-	public Status parse(JsonObject json) throws JsonParseException {
+	public Status parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final URI self = JsonParseUtil.getSelfUri(json);
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String name = json.get("name").getAsString();
-		final String description = json.get("description").getAsString();
-		final URI iconUrl = JsonParseUtil.parseURI(json.get("iconUrl").getAsString());
+		final String name = JsonParseUtil.getAsString(json, "name");
+		final String description = JsonParseUtil.getAsString(json, "description");
+		final URI iconUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "iconUrl"));
 		return new Status(self, id, name, description, iconUrl);
 	}
 }

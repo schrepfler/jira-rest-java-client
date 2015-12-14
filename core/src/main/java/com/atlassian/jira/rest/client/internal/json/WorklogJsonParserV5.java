@@ -19,13 +19,14 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.net.URI;
 
-public class WorklogJsonParserV5 implements JsonObjectParser<Worklog> {
+public class WorklogJsonParserV5 implements JsonElementParser<Worklog> {
 
 	private final URI issue;
 
@@ -35,17 +36,20 @@ public class WorklogJsonParserV5 implements JsonObjectParser<Worklog> {
 
 
 	@Override
-	public Worklog parse(JsonObject json) throws JsonParseException {
+	public Worklog parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final URI self = JsonParseUtil.getSelfUri(json);
 		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
 		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
 		// comment is optional due to JRJC-49: JIRA can return worklog without comment
-		final String comment = json.get("comment").getAsString();
+		final String commentResult = JsonParseUtil.getOptionalString(json, "comment");
+		final String comment = (commentResult == null)? "" : commentResult;
 		final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
 		final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
 		final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
 		// timeSpentSeconds is not required due to bug: JRADEV-8825 (fixed in 5.0, Iteration 14).
-		final int secondsSpent = json.get("timeSpentSeconds").getAsInt();
+		final int secondsSpent = JsonParseUtil.getAsInt(json, "timeSpentSeconds");
 		final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
 		return new Worklog(self, issue, author, updateAuthor, comment, creationDate, updateDate, startDate,
 				secondsSpent / 60, visibility);

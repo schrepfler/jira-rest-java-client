@@ -17,15 +17,18 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.LoginInfo;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
-public class LoginInfoJsonParser implements JsonObjectParser<LoginInfo> {
+public class LoginInfoJsonParser implements JsonElementParser<LoginInfo> {
 	@Override
-	public LoginInfo parse(JsonObject json) throws JsonParseException {
-		final int failedLoginCount = json.get("failedLoginCount").getAsInt();
-		final int loginCount = json.get("loginCount").getAsInt();
+	public LoginInfo parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		final int failedLoginCount = json.has("failedLoginCount")? JsonParseUtil.getAsInt(json, "failedLoginCount") : 0;
+		final int loginCount = JsonParseUtil.getAsInt(json, "loginCount");
 		final DateTime lastFailedLoginTime = JsonParseUtil.parseOptionalDateTime(json, "lastFailedLoginTime");
 		final DateTime previousLoginTime = JsonParseUtil.parseOptionalDateTime(json, "previousLoginTime");
 		return new LoginInfo(failedLoginCount, loginCount, lastFailedLoginTime, previousLoginTime);

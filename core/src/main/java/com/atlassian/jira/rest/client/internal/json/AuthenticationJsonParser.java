@@ -19,16 +19,19 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.LoginInfo;
 import com.atlassian.jira.rest.client.api.domain.SessionCookie;
 import com.atlassian.jira.rest.client.api.domain.Authentication;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class AuthenticationJsonParser implements JsonObjectParser<Authentication> {
+public class AuthenticationJsonParser implements JsonElementParser<Authentication> {
 
 	private final SessionCookieJsonParser sessionCookieJsonParser = new SessionCookieJsonParser();
 	private final LoginInfoJsonParser loginInfoJsonParser = new LoginInfoJsonParser();
 
 	@Override
-	public Authentication parse(JsonObject json) throws JsonParseException {
+	public Authentication parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final SessionCookie sessionCookie = sessionCookieJsonParser.parse(json.get("session").getAsJsonObject());
 		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.get("loginInfo").getAsJsonObject());
 		return new Authentication(loginInfo, sessionCookie);

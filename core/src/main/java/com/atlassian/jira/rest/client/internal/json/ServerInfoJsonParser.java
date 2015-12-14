@@ -17,22 +17,25 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 import java.net.URI;
 
-public class ServerInfoJsonParser implements JsonObjectParser<ServerInfo> {
+public class ServerInfoJsonParser implements JsonElementParser<ServerInfo> {
 	@Override
-	public ServerInfo parse(JsonObject json) throws JsonParseException {
-		final URI baseUri = JsonParseUtil.parseURI(json.get("baseUrl").getAsString());
-		final String version = json.get("version").getAsString();
-		final int buildNumber = json.get("buildNumber").getAsInt();
+	public ServerInfo parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		final URI baseUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "baseUrl"));
+		final String version = JsonParseUtil.getAsString(json, "version");
+		final int buildNumber = JsonParseUtil.getAsInt(json, "buildNumber");
 		final DateTime buildDate = JsonParseUtil.parseDateTime(json, "buildDate");
 		final DateTime serverTime = JsonParseUtil.parseOptionalDateTime(json, "serverTime");
-		final String scmInfo = json.get("scmInfo").getAsString();
-		final String serverTitle = json.get("serverTitle").getAsString();
+		final String scmInfo = JsonParseUtil.getAsString(json, "scmInfo");
+		final String serverTitle = JsonParseUtil.getAsString(json, "serverTitle");
 		return new ServerInfo(baseUri, version, buildNumber, buildDate, serverTime, scmInfo, serverTitle);
 	}
 }

@@ -31,7 +31,6 @@ public class BasicProjectsJsonParser implements JsonArrayParser<Iterable<BasicPr
 		ArrayList<BasicProject> res = new ArrayList<BasicProject>(json.size());
 		for (int i = 0; i < json.size(); i++) {
 			res.add(basicProjectJsonParser.parse(json.get(i).getAsJsonObject()));
-
 		}
 		return res;
 	}

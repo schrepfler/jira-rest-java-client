@@ -19,6 +19,7 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BulkOperationErrorResult;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -31,13 +32,14 @@ import java.util.Map;
  *
  * @since v2.0
  */
-public class IssueErrorJsonParser implements JsonObjectParser<BulkOperationErrorResult> {
+public class IssueErrorJsonParser implements JsonElementParser<BulkOperationErrorResult> {
 
 	@Override
-	public BulkOperationErrorResult parse(final JsonObject json) throws JsonParseException {
+	public BulkOperationErrorResult parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
 
-		final Integer status = json.get("status").getAsInt();
-		final Integer issueNumber = json.get("failedElementNumber").getAsInt();
+		final Integer status = JsonParseUtil.getAsInt(json, "status");
+		final Integer issueNumber = JsonParseUtil.getAsInt(json, "failedElementNumber");
 
 		final JsonObject elementErrors = json.getAsJsonObject("elementErrors");
 		final JsonObject jsonErrors = elementErrors.getAsJsonObject("errors");

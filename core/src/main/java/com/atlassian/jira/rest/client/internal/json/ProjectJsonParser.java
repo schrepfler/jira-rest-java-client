@@ -25,6 +25,7 @@ import com.atlassian.jira.rest.client.api.domain.BasicProjectRole;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -33,7 +34,7 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 
-public class ProjectJsonParser implements JsonObjectParser<Project> {
+public class ProjectJsonParser implements JsonElementParser<Project> {
 
 	private final VersionJsonParser versionJsonParser = new VersionJsonParser();
 	private final BasicComponentJsonParser componentJsonParser = new BasicComponentJsonParser();
@@ -43,7 +44,7 @@ public class ProjectJsonParser implements JsonObjectParser<Project> {
     static Iterable<String> parseExpandos(final JsonObject json) throws JsonParseException
     {
         if (json.has("expand")) {
-            final String expando = json.get("expand").getAsString();
+            final String expando = JsonParseUtil.getAsString(json, "expand");
             return Splitter.on(',').split(expando);
         } else {
             return Collections.emptyList();
@@ -51,11 +52,13 @@ public class ProjectJsonParser implements JsonObjectParser<Project> {
     }
 
 	@Override
-	public Project parse(JsonObject json) throws JsonParseException {
+	public Project parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
         URI self = JsonParseUtil.getSelfUri(json);
         final Iterable<String> expandos = parseExpandos(json);
         final BasicUser lead = JsonParseUtil.parseBasicUser(json.getAsJsonObject("lead"));
-		final String key = json.get("key").getAsString();
+		final String key = JsonParseUtil.getAsString(json, "key");
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
 		final String name = JsonParseUtil.getOptionalString(json, "name");
 		final String urlStr = JsonParseUtil.getOptionalString(json, "url");

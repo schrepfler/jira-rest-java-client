@@ -20,25 +20,27 @@ import com.atlassian.jira.rest.client.api.domain.BasicProjectRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-public class BasicProjectRoleJsonParser implements JsonObjectParser<Collection<BasicProjectRole>> {
+public class BasicProjectRoleJsonParser implements JsonElementParser<Collection<BasicProjectRole>> {
 
 	@Override
-	public Collection<BasicProjectRole> parse(@Nullable final JsonObject json) throws JsonParseException {
+	public Collection<BasicProjectRole> parse(@Nullable final JsonElement json) throws JsonParseException {
 		return json == null ?
 				ImmutableSet.<BasicProjectRole>of() :
 				ImmutableSet.copyOf(Iterators.transform(
-						JsonParseUtil.getStringKeys(json),
+						JsonParseUtil.getStringKeys(json.getAsJsonObject()),
 						new Function<String, BasicProjectRole>() {
 							@Override
 							public BasicProjectRole apply(@Nullable final String key) {
 								try {
-									return new BasicProjectRole(JsonParseUtil.parseURI(json.get(key).getAsString()), key);
+									return new BasicProjectRole(JsonParseUtil
+											.parseURI(JsonParseUtil.getAsString(json.getAsJsonObject(), key)), key);
 								} catch (JsonParseException e) {
 									throw new RestClientException(e);
 								}

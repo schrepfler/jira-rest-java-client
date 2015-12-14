@@ -18,16 +18,19 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.OperationGroup;
 import com.atlassian.jira.rest.client.api.domain.Operations;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.util.Collection;
 
-public class OperationsJsonParser implements JsonObjectParser<Operations> {
-	private final JsonObjectParser<OperationGroup> groupParser = new OperationGroupJsonParser();
+public class OperationsJsonParser implements JsonElementParser<Operations> {
+	private final JsonElementParser<OperationGroup> groupParser = new OperationGroupJsonParser();
 
 	@Override
-	public Operations parse(final JsonObject json) throws JsonParseException {
+	public Operations parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final Collection<OperationGroup> linkGroups = JsonParseUtil.parseJsonArray(json.getAsJsonArray("linkGroups"), groupParser);
 		return new Operations(linkGroups);
 	}

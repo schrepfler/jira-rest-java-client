@@ -17,6 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.SecurityLevel;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -27,14 +28,16 @@ import java.net.URI;
  *
  * @since v2.0
  */
-public class SecurityLevelJsonParser implements JsonObjectParser<SecurityLevel> {
+public class SecurityLevelJsonParser implements JsonElementParser<SecurityLevel> {
 
 	@Override
-	public SecurityLevel parse(final JsonObject json) throws JsonParseException {
+	public SecurityLevel parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final URI self = JsonParseUtil.getSelfUri(json);
 		final long id = json.get("id").getAsLong();
-		final String description = json.get("description").getAsString();
-		final String name = json.get("name").getAsString();
+		final String description = JsonParseUtil.getAsString(json, "description");
+		final String name = JsonParseUtil.getAsString(json, "name");
 		return new SecurityLevel(self, id, name, description);
 	}
 }

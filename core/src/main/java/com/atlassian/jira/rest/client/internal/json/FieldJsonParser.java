@@ -19,25 +19,28 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 import com.atlassian.jira.rest.client.api.domain.FieldType;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
  * JSON parser for JIRA fields.
  */
-public class FieldJsonParser implements JsonObjectParser<Field> {
+public class FieldJsonParser implements JsonElementParser<Field> {
 
 	private final FieldSchemaJsonParser schemaJsonParser = new FieldSchemaJsonParser();
 
 	@Override
-	public Field parse(final JsonObject jsonObject) throws JsonParseException {
-		final String id = jsonObject.get("id").getAsString();
-		final String name = jsonObject.get("name").getAsString();
-		final Boolean orderable = jsonObject.get("orderable").getAsBoolean();
-		final Boolean navigable = jsonObject.get("navigable").getAsBoolean();
-		final Boolean searchable = jsonObject.get("searchable").getAsBoolean();
-		final FieldType custom = jsonObject.get("custom").getAsBoolean() ? FieldType.CUSTOM : FieldType.JIRA;
-		final FieldSchema schema = jsonObject.has("schema") ? schemaJsonParser.parse(jsonObject.getAsJsonObject("schema")) : null;
+	public Field parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		final String id = JsonParseUtil.getAsString(json, "id");
+		final String name = JsonParseUtil.getAsString(json, "name");
+		final Boolean orderable = JsonParseUtil.getAsBoolean(json, "orderable");
+		final Boolean navigable = JsonParseUtil.getAsBoolean(json, "navigable");
+		final Boolean searchable = JsonParseUtil.getAsBoolean(json, "searchable");
+		final FieldType custom = JsonParseUtil.getAsBoolean(json, "custom") ? FieldType.CUSTOM : FieldType.JIRA;
+		final FieldSchema schema = json.has("schema") ? schemaJsonParser.parse(json.getAsJsonObject("schema")) : null;
 		return new Field(id, name, custom, orderable, navigable, searchable, schema);
 	}
 

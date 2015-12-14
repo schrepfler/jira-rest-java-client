@@ -26,12 +26,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.net.URI;
-import java.util.Iterator;
 import java.util.Map;
 
-public class UserJsonParser implements JsonObjectParser<User> {
+public class UserJsonParser implements JsonElementParser<User> {
 	@Override
-	public User parse(JsonObject json) throws JsonParseException {
+	public User parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final BasicUser basicUser = Preconditions.checkNotNull(JsonParseUtil.parseBasicUser(json));
 		final String timezone = JsonParseUtil.getOptionalString(json, "timeZone");
 		final String avatarUrl = JsonParseUtil.getOptionalString(json, "avatarUrl");
@@ -51,10 +52,12 @@ public class UserJsonParser implements JsonObjectParser<User> {
 		final String emailAddress = JsonParseUtil.getOptionalString(json, "emailAddress");
 		// optional because groups are not returned for issue->{reporter,assignee}
 		final ExpandableProperty<String> groups = JsonParseUtil.parseOptionalExpandableProperty(json
-				.getAsJsonObject("groups"), new JsonObjectParser<String>() {
+				.getAsJsonObject("groups"), new JsonElementParser<String>() {
 			@Override
-			public String parse(JsonObject json) throws JsonParseException {
-				return json.get("name").getAsString();
+			public String parse(JsonElement jsonElement) throws JsonParseException {
+				final JsonObject json = jsonElement.getAsJsonObject();
+
+				return JsonParseUtil.getAsString(json, "name");
 			}
 		});
 		return new User(basicUser.getSelf(), basicUser.getName(), basicUser

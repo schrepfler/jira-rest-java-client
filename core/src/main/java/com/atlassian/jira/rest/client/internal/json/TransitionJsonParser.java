@@ -17,6 +17,7 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Transition;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -26,19 +27,21 @@ public class TransitionJsonParser {
 	private final TransitionFieldJsonParser transitionFieldJsonParser = new TransitionFieldJsonParser();
 
 	public Transition parse(JsonObject json, int id) throws JsonParseException {
-		final String name = json.get("name").getAsString();
+		final String name = JsonParseUtil.getAsString(json, "name");
 		final Collection<Transition.Field> fields = JsonParseUtil.parseJsonArray(json.getAsJsonArray("fields"),
 				transitionFieldJsonParser);
 		return new Transition(name, id, fields);
 	}
 
-	public static class TransitionFieldJsonParser implements JsonObjectParser<Transition.Field> {
+	public static class TransitionFieldJsonParser implements JsonElementParser<Transition.Field> {
 
 		@Override
-		public Transition.Field parse(JsonObject json) throws JsonParseException {
-			final String name = json.get("id").getAsString();
+		public Transition.Field parse(JsonElement jsonElement) throws JsonParseException {
+			final JsonObject json = jsonElement.getAsJsonObject();
+
+			final String name = JsonParseUtil.getAsString(json, "id");
 			final boolean isRequired = json.get("required").getAsBoolean();
-			final String type = json.get("type").getAsString();
+			final String type = JsonParseUtil.getAsString(json, "type");
 			return new Transition.Field(name, isRequired, type);
 		}
 	}

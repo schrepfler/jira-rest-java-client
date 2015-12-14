@@ -18,12 +18,15 @@ package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
 import com.atlassian.jira.rest.client.api.domain.FieldType;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class ChangelogItemJsonParser implements JsonObjectParser<ChangelogItem> {
+public class ChangelogItemJsonParser implements JsonElementParser<ChangelogItem> {
 	@Override
-	public ChangelogItem parse(JsonObject json) throws JsonParseException {
+	public ChangelogItem parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final String fieldTypeStr = JsonParseUtil.getNestedString(json, "fieldtype");
 		final FieldType fieldType;
 		if ("jira".equalsIgnoreCase(fieldTypeStr)) {

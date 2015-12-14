@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 public class GenericJsonArrayParser<T> implements JsonArrayParser<Iterable<T>> {
 
-	public static <K> GenericJsonArrayParser<K> create(JsonObjectParser<K> jsonParser) {
+	public static <K> GenericJsonArrayParser<K> create(JsonElementParser<K> jsonParser) {
 		return new GenericJsonArrayParser<K>(jsonParser);
 	}
 
-	private final JsonObjectParser<T> jsonParser;
+	private final JsonElementParser<T> jsonParser;
 
-	public GenericJsonArrayParser(JsonObjectParser<T> jsonParser) {
+	public GenericJsonArrayParser(JsonElementParser<T> jsonParser) {
 		this.jsonParser = jsonParser;
 	}
 

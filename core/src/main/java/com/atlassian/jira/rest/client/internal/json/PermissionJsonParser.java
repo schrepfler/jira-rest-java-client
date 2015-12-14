@@ -16,16 +16,20 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.Permission;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class PermissionJsonParser implements JsonObjectParser<Permission> {
+public class PermissionJsonParser implements JsonElementParser<Permission> {
 	@Override
-	public Permission parse(final JsonObject json) throws JsonParseException {
-		final Integer id = json.get("id").getAsInt();
-		final String key = json.get("key").getAsString();
-		final String name = json.get("name").getAsString();
-		final String description = json.get("description").getAsString();
+	public Permission parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		System.out.println(json);
+		final Integer id = JsonParseUtil.getAsInt(json, "id");
+		final String key = JsonParseUtil.getAsString(json, "key");
+		final String name = JsonParseUtil.getAsString(json, "name");
+		final String description = JsonParseUtil.getAsString(json, "description");
 		final boolean havePermission = json.get("havePermission").getAsBoolean();
 		return new Permission(id, key, name, description, havePermission);
 	}

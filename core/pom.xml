@@ -34,10 +34,20 @@
             <version>${joda.time.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.atlassian.httpclient</groupId>
+            <artifactId>atlassian-httpclient-apache-httpcomponents</artifactId>
+            <version>${atlassian.httpclient.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.atlassian.util.concurrent</groupId>
             <artifactId>atlassian-util-concurrent</artifactId>
             <version>${atlassian.concurrent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+        </dependency>
+
 
         <!-- tests dependencies -->
     </dependencies>

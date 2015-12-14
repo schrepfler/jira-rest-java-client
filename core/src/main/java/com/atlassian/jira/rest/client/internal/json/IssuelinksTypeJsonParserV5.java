@@ -17,19 +17,22 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
-public class IssuelinksTypeJsonParserV5 implements JsonObjectParser<IssuelinksType> {
+public class IssuelinksTypeJsonParserV5 implements JsonElementParser<IssuelinksType> {
 	@Override
-	public IssuelinksType parse(JsonObject json) throws JsonParseException {
+	public IssuelinksType parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String id = json.get("id").getAsString();
-		final String name = json.get("name").getAsString();
-		final String inward = json.get("inward").getAsString();
-		final String outward = json.get("outward").getAsString();
+		final String id = JsonParseUtil.getAsString(json, "id");
+		final String name = JsonParseUtil.getAsString(json, "name");
+		final String inward = JsonParseUtil.getAsString(json, "inward");
+		final String outward = JsonParseUtil.getAsString(json, "outward");
 
 		return new IssuelinksType(selfUri, id, name, inward, outward);
 	}

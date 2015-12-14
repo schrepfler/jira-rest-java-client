@@ -19,6 +19,7 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.BulkOperationErrorResult;
 import com.atlassian.jira.rest.client.api.domain.BulkOperationResult;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.util.Collection;
@@ -26,10 +27,12 @@ import java.util.Collection;
 /**
  * @since 1.1
  */
-public class BasicIssuesJsonParser implements JsonObjectParser<BulkOperationResult<BasicIssue>> {
+public class BasicIssuesJsonParser implements JsonElementParser<BulkOperationResult<BasicIssue>> {
 
 	@Override
-	public BulkOperationResult<BasicIssue> parse(final JsonObject json) throws JsonParseException {
+	public BulkOperationResult<BasicIssue> parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final Collection<BasicIssue> issues =
 				JsonParseUtil.parseJsonArray(json.get("issues").getAsJsonArray(), new BasicIssueJsonParser());
 

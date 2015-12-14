@@ -1,20 +1,22 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.AuditAssociatedItem;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
  * @since v2.0
  */
-public class AuditAssociatedItemJsonParser implements JsonObjectParser<AuditAssociatedItem> {
+public class AuditAssociatedItemJsonParser implements JsonElementParser<AuditAssociatedItem> {
 
     @Override
-    public AuditAssociatedItem parse(final JsonObject json) throws JsonParseException {
+    public AuditAssociatedItem parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
         final String id = JsonParseUtil.getOptionalString(json, "id");
-        final String name = json.get("name").getAsString();
-        final String typeName = json.get("typeName").getAsString();
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String typeName = JsonParseUtil.getAsString(json, "typeName");
         final String parentId = JsonParseUtil.getOptionalString(json, "parentId");
         final String parentName = JsonParseUtil.getOptionalString(json, "parentName");
 

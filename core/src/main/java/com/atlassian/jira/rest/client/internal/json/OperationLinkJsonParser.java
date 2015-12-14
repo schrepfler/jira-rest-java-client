@@ -17,17 +17,20 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.OperationLink;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class OperationLinkJsonParser implements JsonObjectParser<OperationLink> {
+public class OperationLinkJsonParser implements JsonElementParser<OperationLink> {
 	@Override
-	public OperationLink parse(final JsonObject json) throws JsonParseException {
+	public OperationLink parse(final JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
 		final String id = JsonParseUtil.getOptionalString(json, "id");
 		final String styleClass = JsonParseUtil.getOptionalString(json, "styleClass");
-		final String label = json.get("label").getAsString();
+		final String label = JsonParseUtil.getAsString(json, "label");
 		final String title = JsonParseUtil.getOptionalString(json, "title");
-		final String href = json.get("href").getAsString();
+		final String href = JsonParseUtil.getAsString(json, "href");
 		final Integer weight = JsonParseUtil.parseOptionInteger(json, "weight");
 		final String iconClass = JsonParseUtil.getOptionalString(json, "iconClass");
 		return new OperationLink(id, styleClass, label, title, href, weight, iconClass);

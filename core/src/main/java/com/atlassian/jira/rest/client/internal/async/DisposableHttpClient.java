@@ -1,16 +1,14 @@
 package com.atlassian.jira.rest.client.internal.async;
 
+import com.atlassian.httpclient.api.HttpClient;
+
 import java.net.URL;
 import java.net.URLConnection;
 
 /**
  * Atlassian HttpClient with destroy exposed.
  */
-public abstract class DisposableHttpClient extends URLConnection {
-
-	DisposableHttpClient(URL url) {
-		super(url);
-	}
+public interface DisposableHttpClient extends HttpClient {
 
 	abstract void destroy() throws Exception;
 

@@ -20,7 +20,8 @@ import com.atlassian.jira.rest.client.api.VersionRestClient;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.atlassian.jira.rest.client.api.domain.VersionRelatedIssuesCount;
 import com.atlassian.jira.rest.client.api.domain.input.VersionInput;
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import com.atlassian.jira.rest.client.internal.json.JsonElementParser;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
 import com.atlassian.jira.rest.client.internal.json.VersionJsonParser;
 import com.atlassian.jira.rest.client.internal.json.VersionRelatedIssueCountJsonParser;
 import com.atlassian.jira.rest.client.internal.json.gen.JsonGenerator;
@@ -28,6 +29,7 @@ import com.atlassian.jira.rest.client.internal.json.gen.VersionInputJsonGenerato
 import com.atlassian.jira.rest.client.internal.json.gen.VersionPositionInputGenerator;
 import com.atlassian.jira.rest.client.api.domain.input.VersionPosition;
 import com.atlassian.util.concurrent.Promise;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -86,10 +88,10 @@ public class AsynchronousVersionRestClient extends AbstractAsynchronousRestClien
 	@Override
 	public Promise<Integer> getNumUnresolvedIssues(final URI versionUri) {
 		final URI unresolvedIssueCountUri = UriBuilder.fromUri(versionUri).path("unresolvedIssueCount").build();
-		return getAndParse(unresolvedIssueCountUri, new JsonObjectParser<Integer>() {
+		return getAndParse(unresolvedIssueCountUri, new JsonElementParser<Integer>() {
 			@Override
-			public Integer parse(JsonObject json) throws JsonParseException {
-				return json.get("issuesUnresolvedCount").getAsInt();
+			public Integer parse(JsonElement json) throws JsonParseException {
+				return JsonParseUtil.getAsInt(json.getAsJsonObject(), "issuesUnresolvedCount");
 			}
 		});
 	}

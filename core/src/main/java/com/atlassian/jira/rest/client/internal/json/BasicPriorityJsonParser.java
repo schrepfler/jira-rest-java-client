@@ -17,15 +17,18 @@
 package com.atlassian.jira.rest.client.internal.json;
 
 import com.atlassian.jira.rest.client.api.domain.BasicPriority;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.net.URI;
 
-public class BasicPriorityJsonParser implements JsonObjectParser<BasicPriority> {
+public class BasicPriorityJsonParser implements JsonElementParser<BasicPriority> {
 	@Override
-	public BasicPriority parse(JsonObject json) throws JsonParseException {
-		final String name = json.get("name").getAsString();
+	public BasicPriority parse(JsonElement jsonElement) throws JsonParseException {
+		final JsonObject json = jsonElement.getAsJsonObject();
+
+		final String name = JsonParseUtil.getAsString(json, "name");
 		final Long id = JsonParseUtil.getOptionalLong(json, "id");
 		final URI selfUri = JsonParseUtil.getSelfUri(json);
 		return new BasicPriority(selfUri, id, name);
