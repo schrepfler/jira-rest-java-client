@@ -119,19 +119,29 @@ public class AsynchronousSearchRestClient extends AbstractAsynchronousRestClient
 		final JsonObject postEntity = new JsonObject();
 
 		try {
-			postEntity.addProperty(JQL_ATTRIBUTE, jql);
+			if (jql != null) {
+				postEntity.addProperty(JQL_ATTRIBUTE, jql);
+			}
 			JsonArray array = new JsonArray();
-			for (String value: expandosValues) {
-				array.add(value);
+			if (expandosValues != null) {
+				for (String value : expandosValues) {
+					array.add(value);
+				}
 			}
 			postEntity.add(EXPAND_ATTRIBUTE, array);
-			postEntity.addProperty(START_AT_ATTRIBUTE, startAt);
-			postEntity.addProperty(MAX_RESULTS_ATTRIBUTE, maxResults);
+			if (startAt != null) {
+				postEntity.addProperty(START_AT_ATTRIBUTE, startAt);
+			}
+			if (maxResults != null) {
+				postEntity.addProperty(MAX_RESULTS_ATTRIBUTE, maxResults);
+			}
 
 			if (fields != null) {
 				JsonArray fieldsJson = new JsonArray();
-				for (String value: expandosValues) {
-					fieldsJson.add(value);
+				if (fields != null) {
+					for (String value : fields) {
+						fieldsJson.add(value);
+					}
 				}
 				postEntity.add(FIELDS_ATTRIBUTE, fieldsJson); // putOpt doesn't work with collections
 			}
