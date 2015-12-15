@@ -29,18 +29,18 @@ import java.util.Collection;
  */
 public class BasicIssuesJsonParser implements JsonElementParser<BulkOperationResult<BasicIssue>> {
 
-	@Override
-	public BulkOperationResult<BasicIssue> parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public BulkOperationResult<BasicIssue> parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final Collection<BasicIssue> issues =
-				JsonParseUtil.parseJsonArray(json.get("issues").getAsJsonArray(), new BasicIssueJsonParser());
+        final Collection<BasicIssue> issues =
+                JsonParseUtil.parseJsonArray(json.get("issues").getAsJsonArray(), new BasicIssueJsonParser());
 
-		final Collection<BulkOperationErrorResult> errors =
-				JsonParseUtil.parseJsonArray(json.get("errors").getAsJsonArray(), new IssueErrorJsonParser());
+        final Collection<BulkOperationErrorResult> errors =
+                JsonParseUtil.parseJsonArray(json.get("errors").getAsJsonArray(), new IssueErrorJsonParser());
 
-		return new BulkOperationResult<BasicIssue>(issues, errors);
-	}
+        return new BulkOperationResult<BasicIssue>(issues, errors);
+    }
 
 
 }

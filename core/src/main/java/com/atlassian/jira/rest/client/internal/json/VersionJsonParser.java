@@ -25,30 +25,30 @@ import org.joda.time.DateTime;
 import java.net.URI;
 
 public class VersionJsonParser implements JsonElementParser<Version> {
-	@Override
-	public Version parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Version parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI self = JsonParseUtil.getSelfUri(json);
-		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final String description = JsonParseUtil.getOptionalString(json, "description");
-		final boolean isArchived = json.get("archived").getAsBoolean();
-		final boolean isReleased = json.get("released").getAsBoolean();
-		final String releaseDateStr = JsonParseUtil.getOptionalString(json, "releaseDate");
-		final DateTime releaseDate = parseReleaseDate(releaseDateStr);
-		return new Version(self, id, name, description, isArchived, isReleased, releaseDate);
-	}
+        final URI self = JsonParseUtil.getSelfUri(json);
+        final Long id = JsonParseUtil.getOptionalLong(json, "id");
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String description = JsonParseUtil.getOptionalString(json, "description");
+        final boolean isArchived = json.get("archived").getAsBoolean();
+        final boolean isReleased = json.get("released").getAsBoolean();
+        final String releaseDateStr = JsonParseUtil.getOptionalString(json, "releaseDate");
+        final DateTime releaseDate = parseReleaseDate(releaseDateStr);
+        return new Version(self, id, name, description, isArchived, isReleased, releaseDate);
+    }
 
-	private DateTime parseReleaseDate(String releaseDateStr) {
-		if (releaseDateStr != null) {
-			if (releaseDateStr.length() > "YYYY-MM-RR".length()) { // JIRA 4.4 introduces different format - just ISO date
-				return JsonParseUtil.parseDateTime(releaseDateStr);
-			} else {
-				return JsonParseUtil.parseDate(releaseDateStr);
-			}
-		} else {
-			return null;
-		}
-	}
+    private DateTime parseReleaseDate(String releaseDateStr) {
+        if (releaseDateStr != null) {
+            if (releaseDateStr.length() > "YYYY-MM-RR".length()) { // JIRA 4.4 introduces different format - just ISO date
+                return JsonParseUtil.parseDateTime(releaseDateStr);
+            } else {
+                return JsonParseUtil.parseDate(releaseDateStr);
+            }
+        } else {
+            return null;
+        }
+    }
 }

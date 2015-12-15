@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * 	http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,35 +40,35 @@ import static com.google.common.collect.Iterables.transform;
  */
 public class ExampleCreateIssuesAsynchronous {
 
-	private static URI jiraServerUri = URI.create("http://localhost:2990/jira");
+    private static URI jiraServerUri = URI.create("http://localhost:2990/jira");
 
-	public static void main(String[] args) throws IOException {
-		final AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
-		final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(jiraServerUri, "admin", "admin");
+    public static void main(String[] args) throws IOException {
+        final AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+        final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(jiraServerUri, "admin", "admin");
 
-		try {
-			final List<Promise<BasicIssue>> promises = Lists.newArrayList();
-			final IssueRestClient issueClient = restClient.getIssueClient();
+        try {
+            final List<Promise<BasicIssue>> promises = Lists.newArrayList();
+            final IssueRestClient issueClient = restClient.getIssueClient();
 
-			System.out.println("Sending issue creation requests...");
-			for (int i = 0; i < 100; i++) {
-				final String summary = "NewIssue#" + i;
-				final IssueInput newIssue = new IssueInputBuilder("TST", 1L, summary).build();
-				System.out.println("\tCreating: " + summary);
-				promises.add(issueClient.createIssue(newIssue));
-			}
+            System.out.println("Sending issue creation requests...");
+            for (int i = 0; i < 100; i++) {
+                final String summary = "NewIssue#" + i;
+                final IssueInput newIssue = new IssueInputBuilder("TST", 1L, summary).build();
+                System.out.println("\tCreating: " + summary);
+                promises.add(issueClient.createIssue(newIssue));
+            }
 
-			System.out.println("Collecting responses...");
-			final Iterable<BasicIssue> createdIssues = transform(promises, new Function<Promise<BasicIssue>, BasicIssue>() {
-				@Override
-				public BasicIssue apply(Promise<BasicIssue> promise) {
-					return promise.claim();
-				}
-			});
+            System.out.println("Collecting responses...");
+            final Iterable<BasicIssue> createdIssues = transform(promises, new Function<Promise<BasicIssue>, BasicIssue>() {
+                @Override
+                public BasicIssue apply(Promise<BasicIssue> promise) {
+                    return promise.claim();
+                }
+            });
 
-			System.out.println("Created issues:\n" + Joiner.on("\n").join(createdIssues));
-		} finally {
-			restClient.close();
-		}
-	}
+            System.out.println("Created issues:\n" + Joiner.on("\n").join(createdIssues));
+        } finally {
+            restClient.close();
+        }
+    }
 }

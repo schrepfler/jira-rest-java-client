@@ -19,5 +19,5 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.google.gson.JsonParseException;
 
 interface JsonWeakParser<T> {
-	T parse(Object o) throws JsonParseException;
+    T parse(Object o) throws JsonParseException;
 }

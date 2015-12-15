@@ -26,28 +26,28 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class IssueLinkJsonParserV5 implements JsonElementParser<IssueLink> {
-	private final IssuelinksTypeJsonParserV5 issuelinksTypeJsonParserV5 = new IssuelinksTypeJsonParserV5();
+    private final IssuelinksTypeJsonParserV5 issuelinksTypeJsonParserV5 = new IssuelinksTypeJsonParserV5();
 
-	@Override
-	public IssueLink parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public IssueLink parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final IssuelinksType issuelinksType = issuelinksTypeJsonParserV5.parse(json.getAsJsonObject("type"));
-		final IssueLinkType.Direction direction;
-		final JsonObject link;
-		if (json.has("inwardIssue")) {
-			link = json.getAsJsonObject("inwardIssue");
-			direction = IssueLinkType.Direction.INBOUND;
-		} else {
-			link = json.getAsJsonObject("outwardIssue");
-			direction = IssueLinkType.Direction.OUTBOUND;
-		}
+        final IssuelinksType issuelinksType = issuelinksTypeJsonParserV5.parse(json.getAsJsonObject("type"));
+        final IssueLinkType.Direction direction;
+        final JsonObject link;
+        if (json.has("inwardIssue")) {
+            link = json.getAsJsonObject("inwardIssue");
+            direction = IssueLinkType.Direction.INBOUND;
+        } else {
+            link = json.getAsJsonObject("outwardIssue");
+            direction = IssueLinkType.Direction.OUTBOUND;
+        }
 
-		final String key = JsonParseUtil.getAsString(link, "key");
-		final URI targetIssueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(link, "self"));
-		final IssueLinkType issueLinkType = new IssueLinkType(issuelinksType.getName(),
-				direction.equals(IssueLinkType.Direction.INBOUND) ? issuelinksType.getInward()
-						: issuelinksType.getOutward(), direction);
-		return new IssueLink(key, targetIssueUri, issueLinkType);
-	}
+        final String key = JsonParseUtil.getAsString(link, "key");
+        final URI targetIssueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(link, "self"));
+        final IssueLinkType issueLinkType = new IssueLinkType(issuelinksType.getName(),
+                direction.equals(IssueLinkType.Direction.INBOUND) ? issuelinksType.getInward()
+                        : issuelinksType.getOutward(), direction);
+        return new IssueLink(key, targetIssueUri, issueLinkType);
+    }
 }

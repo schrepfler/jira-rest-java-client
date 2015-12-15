@@ -35,54 +35,54 @@ import static org.junit.Assert.assertTrue;
 @Restore(TestConstants.DEFAULT_JIRA_DUMP_FILE)
 public class AsynchronousSessionRestClientTest extends AbstractAsynchronousRestClientTest {
 
-	private final JiraRestClientFactory clientFactory = new AsynchronousJiraRestClientFactory();
+    private final JiraRestClientFactory clientFactory = new AsynchronousJiraRestClientFactory();
 
-	@Test
-	public void testValidSession() {
-		final Session session = client.getSessionClient().getCurrentSession().claim();
-		assertEquals(ADMIN_USERNAME, session.getUsername());
+    @Test
+    public void testValidSession() {
+        final Session session = client.getSessionClient().getCurrentSession().claim();
+        assertEquals(ADMIN_USERNAME, session.getUsername());
 
-	}
+    }
 
-	@Test
-	public void testInvalidCredentials() {
-		client = clientFactory.createWithBasicHttpAuthentication(jiraUri, ADMIN_USERNAME, ADMIN_PASSWORD + "invalid");
-		TestUtil.assertErrorCode(401, new Runnable() {
-			@Override
-			public void run() {
-				client.getSessionClient().getCurrentSession().claim();
-			}
-		});
-	}
+    @Test
+    public void testInvalidCredentials() {
+        client = clientFactory.createWithBasicHttpAuthentication(jiraUri, ADMIN_USERNAME, ADMIN_PASSWORD + "invalid");
+        TestUtil.assertErrorCode(401, new Runnable() {
+            @Override
+            public void run() {
+                client.getSessionClient().getCurrentSession().claim();
+            }
+        });
+    }
 
-	@Test
-	public void testGetCurrentSession() throws Exception {
-		final Session session = client.getSessionClient().getCurrentSession().claim();
-		assertEquals(ADMIN_USERNAME, session.getUsername());
+    @Test
+    public void testGetCurrentSession() throws Exception {
+        final Session session = client.getSessionClient().getCurrentSession().claim();
+        assertEquals(ADMIN_USERNAME, session.getUsername());
 
-		// that is not a mistake - username and the password for this user is the same
-		client = clientFactory.createWithBasicHttpAuthentication(jiraUri, TestConstants.USER1.getName(), TestConstants.USER1
-				.getName());
-		final Session session2 = client.getSessionClient().getCurrentSession().claim();
-		assertEquals(TestConstants.USER1.getName(), session2.getUsername());
-		final DateTime lastFailedLoginDate = session2.getLoginInfo().getLastFailedLoginDate();
+        // that is not a mistake - username and the password for this user is the same
+        client = clientFactory.createWithBasicHttpAuthentication(jiraUri, TestConstants.USER1.getName(), TestConstants.USER1
+                .getName());
+        final Session session2 = client.getSessionClient().getCurrentSession().claim();
+        assertEquals(TestConstants.USER1.getName(), session2.getUsername());
+        final DateTime lastFailedLoginDate = session2.getLoginInfo().getLastFailedLoginDate();
 
-		final JiraRestClient client2 = clientFactory.createWithBasicHttpAuthentication(jiraUri, TestConstants.USER1
-				.getName(), "bad-ppassword");
-		final DateTime now = new DateTime();
-		TestUtil.assertErrorCode(401, new Runnable() {
-			@Override
-			public void run() {
-				client2.getSessionClient().getCurrentSession().claim();
-			}
-		});
-		while (!new DateTime().isAfter(lastFailedLoginDate)) {
-			Thread.sleep(20);
-		}
+        final JiraRestClient client2 = clientFactory.createWithBasicHttpAuthentication(jiraUri, TestConstants.USER1
+                .getName(), "bad-ppassword");
+        final DateTime now = new DateTime();
+        TestUtil.assertErrorCode(401, new Runnable() {
+            @Override
+            public void run() {
+                client2.getSessionClient().getCurrentSession().claim();
+            }
+        });
+        while (!new DateTime().isAfter(lastFailedLoginDate)) {
+            Thread.sleep(20);
+        }
 
-		final Session sessionAfterFailedLogin = client.getSessionClient().getCurrentSession().claim();
-		assertTrue(sessionAfterFailedLogin.getLoginInfo().getLastFailedLoginDate().isAfter(lastFailedLoginDate));
-		assertTrue(sessionAfterFailedLogin.getLoginInfo().getLastFailedLoginDate().isAfter(now));
-	}
+        final Session sessionAfterFailedLogin = client.getSessionClient().getCurrentSession().claim();
+        assertTrue(sessionAfterFailedLogin.getLoginInfo().getLastFailedLoginDate().isAfter(lastFailedLoginDate));
+        assertTrue(sessionAfterFailedLogin.getLoginInfo().getLastFailedLoginDate().isAfter(now));
+    }
 
 }

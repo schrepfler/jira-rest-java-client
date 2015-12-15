@@ -24,18 +24,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class OperationGroupJsonParser implements JsonElementParser<OperationGroup> {
-	final private OperationLinkJsonParser linkJsonParser = new OperationLinkJsonParser();
-	final private OperationHeaderJsonParser headerJsonParser = new OperationHeaderJsonParser();
+    final private OperationLinkJsonParser linkJsonParser = new OperationLinkJsonParser();
+    final private OperationHeaderJsonParser headerJsonParser = new OperationHeaderJsonParser();
 
-	@Override
-	public OperationGroup parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public OperationGroup parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String id = JsonParseUtil.getOptionalString(json, "id");
-		final Iterable<OperationLink> links = JsonParseUtil.parseJsonArray(json.getAsJsonArray("links"), linkJsonParser);
-		final Iterable<OperationGroup> groups = JsonParseUtil.parseJsonArray(json.getAsJsonArray("groups"), this);
-		final OperationHeader header = JsonParseUtil.parseOptionalJsonObject(json, "header", headerJsonParser);
-		final Integer weight = JsonParseUtil.parseOptionInteger(json, "weight");
-		return new OperationGroup(id, links, groups, header, weight);
-	}
+        final String id = JsonParseUtil.getOptionalString(json, "id");
+        final Iterable<OperationLink> links = JsonParseUtil.parseJsonArray(json.getAsJsonArray("links"), linkJsonParser);
+        final Iterable<OperationGroup> groups = JsonParseUtil.parseJsonArray(json.getAsJsonArray("groups"), this);
+        final OperationHeader header = JsonParseUtil.parseOptionalJsonObject(json, "header", headerJsonParser);
+        final Integer weight = JsonParseUtil.parseOptionInteger(json, "weight");
+        return new OperationGroup(id, links, groups, header, weight);
+    }
 }

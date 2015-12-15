@@ -27,13 +27,13 @@ import java.net.URI;
  * @since v0.1
  */
 public class BasicVotesJsonParser implements JsonElementParser<BasicVotes> {
-	@Override
-	public BasicVotes parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public BasicVotes parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI self = JsonParseUtil.getSelfUri(json);
-		final int voteCount = JsonParseUtil.getAsInt(json, "votes");
-		final boolean hasVoted = json.get("hasVoted").getAsBoolean();
-		return new BasicVotes(self, voteCount, hasVoted);
-	}
+        final URI self = JsonParseUtil.getSelfUri(json);
+        final int voteCount = JsonParseUtil.getAsInt(json, "votes");
+        final boolean hasVoted = json.get("hasVoted").getAsBoolean();
+        return new BasicVotes(self, voteCount, hasVoted);
+    }
 }

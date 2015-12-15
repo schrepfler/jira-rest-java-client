@@ -25,20 +25,20 @@ import java.net.URI;
 
 public class BasicComponentJsonParser implements JsonElementParser<BasicComponent> {
 
-	@Override
-	public BasicComponent parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public BasicComponent parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		return parseBasicComponent(json);
-	}
+        return parseBasicComponent(json);
+    }
 
-	static BasicComponent parseBasicComponent(JsonObject json) throws JsonParseException {
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String description = JsonParseUtil.getOptionalString(json, "description");
-		return new BasicComponent(selfUri, id, name, description);
-	}
+    static BasicComponent parseBasicComponent(JsonObject json) throws JsonParseException {
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final Long id = JsonParseUtil.getOptionalLong(json, "id");
+        final String description = JsonParseUtil.getOptionalString(json, "description");
+        return new BasicComponent(selfUri, id, name, description);
+    }
 
 
 }

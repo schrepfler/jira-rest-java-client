@@ -29,24 +29,24 @@ import java.util.Collection;
 
 public class ProjectRoleJsonParser implements JsonElementParser<ProjectRole> {
 
-	private final RoleActorJsonParser roleActorJsonParser;
+    private final RoleActorJsonParser roleActorJsonParser;
 
-	public ProjectRoleJsonParser(URI baseJiraUri) {
-		this.roleActorJsonParser = new RoleActorJsonParser(baseJiraUri);
-	}
+    public ProjectRoleJsonParser(URI baseJiraUri) {
+        this.roleActorJsonParser = new RoleActorJsonParser(baseJiraUri);
+    }
 
-	@Override
-	public ProjectRole parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public ProjectRole parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI self = JsonParseUtil.getSelfUri(json);
-		final long id = json.get("id").getAsLong();
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final String description = JsonParseUtil.getAsString(json, "description");
-		final Optional<JsonArray> roleActorsOpt = JsonParseUtil.getOptionalArray(json, "actors");
-		final Collection<RoleActor> roleActors = roleActorsOpt.isPresent() ?
-				JsonParseUtil.parseJsonArray(roleActorsOpt.get(), roleActorJsonParser) : ImmutableSet.<RoleActor>of();
-		return new ProjectRole(id, self, name, description, roleActors);
-	}
+        final URI self = JsonParseUtil.getSelfUri(json);
+        final long id = json.get("id").getAsLong();
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String description = JsonParseUtil.getAsString(json, "description");
+        final Optional<JsonArray> roleActorsOpt = JsonParseUtil.getOptionalArray(json, "actors");
+        final Collection<RoleActor> roleActors = roleActorsOpt.isPresent() ?
+                JsonParseUtil.parseJsonArray(roleActorsOpt.get(), roleActorJsonParser) : ImmutableSet.<RoleActor>of();
+        return new ProjectRole(id, self, name, description, roleActors);
+    }
 
 }

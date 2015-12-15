@@ -21,22 +21,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 class JsonWeakParserForJsonObject<T> implements JsonWeakParser<T> {
-	private final JsonElementParser<T> jsonParser;
+    private final JsonElementParser<T> jsonParser;
 
-	public JsonWeakParserForJsonObject(JsonElementParser<T> jsonParser) {
-		this.jsonParser = jsonParser;
-	}
+    public JsonWeakParserForJsonObject(JsonElementParser<T> jsonParser) {
+        this.jsonParser = jsonParser;
+    }
 
-	private <T> T convert(Object o, Class<T> clazz) throws JsonParseException {
-		try {
-			return clazz.cast(o);
-		} catch (ClassCastException e) {
-			throw new JsonParseException("Expected [" + clazz.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
-		}
-	}
+    private <T> T convert(Object o, Class<T> clazz) throws JsonParseException {
+        try {
+            return clazz.cast(o);
+        } catch (ClassCastException e) {
+            throw new JsonParseException("Expected [" + clazz.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
+        }
+    }
 
-	@Override
-	public T parse(Object o) throws JsonParseException {
-		return jsonParser.parse(convert(o, JsonObject.class));
-	}
+    @Override
+    public T parse(Object o) throws JsonParseException {
+        return jsonParser.parse(convert(o, JsonObject.class));
+    }
 }

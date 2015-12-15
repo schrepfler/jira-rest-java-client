@@ -28,21 +28,21 @@ import java.net.URI;
 
 public class WorklogJsonParser implements JsonElementParser<Worklog> {
 
-	@Override
-	public Worklog parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Worklog parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI self = JsonParseUtil.getSelfUri(json);
-		final URI issueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "issue"));
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
-		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
-		// it turns out that somehow it can be sometimes omitted in the resource representation - JRJC-49
-		final String comment = JsonParseUtil.getOptionalString(json, "comment");
-		final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
-		final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
-		final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
-		final int minutesSpent = JsonParseUtil.getAsInt(json, "minutesSpent");
-		final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
-		return new Worklog(self, issueUri, author, updateAuthor, comment, creationDate, updateDate, startDate, minutesSpent, visibility);
-	}
+        final URI self = JsonParseUtil.getSelfUri(json);
+        final URI issueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "issue"));
+        final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
+        final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
+        // it turns out that somehow it can be sometimes omitted in the resource representation - JRJC-49
+        final String comment = JsonParseUtil.getOptionalString(json, "comment");
+        final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
+        final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
+        final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
+        final int minutesSpent = JsonParseUtil.getAsInt(json, "minutesSpent");
+        final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
+        return new Worklog(self, issueUri, author, updateAuthor, comment, creationDate, updateDate, startDate, minutesSpent, visibility);
+    }
 }

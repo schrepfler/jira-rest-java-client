@@ -21,12 +21,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class BasicUserJsonGenerator implements JsonGenerator<BasicUser> {
-	@Override
-	public JsonObject generate(BasicUser user) throws JsonParseException {
-		JsonObject obj = new JsonObject();
-		obj.addProperty("self", user.getSelf().toString());
-		obj.addProperty("name", user.getName());
-		obj.addProperty("displayName", user.getDisplayName());
-		return obj;
-	}
+    @Override
+    public JsonObject generate(BasicUser user) throws JsonParseException {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("self", user.getSelf().toString());
+        obj.addProperty("name", user.getName());
+        obj.addProperty("displayName", user.getDisplayName());
+        return obj;
+    }
 }

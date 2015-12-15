@@ -26,26 +26,26 @@ import java.util.Collection;
 import java.util.Map;
 
 public class TransitionJsonParserV5 implements JsonElementParser<Transition> {
-	private final TransitionFieldJsonParser transitionFieldJsonParser = new TransitionFieldJsonParser();
+    private final TransitionFieldJsonParser transitionFieldJsonParser = new TransitionFieldJsonParser();
 
-	public Transition parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    public Transition parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final int id = JsonParseUtil.getAsInt(json, "id");
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final JsonObject fieldsObj = json.getAsJsonObject("fields");
-		final Collection<Transition.Field> fields = Lists.newArrayList();
-		for (Map.Entry<String, JsonElement> entry: fieldsObj.entrySet()) {
-			fields.add(transitionFieldJsonParser.parse(entry.getValue().getAsJsonObject(), entry.getKey()));
-		}
-		return new Transition(name, id, fields);
-	}
+        final int id = JsonParseUtil.getAsInt(json, "id");
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final JsonObject fieldsObj = json.getAsJsonObject("fields");
+        final Collection<Transition.Field> fields = Lists.newArrayList();
+        for (Map.Entry<String, JsonElement> entry: fieldsObj.entrySet()) {
+            fields.add(transitionFieldJsonParser.parse(entry.getValue().getAsJsonObject(), entry.getKey()));
+        }
+        return new Transition(name, id, fields);
+    }
 
-	public static class TransitionFieldJsonParser {
-		public Transition.Field parse(JsonObject json, final String id) throws JsonParseException {
-			final boolean isRequired = json.get("required").getAsBoolean();
-			final String type = JsonParseUtil.getAsString(json.getAsJsonObject("schema"), "type");
-			return new Transition.Field(id, isRequired, type);
-		}
-	}
+    public static class TransitionFieldJsonParser {
+        public Transition.Field parse(JsonObject json, final String id) throws JsonParseException {
+            final boolean isRequired = json.get("required").getAsBoolean();
+            final String type = JsonParseUtil.getAsString(json.getAsJsonObject("schema"), "type");
+            return new Transition.Field(id, isRequired, type);
+        }
+    }
 }

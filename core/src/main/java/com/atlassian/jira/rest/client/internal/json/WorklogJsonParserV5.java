@@ -28,30 +28,30 @@ import java.net.URI;
 
 public class WorklogJsonParserV5 implements JsonElementParser<Worklog> {
 
-	private final URI issue;
+    private final URI issue;
 
-	public WorklogJsonParserV5(URI issue) {
-		this.issue = issue;
-	}
+    public WorklogJsonParserV5(URI issue) {
+        this.issue = issue;
+    }
 
 
-	@Override
-	public Worklog parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Worklog parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI self = JsonParseUtil.getSelfUri(json);
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
-		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
-		// comment is optional due to JRJC-49: JIRA can return worklog without comment
-		final String commentResult = JsonParseUtil.getOptionalString(json, "comment");
-		final String comment = (commentResult == null)? "" : commentResult;
-		final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
-		final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
-		final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
-		// timeSpentSeconds is not required due to bug: JRADEV-8825 (fixed in 5.0, Iteration 14).
-		final int secondsSpent = JsonParseUtil.getAsInt(json, "timeSpentSeconds");
-		final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
-		return new Worklog(self, issue, author, updateAuthor, comment, creationDate, updateDate, startDate,
-				secondsSpent / 60, visibility);
-	}
+        final URI self = JsonParseUtil.getSelfUri(json);
+        final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
+        final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
+        // comment is optional due to JRJC-49: JIRA can return worklog without comment
+        final String commentResult = JsonParseUtil.getOptionalString(json, "comment");
+        final String comment = (commentResult == null)? "" : commentResult;
+        final DateTime creationDate = JsonParseUtil.parseDateTime(json, "created");
+        final DateTime updateDate = JsonParseUtil.parseDateTime(json, "updated");
+        final DateTime startDate = JsonParseUtil.parseDateTime(json, "started");
+        // timeSpentSeconds is not required due to bug: JRADEV-8825 (fixed in 5.0, Iteration 14).
+        final int secondsSpent = JsonParseUtil.getAsInt(json, "timeSpentSeconds");
+        final Visibility visibility = new VisibilityJsonParser().parseVisibility(json);
+        return new Worklog(self, issue, author, updateAuthor, comment, creationDate, updateDate, startDate,
+                secondsSpent / 60, visibility);
+    }
 }

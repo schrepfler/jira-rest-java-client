@@ -22,16 +22,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class TimeTrackingJsonParserV5 implements JsonElementParser<TimeTracking> {
-	@Override
-	public TimeTracking parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public TimeTracking parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final Integer originalEstimateMinutes = JsonParseUtil.parseOptionInteger(json, "originalEstimateSeconds");
-		final Integer timeRemainingMinutes = JsonParseUtil.parseOptionInteger(json, "remainingEstimateSeconds");
-		final Integer timeSpentMinutes = JsonParseUtil.parseOptionInteger(json, "timeSpentSeconds");
-		return new TimeTracking(originalEstimateMinutes != null ? originalEstimateMinutes / 60 : null,
-				timeRemainingMinutes != null ? timeRemainingMinutes / 60 : null,
-				timeSpentMinutes != null ? timeSpentMinutes / 60 : null);
-	}
+        final Integer originalEstimateMinutes = JsonParseUtil.parseOptionInteger(json, "originalEstimateSeconds");
+        final Integer timeRemainingMinutes = JsonParseUtil.parseOptionInteger(json, "remainingEstimateSeconds");
+        final Integer timeSpentMinutes = JsonParseUtil.parseOptionInteger(json, "timeSpentSeconds");
+        return new TimeTracking(originalEstimateMinutes != null ? originalEstimateMinutes / 60 : null,
+                timeRemainingMinutes != null ? timeRemainingMinutes / 60 : null,
+                timeSpentMinutes != null ? timeSpentMinutes / 60 : null);
+    }
 
 }

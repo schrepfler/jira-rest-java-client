@@ -25,22 +25,22 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class OperationLinkJsonParserTest {
-	@Test
-	public void testParseFull() throws Exception {
-		testParseResource("/json/operationLink/valid.json", is(new OperationLink("comment-issue",
-				"issueaction-comment-issue add-issue-comment", "Comment", "Comment on this issue",
-				"/secure/AddComment!default.jspa?id=10100", 10, "aui-icon aui-icon-small aui-iconfont-comment icon-comment")));
-	}
+    @Test
+    public void testParseFull() throws Exception {
+        testParseResource("/json/operationLink/valid.json", is(new OperationLink("comment-issue",
+                "issueaction-comment-issue add-issue-comment", "Comment", "Comment on this issue",
+                "/secure/AddComment!default.jspa?id=10100", 10, "aui-icon aui-icon-small aui-iconfont-comment icon-comment")));
+    }
 
-	@Test
-	public void testParsePartial() throws Exception {
-		testParseResource("/json/operationLink/with-label-href-only.json", is(new OperationLink(null,
-				null, "Comment", null, "/secure/AddComment!default.jspa?id=10100", null, null)));
-	}
+    @Test
+    public void testParsePartial() throws Exception {
+        testParseResource("/json/operationLink/with-label-href-only.json", is(new OperationLink(null,
+                null, "Comment", null, "/secure/AddComment!default.jspa?id=10100", null, null)));
+    }
 
-	private void testParseResource(String resourcePath, Matcher<OperationLink> expected) throws JsonParseException {
-		OperationLinkJsonParser parser = new OperationLinkJsonParser();
-		OperationLink actual = parser.parse(ResourceUtil.getJsonObjectFromResource(resourcePath));
-		assertThat(actual, expected);
-	}
+    private void testParseResource(String resourcePath, Matcher<OperationLink> expected) throws JsonParseException {
+        OperationLinkJsonParser parser = new OperationLinkJsonParser();
+        OperationLink actual = parser.parse(ResourceUtil.getJsonObjectFromResource(resourcePath));
+        assertThat(actual, expected);
+    }
 }

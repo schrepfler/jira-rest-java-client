@@ -6,12 +6,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class IssueLinkTypesJsonParser implements JsonElementParser<Iterable<IssuelinksType>> {
-	private final IssuelinksTypeJsonParserV5 issueLinkTypeJsonParser = new IssuelinksTypeJsonParserV5();
+    private final IssuelinksTypeJsonParserV5 issueLinkTypeJsonParser = new IssuelinksTypeJsonParserV5();
 
-	@Override
-	public Iterable<IssuelinksType> parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Iterable<IssuelinksType> parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		return JsonParseUtil.parseJsonArray(json.getAsJsonArray("issueLinkTypes"), issueLinkTypeJsonParser);
-	}
+        return JsonParseUtil.parseJsonArray(json.getAsJsonArray("issueLinkTypes"), issueLinkTypeJsonParser);
+    }
 }

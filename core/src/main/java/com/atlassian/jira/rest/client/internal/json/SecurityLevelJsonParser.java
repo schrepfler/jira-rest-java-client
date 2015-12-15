@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * 	http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,14 +30,14 @@ import java.net.URI;
  */
 public class SecurityLevelJsonParser implements JsonElementParser<SecurityLevel> {
 
-	@Override
-	public SecurityLevel parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public SecurityLevel parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI self = JsonParseUtil.getSelfUri(json);
-		final long id = json.get("id").getAsLong();
-		final String description = JsonParseUtil.getAsString(json, "description");
-		final String name = JsonParseUtil.getAsString(json, "name");
-		return new SecurityLevel(self, id, name, description);
-	}
+        final URI self = JsonParseUtil.getSelfUri(json);
+        final long id = json.get("id").getAsLong();
+        final String description = JsonParseUtil.getAsString(json, "description");
+        final String name = JsonParseUtil.getAsString(json, "name");
+        return new SecurityLevel(self, id, name, description);
+    }
 }

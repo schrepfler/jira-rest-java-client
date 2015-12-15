@@ -27,14 +27,14 @@ import java.net.URI;
  * @since v0.1
  */
 public class ResolutionJsonParser implements JsonElementParser<Resolution> {
-	@Override
-	public Resolution parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Resolution parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String description = JsonParseUtil.getOptionalString(json, "description");
-		return new Resolution(selfUri, id, name, description);
-	}
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final Long id = JsonParseUtil.getOptionalLong(json, "id");
+        final String description = JsonParseUtil.getOptionalString(json, "description");
+        return new Resolution(selfUri, id, name, description);
+    }
 }

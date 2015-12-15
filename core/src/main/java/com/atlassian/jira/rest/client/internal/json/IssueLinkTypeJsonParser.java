@@ -22,24 +22,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class IssueLinkTypeJsonParser implements JsonElementParser<IssueLinkType> {
-	private static final String KEY_DIRECTION = "direction";
+    private static final String KEY_DIRECTION = "direction";
 
-	@Override
-	public IssueLinkType parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public IssueLinkType parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final String description = JsonParseUtil.getAsString(json, "description");
-		final String dirStr = JsonParseUtil.getAsString(json, KEY_DIRECTION);
-		final IssueLinkType.Direction direction;
-		if ("OUTBOUND".equals(dirStr)) {
-			direction = IssueLinkType.Direction.OUTBOUND;
-		} else if ("INBOUND".equals(dirStr)) {
-			direction = IssueLinkType.Direction.INBOUND;
-		} else {
-			throw new JsonParseException("Invalid value of " + KEY_DIRECTION + " key: [" + dirStr + "]");
-		}
-		return new IssueLinkType(name, description, direction);
-	}
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String description = JsonParseUtil.getAsString(json, "description");
+        final String dirStr = JsonParseUtil.getAsString(json, KEY_DIRECTION);
+        final IssueLinkType.Direction direction;
+        if ("OUTBOUND".equals(dirStr)) {
+            direction = IssueLinkType.Direction.OUTBOUND;
+        } else if ("INBOUND".equals(dirStr)) {
+            direction = IssueLinkType.Direction.INBOUND;
+        } else {
+            throw new JsonParseException("Invalid value of " + KEY_DIRECTION + " key: [" + dirStr + "]");
+        }
+        return new IssueLinkType(name, description, direction);
+    }
 }
 

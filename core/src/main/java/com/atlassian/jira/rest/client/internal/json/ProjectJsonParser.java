@@ -36,10 +36,10 @@ import java.util.Collections;
 
 public class ProjectJsonParser implements JsonElementParser<Project> {
 
-	private final VersionJsonParser versionJsonParser = new VersionJsonParser();
-	private final BasicComponentJsonParser componentJsonParser = new BasicComponentJsonParser();
-	private final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
-	private final BasicProjectRoleJsonParser basicProjectRoleJsonParser = new BasicProjectRoleJsonParser();
+    private final VersionJsonParser versionJsonParser = new VersionJsonParser();
+    private final BasicComponentJsonParser componentJsonParser = new BasicComponentJsonParser();
+    private final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
+    private final BasicProjectRoleJsonParser basicProjectRoleJsonParser = new BasicProjectRoleJsonParser();
 
     static Iterable<String> parseExpandos(final JsonObject json) throws JsonParseException
     {
@@ -51,36 +51,36 @@ public class ProjectJsonParser implements JsonElementParser<Project> {
         }
     }
 
-	@Override
-	public Project parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Project parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
         URI self = JsonParseUtil.getSelfUri(json);
         final Iterable<String> expandos = parseExpandos(json);
         final BasicUser lead = JsonParseUtil.parseBasicUser(json.getAsJsonObject("lead"));
-		final String key = JsonParseUtil.getAsString(json, "key");
-		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String name = JsonParseUtil.getOptionalString(json, "name");
-		final String urlStr = JsonParseUtil.getOptionalString(json, "url");
-		URI uri;
-		try {
-			uri = urlStr == null || "".equals(urlStr) ? null : new URI(urlStr);
-		} catch (URISyntaxException e) {
-			uri = null;
-		}
-		String description = JsonParseUtil.getOptionalString(json, "description");
-		if ("".equals(description)) {
-			description = null;
-		}
-		final Collection<Version> versions = JsonParseUtil.parseJsonArray(json.getAsJsonArray("versions"), versionJsonParser);
-		final Collection<BasicComponent> components = JsonParseUtil.parseJsonArray(json
-				.getAsJsonArray("components"), componentJsonParser);
-		final JsonArray issueTypesArray = json.getAsJsonArray("issueTypes");
-		final OptionalIterable<IssueType> issueTypes = JsonParseUtil.parseOptionalJsonArray(issueTypesArray, issueTypeJsonParser);
-		final Collection<BasicProjectRole> projectRoles = basicProjectRoleJsonParser.parse(JsonParseUtil
-				.getOptionalJsonObject(json, "roles"));
+        final String key = JsonParseUtil.getAsString(json, "key");
+        final Long id = JsonParseUtil.getOptionalLong(json, "id");
+        final String name = JsonParseUtil.getOptionalString(json, "name");
+        final String urlStr = JsonParseUtil.getOptionalString(json, "url");
+        URI uri;
+        try {
+            uri = urlStr == null || "".equals(urlStr) ? null : new URI(urlStr);
+        } catch (URISyntaxException e) {
+            uri = null;
+        }
+        String description = JsonParseUtil.getOptionalString(json, "description");
+        if ("".equals(description)) {
+            description = null;
+        }
+        final Collection<Version> versions = JsonParseUtil.parseJsonArray(json.getAsJsonArray("versions"), versionJsonParser);
+        final Collection<BasicComponent> components = JsonParseUtil.parseJsonArray(json
+                .getAsJsonArray("components"), componentJsonParser);
+        final JsonArray issueTypesArray = json.getAsJsonArray("issueTypes");
+        final OptionalIterable<IssueType> issueTypes = JsonParseUtil.parseOptionalJsonArray(issueTypesArray, issueTypeJsonParser);
+        final Collection<BasicProjectRole> projectRoles = basicProjectRoleJsonParser.parse(JsonParseUtil
+                .getOptionalJsonObject(json, "roles"));
         return new Project(expandos, self, key, id, name, description, lead, uri, versions, components, issueTypes, projectRoles);
-	}
+    }
 
 
 }

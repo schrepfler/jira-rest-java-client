@@ -25,17 +25,17 @@ import org.joda.time.DateTime;
 import java.net.URI;
 
 public class ServerInfoJsonParser implements JsonElementParser<ServerInfo> {
-	@Override
-	public ServerInfo parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public ServerInfo parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI baseUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "baseUrl"));
-		final String version = JsonParseUtil.getAsString(json, "version");
-		final int buildNumber = JsonParseUtil.getAsInt(json, "buildNumber");
-		final DateTime buildDate = JsonParseUtil.parseDateTime(json, "buildDate");
-		final DateTime serverTime = JsonParseUtil.parseOptionalDateTime(json, "serverTime");
-		final String scmInfo = JsonParseUtil.getAsString(json, "scmInfo");
-		final String serverTitle = JsonParseUtil.getAsString(json, "serverTitle");
-		return new ServerInfo(baseUri, version, buildNumber, buildDate, serverTime, scmInfo, serverTitle);
-	}
+        final URI baseUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "baseUrl"));
+        final String version = JsonParseUtil.getAsString(json, "version");
+        final int buildNumber = JsonParseUtil.getAsInt(json, "buildNumber");
+        final DateTime buildDate = JsonParseUtil.parseDateTime(json, "buildDate");
+        final DateTime serverTime = JsonParseUtil.parseOptionalDateTime(json, "serverTime");
+        final String scmInfo = JsonParseUtil.getAsString(json, "scmInfo");
+        final String serverTitle = JsonParseUtil.getAsString(json, "serverTitle");
+        return new ServerInfo(baseUri, version, buildNumber, buildDate, serverTime, scmInfo, serverTitle);
+    }
 }

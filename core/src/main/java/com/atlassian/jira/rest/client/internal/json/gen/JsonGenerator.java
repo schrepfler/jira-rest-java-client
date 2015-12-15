@@ -20,5 +20,5 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public interface JsonGenerator<T> {
-	JsonObject generate(T bean)  throws JsonParseException;
+    JsonObject generate(T bean)  throws JsonParseException;
 }

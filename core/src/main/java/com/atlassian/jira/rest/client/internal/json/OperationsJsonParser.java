@@ -25,13 +25,13 @@ import com.google.gson.JsonParseException;
 import java.util.Collection;
 
 public class OperationsJsonParser implements JsonElementParser<Operations> {
-	private final JsonElementParser<OperationGroup> groupParser = new OperationGroupJsonParser();
+    private final JsonElementParser<OperationGroup> groupParser = new OperationGroupJsonParser();
 
-	@Override
-	public Operations parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Operations parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final Collection<OperationGroup> linkGroups = JsonParseUtil.parseJsonArray(json.getAsJsonArray("linkGroups"), groupParser);
-		return new Operations(linkGroups);
-	}
+        final Collection<OperationGroup> linkGroups = JsonParseUtil.parseJsonArray(json.getAsJsonArray("linkGroups"), groupParser);
+        return new Operations(linkGroups);
+    }
 }

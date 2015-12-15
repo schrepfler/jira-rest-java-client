@@ -26,19 +26,19 @@ import java.util.List;
 import java.util.Map;
 
 public class PermissionsJsonParser implements JsonElementParser<Permissions> {
-	private final PermissionJsonParser permissionJsonParser = new PermissionJsonParser();
+    private final PermissionJsonParser permissionJsonParser = new PermissionJsonParser();
 
-	@Override
-	public Permissions parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Permissions parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final JsonObject permissionsObject = json.getAsJsonObject("permissions");
+        final JsonObject permissionsObject = json.getAsJsonObject("permissions");
 
-		final List<Permission> permissions = Lists.newArrayList();
-		for (Map.Entry<String, JsonElement> entry : permissionsObject.entrySet()) {
-			final Permission permission = permissionJsonParser.parse(entry.getValue().getAsJsonObject());
-			permissions.add(permission);
-		}
-		return new Permissions(permissions);
-	}
+        final List<Permission> permissions = Lists.newArrayList();
+        for (Map.Entry<String, JsonElement> entry : permissionsObject.entrySet()) {
+            final Permission permission = permissionJsonParser.parse(entry.getValue().getAsJsonObject());
+            permissions.add(permission);
+        }
+        return new Permissions(permissions);
+    }
 }

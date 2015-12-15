@@ -19,14 +19,14 @@ package com.atlassian.jira.rest.client.internal.json;
 import com.google.gson.JsonParseException;
 
 public class JsonWeakParserForString implements JsonWeakParser<String> {
-	@Override
-	public String parse(Object o) throws JsonParseException {
-		try {
-			return (String) o;
-		} catch (ClassCastException e) {
-			throw new JsonParseException(
-					"Expected [" + String.class.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
-		}
-	}
+    @Override
+    public String parse(Object o) throws JsonParseException {
+        try {
+            return (String) o;
+        } catch (ClassCastException e) {
+            throw new JsonParseException(
+                    "Expected [" + String.class.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
+        }
+    }
 
 }

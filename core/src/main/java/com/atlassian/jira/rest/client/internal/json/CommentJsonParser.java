@@ -27,22 +27,22 @@ import java.net.URI;
 
 public class CommentJsonParser implements JsonElementParser<Comment> {
 
-	public static final String VISIBILITY_KEY = "visibility";
-	private final VisibilityJsonParser visibilityJsonParser = new VisibilityJsonParser();
+    public static final String VISIBILITY_KEY = "visibility";
+    private final VisibilityJsonParser visibilityJsonParser = new VisibilityJsonParser();
 
-	@Override
-	public Comment parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Comment parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String body = JsonParseUtil.getAsString(json, "body");
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
-		final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final Long id = JsonParseUtil.getOptionalLong(json, "id");
+        final String body = JsonParseUtil.getAsString(json, "body");
+        final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
+        final BasicUser updateAuthor = JsonParseUtil.parseBasicUser(json.getAsJsonObject("updateAuthor"));
 
-		final Visibility visibility = visibilityJsonParser.parseVisibility(json);
-		return new Comment(selfUri, body, author, updateAuthor, JsonParseUtil
-				.parseDateTime(JsonParseUtil.getAsString(json, "created")),
-						JsonParseUtil.parseDateTime(JsonParseUtil.getAsString(json, "updated")), visibility, id);
-	}
+        final Visibility visibility = visibilityJsonParser.parseVisibility(json);
+        return new Comment(selfUri, body, author, updateAuthor, JsonParseUtil
+                .parseDateTime(JsonParseUtil.getAsString(json, "created")),
+                        JsonParseUtil.parseDateTime(JsonParseUtil.getAsString(json, "updated")), visibility, id);
+    }
 }

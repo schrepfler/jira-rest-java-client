@@ -24,14 +24,14 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class BasicProjectJsonParser implements JsonElementParser<BasicProject> {
-	@Override
-	public BasicProject parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public BasicProject parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String key = JsonParseUtil.getAsString(json, "key");
-		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String name = JsonParseUtil.getOptionalString(json, "name");
-		return new BasicProject(selfUri, key, id, name);
-	}
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final String key = JsonParseUtil.getAsString(json, "key");
+        final Long id = JsonParseUtil.getOptionalLong(json, "id");
+        final String name = JsonParseUtil.getOptionalString(json, "name");
+        return new BasicProject(selfUri, key, id, name);
+    }
 }

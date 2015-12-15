@@ -27,23 +27,23 @@ import java.util.Collections;
 
 public class SearchResultJsonParser implements JsonElementParser<SearchResult> {
 
-	@Override
-	public SearchResult parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public SearchResult parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final int startAt = JsonParseUtil.getAsInt(json, "startAt");
-		final int maxResults = JsonParseUtil.getAsInt(json, "maxResults");
-		final int total = JsonParseUtil.getAsInt(json, "total");
-		final JsonArray issuesJsonArray = json.getAsJsonArray("issues");
+        final int startAt = JsonParseUtil.getAsInt(json, "startAt");
+        final int maxResults = JsonParseUtil.getAsInt(json, "maxResults");
+        final int total = JsonParseUtil.getAsInt(json, "total");
+        final JsonArray issuesJsonArray = json.getAsJsonArray("issues");
 
-		final Iterable<Issue> issues;
-		if (issuesJsonArray.size() > 0) {
-			final IssueJsonParser issueParser = new IssueJsonParser(json.getAsJsonObject("names"), json.getAsJsonObject("schema"));
-			final GenericJsonArrayParser<Issue> issuesParser = GenericJsonArrayParser.create(issueParser);
-			issues = issuesParser.parse(issuesJsonArray);
-		} else {
-			issues = Collections.emptyList();
-		}
-		return new SearchResult(startAt, maxResults, total, issues);
-	}
+        final Iterable<Issue> issues;
+        if (issuesJsonArray.size() > 0) {
+            final IssueJsonParser issueParser = new IssueJsonParser(json.getAsJsonObject("names"), json.getAsJsonObject("schema"));
+            final GenericJsonArrayParser<Issue> issuesParser = GenericJsonArrayParser.create(issueParser);
+            issues = issuesParser.parse(issuesJsonArray);
+        } else {
+            issues = Collections.emptyList();
+        }
+        return new SearchResult(startAt, maxResults, total, issues);
+    }
 }

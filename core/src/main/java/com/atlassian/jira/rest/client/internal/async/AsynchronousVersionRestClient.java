@@ -44,80 +44,80 @@ import java.net.URI;
  */
 public class AsynchronousVersionRestClient extends AbstractAsynchronousRestClient implements VersionRestClient {
 
-	private final URI versionRootUri;
+    private final URI versionRootUri;
 
-	public AsynchronousVersionRestClient(URI baseUri, final HttpClient client) {
-		super(client);
-		versionRootUri = UriBuilder.fromUri(baseUri).path("version").build();
-	}
+    public AsynchronousVersionRestClient(URI baseUri, final HttpClient client) {
+        super(client);
+        versionRootUri = UriBuilder.fromUri(baseUri).path("version").build();
+    }
 
-	@Override
-	public Promise<Version> getVersion(final URI versionUri) {
-		return getAndParse(versionUri, new VersionJsonParser());
-	}
+    @Override
+    public Promise<Version> getVersion(final URI versionUri) {
+        return getAndParse(versionUri, new VersionJsonParser());
+    }
 
-	@Override
-	public Promise<Version> createVersion(final VersionInput versionInput) {
-		return postAndParse(versionRootUri, versionInput, new VersionInputJsonGenerator(), new VersionJsonParser());
-	}
+    @Override
+    public Promise<Version> createVersion(final VersionInput versionInput) {
+        return postAndParse(versionRootUri, versionInput, new VersionInputJsonGenerator(), new VersionJsonParser());
+    }
 
-	@Override
-	public Promise<Version> updateVersion(final URI versionUri, final VersionInput versionInput) {
-		return putAndParse(versionUri, versionInput, new VersionInputJsonGenerator(), new VersionJsonParser());
-	}
+    @Override
+    public Promise<Version> updateVersion(final URI versionUri, final VersionInput versionInput) {
+        return putAndParse(versionUri, versionInput, new VersionInputJsonGenerator(), new VersionJsonParser());
+    }
 
-	@Override
-	public Promise<Void> removeVersion(final URI versionUri, final @Nullable URI moveFixIssuesToVersionUri,
-			final @Nullable URI moveAffectedIssuesToVersionUri) {
-		final UriBuilder uriBuilder = UriBuilder.fromUri(versionUri);
-		if (moveFixIssuesToVersionUri != null) {
-			uriBuilder.queryParam("moveFixIssuesTo", moveFixIssuesToVersionUri);
-		}
-		if (moveAffectedIssuesToVersionUri != null) {
-			uriBuilder.queryParam("moveAffectedIssuesTo", moveAffectedIssuesToVersionUri);
-		}
-		return delete(uriBuilder.build());
-	}
+    @Override
+    public Promise<Void> removeVersion(final URI versionUri, final @Nullable URI moveFixIssuesToVersionUri,
+            final @Nullable URI moveAffectedIssuesToVersionUri) {
+        final UriBuilder uriBuilder = UriBuilder.fromUri(versionUri);
+        if (moveFixIssuesToVersionUri != null) {
+            uriBuilder.queryParam("moveFixIssuesTo", moveFixIssuesToVersionUri);
+        }
+        if (moveAffectedIssuesToVersionUri != null) {
+            uriBuilder.queryParam("moveAffectedIssuesTo", moveAffectedIssuesToVersionUri);
+        }
+        return delete(uriBuilder.build());
+    }
 
-	@Override
-	public Promise<VersionRelatedIssuesCount> getVersionRelatedIssuesCount(final URI versionUri) {
-		final URI relatedIssueCountsUri = UriBuilder.fromUri(versionUri).path("relatedIssueCounts").build();
-		return getAndParse(relatedIssueCountsUri, new VersionRelatedIssueCountJsonParser());
-	}
+    @Override
+    public Promise<VersionRelatedIssuesCount> getVersionRelatedIssuesCount(final URI versionUri) {
+        final URI relatedIssueCountsUri = UriBuilder.fromUri(versionUri).path("relatedIssueCounts").build();
+        return getAndParse(relatedIssueCountsUri, new VersionRelatedIssueCountJsonParser());
+    }
 
-	@Override
-	public Promise<Integer> getNumUnresolvedIssues(final URI versionUri) {
-		final URI unresolvedIssueCountUri = UriBuilder.fromUri(versionUri).path("unresolvedIssueCount").build();
-		return getAndParse(unresolvedIssueCountUri, new JsonElementParser<Integer>() {
-			@Override
-			public Integer parse(JsonElement json) throws JsonParseException {
-				return JsonParseUtil.getAsInt(json.getAsJsonObject(), "issuesUnresolvedCount");
-			}
-		});
-	}
+    @Override
+    public Promise<Integer> getNumUnresolvedIssues(final URI versionUri) {
+        final URI unresolvedIssueCountUri = UriBuilder.fromUri(versionUri).path("unresolvedIssueCount").build();
+        return getAndParse(unresolvedIssueCountUri, new JsonElementParser<Integer>() {
+            @Override
+            public Integer parse(JsonElement json) throws JsonParseException {
+                return JsonParseUtil.getAsInt(json.getAsJsonObject(), "issuesUnresolvedCount");
+            }
+        });
+    }
 
-	@Override
-	public Promise<Version> moveVersionAfter(final URI versionUri, final URI afterVersionUri) {
-		final URI moveUri = getMoveVersionUri(versionUri);
+    @Override
+    public Promise<Version> moveVersionAfter(final URI versionUri, final URI afterVersionUri) {
+        final URI moveUri = getMoveVersionUri(versionUri);
 
-		return postAndParse(moveUri, afterVersionUri, new JsonGenerator<URI>() {
-			@Override
-			public JsonObject generate(final URI uri) throws JsonParseException {
-				final JsonObject res = new JsonObject();
-				res.addProperty("after", uri.toString());
-				return res;
-			}
-		}, new VersionJsonParser());
-	}
+        return postAndParse(moveUri, afterVersionUri, new JsonGenerator<URI>() {
+            @Override
+            public JsonObject generate(final URI uri) throws JsonParseException {
+                final JsonObject res = new JsonObject();
+                res.addProperty("after", uri.toString());
+                return res;
+            }
+        }, new VersionJsonParser());
+    }
 
-	@Override
-	public Promise<Version> moveVersion(final URI versionUri, final VersionPosition versionPosition) {
-		final URI moveUri = getMoveVersionUri(versionUri);
-		return postAndParse(moveUri, versionPosition, new VersionPositionInputGenerator(), new VersionJsonParser());
-	}
+    @Override
+    public Promise<Version> moveVersion(final URI versionUri, final VersionPosition versionPosition) {
+        final URI moveUri = getMoveVersionUri(versionUri);
+        return postAndParse(moveUri, versionPosition, new VersionPositionInputGenerator(), new VersionJsonParser());
+    }
 
-	private URI getMoveVersionUri(URI versionUri) {
-		return UriBuilder.fromUri(versionUri).path("move").build();
-	}
+    private URI getMoveVersionUri(URI versionUri) {
+        return UriBuilder.fromUri(versionUri).path("move").build();
+    }
 
 }

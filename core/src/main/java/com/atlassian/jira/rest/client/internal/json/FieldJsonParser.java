@@ -28,23 +28,23 @@ import com.google.gson.JsonParseException;
  */
 public class FieldJsonParser implements JsonElementParser<Field> {
 
-	private final FieldSchemaJsonParser schemaJsonParser = new FieldSchemaJsonParser();
+    private final FieldSchemaJsonParser schemaJsonParser = new FieldSchemaJsonParser();
 
-	@Override
-	public Field parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Field parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String id = JsonParseUtil.getAsString(json, "id");
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final Boolean orderable = JsonParseUtil.getAsBoolean(json, "orderable");
-		final Boolean navigable = JsonParseUtil.getAsBoolean(json, "navigable");
-		final Boolean searchable = JsonParseUtil.getAsBoolean(json, "searchable");
-		final FieldType custom = JsonParseUtil.getAsBoolean(json, "custom") ? FieldType.CUSTOM : FieldType.JIRA;
-		final FieldSchema schema = json.has("schema") ? schemaJsonParser.parse(json.getAsJsonObject("schema")) : null;
-		return new Field(id, name, custom, orderable, navigable, searchable, schema);
-	}
+        final String id = JsonParseUtil.getAsString(json, "id");
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final Boolean orderable = JsonParseUtil.getAsBoolean(json, "orderable");
+        final Boolean navigable = JsonParseUtil.getAsBoolean(json, "navigable");
+        final Boolean searchable = JsonParseUtil.getAsBoolean(json, "searchable");
+        final FieldType custom = JsonParseUtil.getAsBoolean(json, "custom") ? FieldType.CUSTOM : FieldType.JIRA;
+        final FieldSchema schema = json.has("schema") ? schemaJsonParser.parse(json.getAsJsonObject("schema")) : null;
+        return new Field(id, name, custom, orderable, navigable, searchable, schema);
+    }
 
-	public static JsonArrayParser<Iterable<Field>> createFieldsArrayParser() {
-		return GenericJsonArrayParser.create(new FieldJsonParser());
-	}
+    public static JsonArrayParser<Iterable<Field>> createFieldsArrayParser() {
+        return GenericJsonArrayParser.create(new FieldJsonParser());
+    }
 }

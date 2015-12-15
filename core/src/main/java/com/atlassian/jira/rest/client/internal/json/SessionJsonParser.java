@@ -25,15 +25,15 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class SessionJsonParser implements JsonElementParser<Session> {
-	private final LoginInfoJsonParser loginInfoJsonParser = new LoginInfoJsonParser();
+    private final LoginInfoJsonParser loginInfoJsonParser = new LoginInfoJsonParser();
 
-	@Override
-	public Session parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Session parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI userUri = JsonParseUtil.getSelfUri(json);
-		final String username = JsonParseUtil.getAsString(json, "name");
-		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getAsJsonObject("loginInfo"));
-		return new Session(userUri, username, loginInfo);
-	}
+        final URI userUri = JsonParseUtil.getSelfUri(json);
+        final String username = JsonParseUtil.getAsString(json, "name");
+        final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getAsJsonObject("loginInfo"));
+        return new Session(userUri, username, loginInfo);
+    }
 }

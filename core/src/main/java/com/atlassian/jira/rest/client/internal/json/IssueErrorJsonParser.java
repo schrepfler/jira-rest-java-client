@@ -34,32 +34,32 @@ import java.util.Map;
  */
 public class IssueErrorJsonParser implements JsonElementParser<BulkOperationErrorResult> {
 
-	@Override
-	public BulkOperationErrorResult parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public BulkOperationErrorResult parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final Integer status = JsonParseUtil.getAsInt(json, "status");
-		final Integer issueNumber = JsonParseUtil.getAsInt(json, "failedElementNumber");
+        final Integer status = JsonParseUtil.getAsInt(json, "status");
+        final Integer issueNumber = JsonParseUtil.getAsInt(json, "failedElementNumber");
 
-		final JsonObject elementErrors = json.getAsJsonObject("elementErrors");
-		final JsonObject jsonErrors = elementErrors.getAsJsonObject("errors");
-		final JsonArray jsonErrorMessages = elementErrors.getAsJsonArray("errorMessages");
+        final JsonObject elementErrors = json.getAsJsonObject("elementErrors");
+        final JsonObject jsonErrors = elementErrors.getAsJsonObject("errors");
+        final JsonArray jsonErrorMessages = elementErrors.getAsJsonArray("errorMessages");
 
-		final Collection<String> errorMessages;
-		if (jsonErrorMessages != null) {
-			errorMessages = JsonParseUtil.toStringCollection(jsonErrorMessages);
-		} else {
-			errorMessages = Collections.emptyList();
-		}
+        final Collection<String> errorMessages;
+        if (jsonErrorMessages != null) {
+            errorMessages = JsonParseUtil.toStringCollection(jsonErrorMessages);
+        } else {
+            errorMessages = Collections.emptyList();
+        }
 
-		final Map<String, String> errors;
-		if (jsonErrors != null) {
-			errors = JsonParseUtil.toStringMap(jsonErrors);
-		} else {
-			errors = Collections.emptyMap();
-		}
+        final Map<String, String> errors;
+        if (jsonErrors != null) {
+            errors = JsonParseUtil.toStringMap(jsonErrors);
+        } else {
+            errors = Collections.emptyMap();
+        }
 
-		return new BulkOperationErrorResult(new ErrorCollection(status, errorMessages, errors), issueNumber);
-	}
+        return new BulkOperationErrorResult(new ErrorCollection(status, errorMessages, errors), issueNumber);
+    }
 
 }

@@ -22,11 +22,11 @@ import com.google.gson.JsonParseException;
 
 public class VisibilityJsonGenerator implements JsonGenerator<Visibility> {
 
-	@Override
-	public JsonObject generate(Visibility visibility) throws JsonParseException {
-		JsonObject obj = new JsonObject();
-		obj.addProperty("type", visibility.getType().name().toLowerCase());
-		obj.addProperty("value", visibility.getValue());
-		return obj;
-	}
+    @Override
+    public JsonObject generate(Visibility visibility) throws JsonParseException {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("type", visibility.getType().name().toLowerCase());
+        obj.addProperty("value", visibility.getValue());
+        return obj;
+    }
 }

@@ -26,13 +26,13 @@ import java.net.URI;
 
 public class BasicUserJsonGeneratorTest {
 
-	private final BasicUserJsonGenerator generator = new BasicUserJsonGenerator();
+    private final BasicUserJsonGenerator generator = new BasicUserJsonGenerator();
 
-	@Test
-	public void testGenerate() throws Exception {
-		final BasicUser user = new BasicUser(new URI("http://localhost:2990/jira/rest/api/2/user?username=wseliga"), "wseliga", "Wojciech Seliga");
-		Assert.assertThat(generator.generate(user), JSONObjectMatcher.isEqual(
-				ResourceUtil.getJsonObjectFromResource("/json/user/valid-generated.json")
-		));
-	}
+    @Test
+    public void testGenerate() throws Exception {
+        final BasicUser user = new BasicUser(new URI("http://localhost:2990/jira/rest/api/2/user?username=wseliga"), "wseliga", "Wojciech Seliga");
+        Assert.assertThat(generator.generate(user), JSONObjectMatcher.isEqual(
+                ResourceUtil.getJsonObjectFromResource("/json/user/valid-generated.json")
+        ));
+    }
 }

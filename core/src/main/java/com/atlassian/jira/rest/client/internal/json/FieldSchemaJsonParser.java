@@ -28,16 +28,16 @@ import com.google.gson.JsonParseException;
  */
 public class FieldSchemaJsonParser implements JsonElementParser<FieldSchema> {
 
-	@Override
-	public FieldSchema parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public FieldSchema parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String type = JsonParseUtil.getOptionalString(json, "type");
-		final String items = JsonParseUtil.getOptionalString(json, "items");
-		final String system = JsonParseUtil.getOptionalString(json, "system");
-		final String custom = JsonParseUtil.getOptionalString(json, "custom");
-		final Long customId = JsonParseUtil.getOptionalLong(json, "customId");
+        final String type = JsonParseUtil.getOptionalString(json, "type");
+        final String items = JsonParseUtil.getOptionalString(json, "items");
+        final String system = JsonParseUtil.getOptionalString(json, "system");
+        final String custom = JsonParseUtil.getOptionalString(json, "custom");
+        final Long customId = JsonParseUtil.getOptionalLong(json, "customId");
 
-		return new FieldSchema(type, items, system, custom, customId);
-	}
+        return new FieldSchema(type, items, system, custom, customId);
+    }
 }

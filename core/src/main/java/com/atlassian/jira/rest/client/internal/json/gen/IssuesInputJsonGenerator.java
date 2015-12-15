@@ -28,17 +28,17 @@ import com.google.gson.JsonParseException;
  */
 public class IssuesInputJsonGenerator implements JsonGenerator<Iterable<IssueInput>> {
 
-	private final IssueInputJsonGenerator issueInputJsonGenerator = new IssueInputJsonGenerator();
+    private final IssueInputJsonGenerator issueInputJsonGenerator = new IssueInputJsonGenerator();
 
-	@Override
-	public JsonObject generate(final Iterable<IssueInput> issues) throws JsonParseException {
-		final JsonObject issueUpdates = new JsonObject();
-		final JsonArray obj = new JsonArray();
+    @Override
+    public JsonObject generate(final Iterable<IssueInput> issues) throws JsonParseException {
+        final JsonObject issueUpdates = new JsonObject();
+        final JsonArray obj = new JsonArray();
 
-		for (final IssueInput issue : issues) {
-			obj.add(issueInputJsonGenerator.generate(issue));
-		}
-		issueUpdates.add("issueUpdates", obj);
-		return issueUpdates;
-	}
+        for (final IssueInput issue : issues) {
+            obj.add(issueInputJsonGenerator.generate(issue));
+        }
+        issueUpdates.add("issueUpdates", obj);
+        return issueUpdates;
+    }
 }

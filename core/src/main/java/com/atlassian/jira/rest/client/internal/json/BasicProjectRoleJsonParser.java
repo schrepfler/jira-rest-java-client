@@ -29,25 +29,25 @@ import java.util.Collection;
 
 public class BasicProjectRoleJsonParser implements JsonElementParser<Collection<BasicProjectRole>> {
 
-	@Override
-	public Collection<BasicProjectRole> parse(@Nullable final JsonElement json) throws JsonParseException {
-		return json == null ?
-				ImmutableSet.<BasicProjectRole>of() :
-				ImmutableSet.copyOf(Iterators.transform(
-						JsonParseUtil.getStringKeys(json.getAsJsonObject()),
-						new Function<String, BasicProjectRole>() {
-							@Override
-							public BasicProjectRole apply(@Nullable final String key) {
-								try {
-									return new BasicProjectRole(JsonParseUtil
-											.parseURI(JsonParseUtil.getAsString(json.getAsJsonObject(), key)), key);
-								} catch (JsonParseException e) {
-									throw new RestClientException(e);
-								}
-							}
-						}
-				));
-	}
+    @Override
+    public Collection<BasicProjectRole> parse(@Nullable final JsonElement json) throws JsonParseException {
+        return json == null ?
+                ImmutableSet.<BasicProjectRole>of() :
+                ImmutableSet.copyOf(Iterators.transform(
+                        JsonParseUtil.getStringKeys(json.getAsJsonObject()),
+                        new Function<String, BasicProjectRole>() {
+                            @Override
+                            public BasicProjectRole apply(@Nullable final String key) {
+                                try {
+                                    return new BasicProjectRole(JsonParseUtil
+                                            .parseURI(JsonParseUtil.getAsString(json.getAsJsonObject(), key)), key);
+                                } catch (JsonParseException e) {
+                                    throw new RestClientException(e);
+                                }
+                            }
+                        }
+                ));
+    }
 
 
 }

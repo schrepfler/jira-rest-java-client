@@ -26,15 +26,15 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class IssueLinkJsonParser implements JsonElementParser<IssueLink> {
-	private final IssueLinkTypeJsonParser issueLinkTypeJsonParser = new IssueLinkTypeJsonParser();
+    private final IssueLinkTypeJsonParser issueLinkTypeJsonParser = new IssueLinkTypeJsonParser();
 
-	@Override
-	public IssueLink parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public IssueLink parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String key = JsonParseUtil.getAsString(json, "issueKey");
-		final URI targetIssueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "issue"));
-		final IssueLinkType issueLinkType = issueLinkTypeJsonParser.parse(json.getAsJsonObject("type"));
-		return new IssueLink(key, targetIssueUri, issueLinkType);
-	}
+        final String key = JsonParseUtil.getAsString(json, "issueKey");
+        final URI targetIssueUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "issue"));
+        final IssueLinkType issueLinkType = issueLinkTypeJsonParser.parse(json.getAsJsonObject("type"));
+        return new IssueLink(key, targetIssueUri, issueLinkType);
+    }
 }

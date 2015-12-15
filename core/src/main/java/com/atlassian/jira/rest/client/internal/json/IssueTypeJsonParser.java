@@ -24,17 +24,17 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class IssueTypeJsonParser implements JsonElementParser<IssueType> {
-	@Override
-	public IssueType parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public IssueType parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final long id = json.get("id").getAsLong();
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final boolean isSubtask = json.get("subtask").getAsBoolean();
-		final String iconUrl = JsonParseUtil.getOptionalString(json, "iconUrl");
-		final URI iconUri = iconUrl == null ? null : JsonParseUtil.parseURI(iconUrl);
-		final String description = JsonParseUtil.getOptionalString(json, "description");
-		return new IssueType(selfUri, id, name, isSubtask, description, iconUri);
-	}
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final long id = json.get("id").getAsLong();
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final boolean isSubtask = json.get("subtask").getAsBoolean();
+        final String iconUrl = JsonParseUtil.getOptionalString(json, "iconUrl");
+        final URI iconUri = iconUrl == null ? null : JsonParseUtil.parseURI(iconUrl);
+        final String description = JsonParseUtil.getOptionalString(json, "description");
+        return new IssueType(selfUri, id, name, isSubtask, description, iconUri);
+    }
 }

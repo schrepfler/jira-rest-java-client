@@ -22,12 +22,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class SessionCookieJsonParser implements JsonElementParser<SessionCookie> {
-	@Override
-	public SessionCookie parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public SessionCookie parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		return new SessionCookie(JsonParseUtil.getAsString(json, "name"),
-				JsonParseUtil.getAsString(json, "value"));
-	}
+        return new SessionCookie(JsonParseUtil.getAsString(json, "name"),
+                JsonParseUtil.getAsString(json, "value"));
+    }
 
 }

@@ -26,46 +26,46 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class ComponentJsonParser implements JsonElementParser<Component> {
-	@Override
-	public Component parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Component parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final BasicComponent basicComponent = BasicComponentJsonParser.parseBasicComponent(json);
-		final JsonObject leadJson = json.getAsJsonObject("lead");
-		final BasicUser lead = leadJson != null ? JsonParseUtil.parseBasicUser(leadJson) : null;
-		final String assigneeTypeStr = JsonParseUtil.getOptionalString(json, "assigneeType");
-		final Component.AssigneeInfo assigneeInfo;
-		if (assigneeTypeStr != null) {
-			final AssigneeType assigneeType = parseAssigneeType(assigneeTypeStr);
-			final JsonObject assigneeJson = json.getAsJsonObject("assignee");
-			final BasicUser assignee = assigneeJson != null ? JsonParseUtil.parseBasicUser(assigneeJson) : null;
-			final AssigneeType realAssigneeType = parseAssigneeType(JsonParseUtil.getAsString(json, "realAssigneeType"));
-			final JsonObject realAssigneeJson = json.getAsJsonObject("realAssignee");
-			final BasicUser realAssignee = realAssigneeJson != null ? JsonParseUtil.parseBasicUser(realAssigneeJson) : null;
-			final boolean isAssigneeTypeValid = json.get("isAssigneeTypeValid").getAsBoolean();
-			assigneeInfo = new Component.AssigneeInfo(assignee, assigneeType, realAssignee, realAssigneeType, isAssigneeTypeValid);
-		} else {
-			assigneeInfo = null;
-		}
+        final BasicComponent basicComponent = BasicComponentJsonParser.parseBasicComponent(json);
+        final JsonObject leadJson = json.getAsJsonObject("lead");
+        final BasicUser lead = leadJson != null ? JsonParseUtil.parseBasicUser(leadJson) : null;
+        final String assigneeTypeStr = JsonParseUtil.getOptionalString(json, "assigneeType");
+        final Component.AssigneeInfo assigneeInfo;
+        if (assigneeTypeStr != null) {
+            final AssigneeType assigneeType = parseAssigneeType(assigneeTypeStr);
+            final JsonObject assigneeJson = json.getAsJsonObject("assignee");
+            final BasicUser assignee = assigneeJson != null ? JsonParseUtil.parseBasicUser(assigneeJson) : null;
+            final AssigneeType realAssigneeType = parseAssigneeType(JsonParseUtil.getAsString(json, "realAssigneeType"));
+            final JsonObject realAssigneeJson = json.getAsJsonObject("realAssignee");
+            final BasicUser realAssignee = realAssigneeJson != null ? JsonParseUtil.parseBasicUser(realAssigneeJson) : null;
+            final boolean isAssigneeTypeValid = json.get("isAssigneeTypeValid").getAsBoolean();
+            assigneeInfo = new Component.AssigneeInfo(assignee, assigneeType, realAssignee, realAssigneeType, isAssigneeTypeValid);
+        } else {
+            assigneeInfo = null;
+        }
 
-		return new Component(basicComponent.getSelf(), basicComponent.getId(), basicComponent.getName(), basicComponent
-				.getDescription(), lead, assigneeInfo);
-	}
+        return new Component(basicComponent.getSelf(), basicComponent.getId(), basicComponent.getName(), basicComponent
+                .getDescription(), lead, assigneeInfo);
+    }
 
-	AssigneeType parseAssigneeType(String str) throws JsonParseException {
-		// JIRA 4.4+ adds full assignee info to component resource
-		if (AssigneeTypeConstants.COMPONENT_LEAD.equals(str)) {
-			return AssigneeType.COMPONENT_LEAD;
-		}
-		if (AssigneeTypeConstants.PROJECT_DEFAULT.equals(str)) {
-			return AssigneeType.PROJECT_DEFAULT;
-		}
-		if (AssigneeTypeConstants.PROJECT_LEAD.equals(str)) {
-			return AssigneeType.PROJECT_LEAD;
-		}
-		if (AssigneeTypeConstants.UNASSIGNED.equals(str)) {
-			return AssigneeType.UNASSIGNED;
-		}
-		throw new JsonParseException("Unexpected value of assignee type [" + str + "]");
-	}
+    AssigneeType parseAssigneeType(String str) throws JsonParseException {
+        // JIRA 4.4+ adds full assignee info to component resource
+        if (AssigneeTypeConstants.COMPONENT_LEAD.equals(str)) {
+            return AssigneeType.COMPONENT_LEAD;
+        }
+        if (AssigneeTypeConstants.PROJECT_DEFAULT.equals(str)) {
+            return AssigneeType.PROJECT_DEFAULT;
+        }
+        if (AssigneeTypeConstants.PROJECT_LEAD.equals(str)) {
+            return AssigneeType.PROJECT_LEAD;
+        }
+        if (AssigneeTypeConstants.UNASSIGNED.equals(str)) {
+            return AssigneeType.UNASSIGNED;
+        }
+        throw new JsonParseException("Unexpected value of assignee type [" + str + "]");
+    }
 }

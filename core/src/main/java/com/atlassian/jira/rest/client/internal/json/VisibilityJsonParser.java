@@ -24,47 +24,47 @@ import com.google.gson.JsonParseException;
 import javax.annotation.Nullable;
 
 public class VisibilityJsonParser implements JsonElementParser<Visibility> {
-	private static final String ROLE_TYPE = "ROLE";
-	private static final String GROUP_TYPE = "GROUP";
+    private static final String ROLE_TYPE = "ROLE";
+    private static final String GROUP_TYPE = "GROUP";
 
-	@Override
-	public Visibility parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Visibility parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String type = JsonParseUtil.getAsString(json, "type");
-		final Visibility.Type visibilityType;
-		if (ROLE_TYPE.equalsIgnoreCase(type)) {
-			visibilityType = Visibility.Type.ROLE;
-		} else if (GROUP_TYPE.equalsIgnoreCase(type)) {
-			visibilityType = Visibility.Type.GROUP;
-		} else {
-			throw new JsonParseException("[" + type + "] does not represent a valid visibility type. Expected ["
-					+ ROLE_TYPE + "] or [" + GROUP_TYPE + "].");
-		}
-		final String value = JsonParseUtil.getAsString(json, "value");
-		return new Visibility(visibilityType, value);
-	}
+        final String type = JsonParseUtil.getAsString(json, "type");
+        final Visibility.Type visibilityType;
+        if (ROLE_TYPE.equalsIgnoreCase(type)) {
+            visibilityType = Visibility.Type.ROLE;
+        } else if (GROUP_TYPE.equalsIgnoreCase(type)) {
+            visibilityType = Visibility.Type.GROUP;
+        } else {
+            throw new JsonParseException("[" + type + "] does not represent a valid visibility type. Expected ["
+                    + ROLE_TYPE + "] or [" + GROUP_TYPE + "].");
+        }
+        final String value = JsonParseUtil.getAsString(json, "value");
+        return new Visibility(visibilityType, value);
+    }
 
-	@Nullable
-	public Visibility parseVisibility(JsonObject parentObject) throws JsonParseException {
-		if (parentObject.has(CommentJsonParser.VISIBILITY_KEY)) { // JIRA 4.3-rc1 and newer
-			return parse(parentObject.get(CommentJsonParser.VISIBILITY_KEY).getAsJsonObject());
-		}
+    @Nullable
+    public Visibility parseVisibility(JsonObject parentObject) throws JsonParseException {
+        if (parentObject.has(CommentJsonParser.VISIBILITY_KEY)) { // JIRA 4.3-rc1 and newer
+            return parse(parentObject.get(CommentJsonParser.VISIBILITY_KEY).getAsJsonObject());
+        }
 
-		String roleLevel = JsonParseUtil.getOptionalString(parentObject, "roleLevel");
-		// in JIRA 4.2 "role" was used instead
-		if (roleLevel == null) {
-			roleLevel = JsonParseUtil.getOptionalString(parentObject, "role");
-		}
+        String roleLevel = JsonParseUtil.getOptionalString(parentObject, "roleLevel");
+        // in JIRA 4.2 "role" was used instead
+        if (roleLevel == null) {
+            roleLevel = JsonParseUtil.getOptionalString(parentObject, "role");
+        }
 
-		if (roleLevel != null) {
-			return Visibility.role(roleLevel);
-		}
+        if (roleLevel != null) {
+            return Visibility.role(roleLevel);
+        }
 
-		final String groupLevel = JsonParseUtil.getOptionalString(parentObject, "groupLevel");
-		if (groupLevel != null) {
-			return Visibility.group(groupLevel);
-		}
-		return null;
-	}
+        final String groupLevel = JsonParseUtil.getOptionalString(parentObject, "groupLevel");
+        if (groupLevel != null) {
+            return Visibility.group(groupLevel);
+        }
+        return null;
+    }
 }

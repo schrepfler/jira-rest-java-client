@@ -22,23 +22,23 @@ import org.junit.internal.matchers.TypeSafeMatcher;
 
 public class JSONObjectMatcher extends TypeSafeMatcher<JsonObject> {
 
-	private final JsonObject jsonObject;
+    private final JsonObject jsonObject;
 
-	public JSONObjectMatcher(JsonObject jsonObject) {
-		this.jsonObject = jsonObject;
-	}
+    public JSONObjectMatcher(JsonObject jsonObject) {
+        this.jsonObject = jsonObject;
+    }
 
-	public static JSONObjectMatcher isEqual(JsonObject jsonObject) {
-		return new JSONObjectMatcher(jsonObject);
-	}
+    public static JSONObjectMatcher isEqual(JsonObject jsonObject) {
+        return new JSONObjectMatcher(jsonObject);
+    }
 
-	@Override
-	public boolean matchesSafely(JsonObject item) {
-		return item.toString().equals(jsonObject.toString());
-	}
+    @Override
+    public boolean matchesSafely(JsonObject item) {
+        return item.toString().equals(jsonObject.toString());
+    }
 
-	@Override
-	public void describeTo(Description description) {
-		description.appendText("JsonObject " + jsonObject.toString());
-	}
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("JsonObject " + jsonObject.toString());
+    }
 }

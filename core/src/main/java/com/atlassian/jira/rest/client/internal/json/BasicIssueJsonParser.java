@@ -24,13 +24,13 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class BasicIssueJsonParser implements JsonElementParser<BasicIssue> {
-	@Override
-	public BasicIssue parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public BasicIssue parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String key = JsonParseUtil.getAsString(json, "key");
-		final Long id = json.get("id").getAsLong();
-		return new BasicIssue(selfUri, key, id);
-	}
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final String key = JsonParseUtil.getAsString(json, "key");
+        final Long id = json.get("id").getAsLong();
+        return new BasicIssue(selfUri, key, id);
+    }
 }

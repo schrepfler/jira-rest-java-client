@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 public interface JsonParser<INPUT, T> {
-	com.google.gson.JsonParser GSON_PARSER = new com.google.gson.JsonParser();
-	Gson GSON = new Gson();
-	T parse(INPUT json) throws JsonParseException;
+    com.google.gson.JsonParser GSON_PARSER = new com.google.gson.JsonParser();
+    Gson GSON = new Gson();
+    T parse(INPUT json) throws JsonParseException;
 }

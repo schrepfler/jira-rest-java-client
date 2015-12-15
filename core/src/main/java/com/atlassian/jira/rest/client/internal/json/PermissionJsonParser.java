@@ -21,15 +21,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class PermissionJsonParser implements JsonElementParser<Permission> {
-	@Override
-	public Permission parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Permission parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final Integer id = JsonParseUtil.getAsInt(json, "id");
-		final String key = JsonParseUtil.getAsString(json, "key");
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final String description = JsonParseUtil.getAsString(json, "description");
-		final boolean havePermission = json.get("havePermission").getAsBoolean();
-		return new Permission(id, key, name, description, havePermission);
-	}
+        final Integer id = JsonParseUtil.getAsInt(json, "id");
+        final String key = JsonParseUtil.getAsString(json, "key");
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String description = JsonParseUtil.getAsString(json, "description");
+        final boolean havePermission = json.get("havePermission").getAsBoolean();
+        return new Permission(id, key, name, description, havePermission);
+    }
 }

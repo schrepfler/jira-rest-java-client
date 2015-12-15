@@ -25,11 +25,11 @@ import static org.junit.Assert.assertNull;
 @Restore("jira-dump-unassigned.xml")
 public class AsynchronousIssueRestClientWithAnonymousThingsAsynchronousRestClientTest extends AbstractAsynchronousRestClientTest {
 
-	@Test
-	public void testGetUnassignedIssue() throws Exception {
-		final Issue issue = client.getIssueClient().getIssue("TST-1").claim();
-		assertEquals("TST-1", issue.getKey());
-		assertNull(issue.getAssignee());
-	}
+    @Test
+    public void testGetUnassignedIssue() throws Exception {
+        final Issue issue = client.getIssueClient().getIssue("TST-1").claim();
+        assertEquals("TST-1", issue.getKey());
+        assertNull(issue.getAssignee());
+    }
 
 }

@@ -22,14 +22,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class TimeTrackingJsonParser implements JsonElementParser<TimeTracking> {
-	@Override
-	public TimeTracking parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public TimeTracking parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final Integer originalEstimateMinutes = JsonParseUtil.parseOptionInteger(json, "timeoriginalestimate");
-		final Integer timeRemainingMinutes = JsonParseUtil.parseOptionInteger(json, "timeestimate");
-		final Integer timeSpentMinutes = JsonParseUtil.parseOptionInteger(json, "timespent");
-		return new TimeTracking(originalEstimateMinutes, timeRemainingMinutes, timeSpentMinutes);
-	}
+        final Integer originalEstimateMinutes = JsonParseUtil.parseOptionInteger(json, "timeoriginalestimate");
+        final Integer timeRemainingMinutes = JsonParseUtil.parseOptionInteger(json, "timeestimate");
+        final Integer timeSpentMinutes = JsonParseUtil.parseOptionInteger(json, "timespent");
+        return new TimeTracking(originalEstimateMinutes, timeRemainingMinutes, timeSpentMinutes);
+    }
 
 }

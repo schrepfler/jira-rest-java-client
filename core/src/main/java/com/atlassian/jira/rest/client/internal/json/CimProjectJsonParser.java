@@ -35,22 +35,22 @@ import java.util.Map;
  */
 public class CimProjectJsonParser implements JsonElementParser<CimProject> {
 
-	private final JsonArrayParser<Iterable<CimIssueType>> issueTypesParser = GenericJsonArrayParser
-			.create(new CimIssueTypeJsonParser());
+    private final JsonArrayParser<Iterable<CimIssueType>> issueTypesParser = GenericJsonArrayParser
+            .create(new CimIssueTypeJsonParser());
 
-	private final BasicProjectJsonParser basicProjectJsonParser = new BasicProjectJsonParser();
+    private final BasicProjectJsonParser basicProjectJsonParser = new BasicProjectJsonParser();
 
-	@Override
-	public CimProject parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public CimProject parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final BasicProject basicProject = basicProjectJsonParser.parse(json);
-		final JsonArray issueTypesArray = json.get("issuetypes").getAsJsonArray();
-		final Iterable<CimIssueType> issueTypes = (issueTypesArray != null) ?
-				issueTypesParser.parse(issueTypesArray) : Collections.<CimIssueType>emptyList();
+        final BasicProject basicProject = basicProjectJsonParser.parse(json);
+        final JsonArray issueTypesArray = json.get("issuetypes").getAsJsonArray();
+        final Iterable<CimIssueType> issueTypes = (issueTypesArray != null) ?
+                issueTypesParser.parse(issueTypesArray) : Collections.<CimIssueType>emptyList();
 
-		final Map<String, URI> avatarUris = JsonParseUtil.getAvatarUris(json.getAsJsonObject("avatarUrls"));
-		return new CimProject(basicProject.getSelf(), basicProject.getKey(), basicProject.getId(),
-				basicProject.getName(), avatarUris, issueTypes);
-	}
+        final Map<String, URI> avatarUris = JsonParseUtil.getAvatarUris(json.getAsJsonObject("avatarUrls"));
+        return new CimProject(basicProject.getSelf(), basicProject.getKey(), basicProject.getId(),
+                basicProject.getName(), avatarUris, issueTypes);
+    }
 }

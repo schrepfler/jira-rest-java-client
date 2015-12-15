@@ -32,43 +32,43 @@ import org.junit.Test;
  */
 public class IssueInputJsonGeneratorTest {
 
-	@Test
-	public void testGenerate() throws Exception {
-		final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
-		final IssueInput issueInput = IssueInput.createWithFields(
-				new FieldInput("string", "String value"),
-				new FieldInput("integer", 1),
-				new FieldInput("long", 1L),
-				new FieldInput("complex", new ComplexIssueInputFieldValue(ImmutableMap.of(
-						"string", "string",
-						"integer", 1,
-						"long", 1L,
-						"complex", ComplexIssueInputFieldValue.with("test", "id")
-				)))
-		);
+    @Test
+    public void testGenerate() throws Exception {
+        final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
+        final IssueInput issueInput = IssueInput.createWithFields(
+                new FieldInput("string", "String value"),
+                new FieldInput("integer", 1),
+                new FieldInput("long", 1L),
+                new FieldInput("complex", new ComplexIssueInputFieldValue(ImmutableMap.of(
+                        "string", "string",
+                        "integer", 1,
+                        "long", 1L,
+                        "complex", ComplexIssueInputFieldValue.with("test", "id")
+                )))
+        );
 
-		final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/valid.json");
-		final JsonObject actual = generator.generate(issueInput);
-		Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
-	}
+        final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/valid.json");
+        final JsonObject actual = generator.generate(issueInput);
+        Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
+    }
 
-	@Test
-	public void testGenerateWithEmptyInput() throws Exception {
-		final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
-		final IssueInput issueInput = new IssueInput(Maps.<String, FieldInput>newHashMap());
+    @Test
+    public void testGenerateWithEmptyInput() throws Exception {
+        final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
+        final IssueInput issueInput = new IssueInput(Maps.<String, FieldInput>newHashMap());
 
-		final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
-		final JsonObject actual = generator.generate(issueInput);
-		Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
-	}
+        final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
+        final JsonObject actual = generator.generate(issueInput);
+        Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
+    }
 
-	@Test
-	public void testGenerateWithNullInput() throws Exception {
-		final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
-		final IssueInput issueInput = null;
+    @Test
+    public void testGenerateWithNullInput() throws Exception {
+        final IssueInputJsonGenerator generator = new IssueInputJsonGenerator();
+        final IssueInput issueInput = null;
 
-		final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
-		final JsonObject actual = generator.generate(issueInput);
-		Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
-	}
+        final JsonObject expected = ResourceUtil.getJsonObjectFromResource("/json/issueInput/empty.json");
+        final JsonObject actual = generator.generate(issueInput);
+        Assert.assertThat(expected, JSONObjectMatcher.isEqual(actual));
+    }
 }

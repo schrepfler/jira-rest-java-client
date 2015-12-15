@@ -22,17 +22,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class OperationLinkJsonParser implements JsonElementParser<OperationLink> {
-	@Override
-	public OperationLink parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public OperationLink parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String id = JsonParseUtil.getOptionalString(json, "id");
-		final String styleClass = JsonParseUtil.getOptionalString(json, "styleClass");
-		final String label = JsonParseUtil.getAsString(json, "label");
-		final String title = JsonParseUtil.getOptionalString(json, "title");
-		final String href = JsonParseUtil.getAsString(json, "href");
-		final Integer weight = JsonParseUtil.parseOptionInteger(json, "weight");
-		final String iconClass = JsonParseUtil.getOptionalString(json, "iconClass");
-		return new OperationLink(id, styleClass, label, title, href, weight, iconClass);
-	}
+        final String id = JsonParseUtil.getOptionalString(json, "id");
+        final String styleClass = JsonParseUtil.getOptionalString(json, "styleClass");
+        final String label = JsonParseUtil.getAsString(json, "label");
+        final String title = JsonParseUtil.getOptionalString(json, "title");
+        final String href = JsonParseUtil.getAsString(json, "href");
+        final Integer weight = JsonParseUtil.parseOptionInteger(json, "weight");
+        final String iconClass = JsonParseUtil.getOptionalString(json, "iconClass");
+        return new OperationLink(id, styleClass, label, title, href, weight, iconClass);
+    }
 }

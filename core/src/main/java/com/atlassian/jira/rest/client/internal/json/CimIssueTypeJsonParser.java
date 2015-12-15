@@ -33,20 +33,20 @@ import java.util.Map;
  */
 public class CimIssueTypeJsonParser implements JsonElementParser<CimIssueType> {
 
-	final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
-	final CimFieldsInfoMapJsonParser fieldsParser = new CimFieldsInfoMapJsonParser();
+    final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
+    final CimFieldsInfoMapJsonParser fieldsParser = new CimFieldsInfoMapJsonParser();
 
-	@Override
-	public CimIssueType parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public CimIssueType parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final IssueType issueType = issueTypeJsonParser.parse(json);
-		final JsonObject jsonFieldsMap = json.getAsJsonObject("fields");
+        final IssueType issueType = issueTypeJsonParser.parse(json);
+        final JsonObject jsonFieldsMap = json.getAsJsonObject("fields");
 
-		final Map<String, CimFieldInfo> fields = (jsonFieldsMap == null) ?
-				Collections.<String, CimFieldInfo>emptyMap() : fieldsParser.parse(jsonFieldsMap);
+        final Map<String, CimFieldInfo> fields = (jsonFieldsMap == null) ?
+                Collections.<String, CimFieldInfo>emptyMap() : fieldsParser.parse(jsonFieldsMap);
 
-		return new CimIssueType(issueType.getSelf(), issueType.getId(), issueType.getName(),
-				issueType.isSubtask(), issueType.getDescription(), issueType.getIconUri(), fields);
-	}
+        return new CimIssueType(issueType.getSelf(), issueType.getId(), issueType.getName(),
+                issueType.isSubtask(), issueType.getDescription(), issueType.getIconUri(), fields);
+    }
 }

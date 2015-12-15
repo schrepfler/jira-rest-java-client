@@ -26,8 +26,8 @@ import com.atlassian.jira.rest.client.api.AuthenticationHandler;
  */
 public class AnonymousAuthenticationHandler implements AuthenticationHandler {
 
-	@Override
-	public void configure(Request request) {
-	}
+    @Override
+    public void configure(Request request) {
+    }
 
 }

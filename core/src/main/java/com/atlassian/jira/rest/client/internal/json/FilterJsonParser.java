@@ -31,19 +31,19 @@ import java.net.URI;
  */
 public class FilterJsonParser implements JsonElementParser<Filter> {
 
-	@Override
-	public Filter parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Filter parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final long id = json.get("id").getAsLong();
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final String jql = JsonParseUtil.getAsString(json, "jql");
-		final String description = json.has("description")? JsonParseUtil.getAsString(json, "description") : "";
-		final URI searchUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "searchUrl"));
-		final URI viewUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "viewUrl"));
-		final BasicUser owner = JsonParseUtil.parseBasicUser(json.getAsJsonObject("owner"));
-		final boolean favourite = json.get("favourite").getAsBoolean();
-		return new Filter(selfUri, id, name, description, jql, viewUrl, searchUrl, owner, favourite);
-	}
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final long id = json.get("id").getAsLong();
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String jql = JsonParseUtil.getAsString(json, "jql");
+        final String description = json.has("description")? JsonParseUtil.getAsString(json, "description") : "";
+        final URI searchUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "searchUrl"));
+        final URI viewUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "viewUrl"));
+        final BasicUser owner = JsonParseUtil.parseBasicUser(json.getAsJsonObject("owner"));
+        final boolean favourite = json.get("favourite").getAsBoolean();
+        return new Filter(selfUri, id, name, description, jql, viewUrl, searchUrl, owner, favourite);
+    }
 }

@@ -22,14 +22,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class OperationHeaderJsonParser implements JsonElementParser<OperationHeader> {
-	@Override
-	public OperationHeader parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public OperationHeader parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String id = JsonParseUtil.getOptionalString(json, "id");
-		final String label = JsonParseUtil.getAsString(json, "label");
-		final String title = JsonParseUtil.getOptionalString(json, "title");
-		final String iconClass = JsonParseUtil.getOptionalString(json, "iconClass");
-		return new OperationHeader(id, label, title, iconClass);
-	}
+        final String id = JsonParseUtil.getOptionalString(json, "id");
+        final String label = JsonParseUtil.getAsString(json, "label");
+        final String title = JsonParseUtil.getOptionalString(json, "title");
+        final String iconClass = JsonParseUtil.getOptionalString(json, "iconClass");
+        return new OperationHeader(id, label, title, iconClass);
+    }
 }

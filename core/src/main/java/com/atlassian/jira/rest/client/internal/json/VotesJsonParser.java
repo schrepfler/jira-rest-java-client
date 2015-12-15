@@ -26,15 +26,15 @@ import com.google.gson.JsonParseException;
 import java.util.Collection;
 
 public class VotesJsonParser implements JsonElementParser<Votes> {
-	private final BasicVotesJsonParser basicVotesJsonParser = new BasicVotesJsonParser();
-	private final BasicUserJsonParser basicUserJsonParser = new BasicUserJsonParser();
+    private final BasicVotesJsonParser basicVotesJsonParser = new BasicVotesJsonParser();
+    private final BasicUserJsonParser basicUserJsonParser = new BasicUserJsonParser();
 
-	@Override
-	public Votes parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Votes parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final BasicVotes basicVotes = basicVotesJsonParser.parse(json);
-		final Collection<BasicUser> users = JsonParseUtil.parseJsonArray(json.getAsJsonArray("voters"), basicUserJsonParser);
-		return new Votes(basicVotes.getSelf(), basicVotes.getVotes(), basicVotes.hasVoted(), users);
-	}
+        final BasicVotes basicVotes = basicVotesJsonParser.parse(json);
+        final Collection<BasicUser> users = JsonParseUtil.parseJsonArray(json.getAsJsonArray("voters"), basicUserJsonParser);
+        return new Votes(basicVotes.getSelf(), basicVotes.getVotes(), basicVotes.hasVoted(), users);
+    }
 }

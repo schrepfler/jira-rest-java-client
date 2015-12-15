@@ -24,17 +24,17 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class IssuelinksTypeJsonParserV5 implements JsonElementParser<IssuelinksType> {
-	@Override
-	public IssuelinksType parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public IssuelinksType parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String id = JsonParseUtil.getAsString(json, "id");
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final String inward = JsonParseUtil.getAsString(json, "inward");
-		final String outward = JsonParseUtil.getAsString(json, "outward");
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final String id = JsonParseUtil.getAsString(json, "id");
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String inward = JsonParseUtil.getAsString(json, "inward");
+        final String outward = JsonParseUtil.getAsString(json, "outward");
 
-		return new IssuelinksType(selfUri, id, name, inward, outward);
-	}
+        return new IssuelinksType(selfUri, id, name, inward, outward);
+    }
 }
 

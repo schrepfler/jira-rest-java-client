@@ -28,23 +28,23 @@ import com.google.gson.JsonParseException;
  */
 public class IssueInputJsonGenerator implements JsonGenerator<IssueInput> {
 
-	private final ComplexIssueInputFieldValueJsonGenerator complexIssueInputFieldValueJsonGenerator = new ComplexIssueInputFieldValueJsonGenerator();
+    private final ComplexIssueInputFieldValueJsonGenerator complexIssueInputFieldValueJsonGenerator = new ComplexIssueInputFieldValueJsonGenerator();
 
-	@Override
-	public JsonObject generate(IssueInput issue) throws JsonParseException {
-		final JsonObject jsonObject = new JsonObject();
-		final JsonObject fields = new JsonObject();
+    @Override
+    public JsonObject generate(IssueInput issue) throws JsonParseException {
+        final JsonObject jsonObject = new JsonObject();
+        final JsonObject fields = new JsonObject();
 
-		if (issue != null && issue.getFields() != null) {
-			for (final FieldInput field : issue.getFields().values()) {
-				if (field.getValue() != null) {
-					fields.add(field.getId(), complexIssueInputFieldValueJsonGenerator.generateFieldValueForJson(field
-							.getValue()));
-				}
-			}
-		}
+        if (issue != null && issue.getFields() != null) {
+            for (final FieldInput field : issue.getFields().values()) {
+                if (field.getValue() != null) {
+                    fields.add(field.getId(), complexIssueInputFieldValueJsonGenerator.generateFieldValueForJson(field
+                            .getValue()));
+                }
+            }
+        }
 
-		jsonObject.add("fields", fields);
-		return jsonObject;
-	}
+        jsonObject.add("fields", fields);
+        return jsonObject;
+    }
 }

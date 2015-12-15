@@ -24,25 +24,25 @@ import com.google.gson.JsonParseException;
 import java.util.Collection;
 
 public class TransitionJsonParser {
-	private final TransitionFieldJsonParser transitionFieldJsonParser = new TransitionFieldJsonParser();
+    private final TransitionFieldJsonParser transitionFieldJsonParser = new TransitionFieldJsonParser();
 
-	public Transition parse(JsonObject json, int id) throws JsonParseException {
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final Collection<Transition.Field> fields = JsonParseUtil.parseJsonArray(json.getAsJsonArray("fields"),
-				transitionFieldJsonParser);
-		return new Transition(name, id, fields);
-	}
+    public Transition parse(JsonObject json, int id) throws JsonParseException {
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final Collection<Transition.Field> fields = JsonParseUtil.parseJsonArray(json.getAsJsonArray("fields"),
+                transitionFieldJsonParser);
+        return new Transition(name, id, fields);
+    }
 
-	public static class TransitionFieldJsonParser implements JsonElementParser<Transition.Field> {
+    public static class TransitionFieldJsonParser implements JsonElementParser<Transition.Field> {
 
-		@Override
-		public Transition.Field parse(JsonElement jsonElement) throws JsonParseException {
-			final JsonObject json = jsonElement.getAsJsonObject();
+        @Override
+        public Transition.Field parse(JsonElement jsonElement) throws JsonParseException {
+            final JsonObject json = jsonElement.getAsJsonObject();
 
-			final String name = JsonParseUtil.getAsString(json, "id");
-			final boolean isRequired = json.get("required").getAsBoolean();
-			final String type = JsonParseUtil.getAsString(json, "type");
-			return new Transition.Field(name, isRequired, type);
-		}
-	}
+            final String name = JsonParseUtil.getAsString(json, "id");
+            final boolean isRequired = json.get("required").getAsBoolean();
+            final String type = JsonParseUtil.getAsString(json, "type");
+            return new Transition.Field(name, isRequired, type);
+        }
+    }
 }

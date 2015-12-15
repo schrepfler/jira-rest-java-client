@@ -23,14 +23,14 @@ import com.google.gson.JsonParseException;
 import org.joda.time.DateTime;
 
 public class LoginInfoJsonParser implements JsonElementParser<LoginInfo> {
-	@Override
-	public LoginInfo parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public LoginInfo parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final int failedLoginCount = json.has("failedLoginCount")? JsonParseUtil.getAsInt(json, "failedLoginCount") : 0;
-		final int loginCount = JsonParseUtil.getAsInt(json, "loginCount");
-		final DateTime lastFailedLoginTime = JsonParseUtil.parseOptionalDateTime(json, "lastFailedLoginTime");
-		final DateTime previousLoginTime = JsonParseUtil.parseOptionalDateTime(json, "previousLoginTime");
-		return new LoginInfo(failedLoginCount, loginCount, lastFailedLoginTime, previousLoginTime);
-	}
+        final int failedLoginCount = json.has("failedLoginCount")? JsonParseUtil.getAsInt(json, "failedLoginCount") : 0;
+        final int loginCount = JsonParseUtil.getAsInt(json, "loginCount");
+        final DateTime lastFailedLoginTime = JsonParseUtil.parseOptionalDateTime(json, "lastFailedLoginTime");
+        final DateTime previousLoginTime = JsonParseUtil.parseOptionalDateTime(json, "previousLoginTime");
+        return new LoginInfo(failedLoginCount, loginCount, lastFailedLoginTime, previousLoginTime);
+    }
 }

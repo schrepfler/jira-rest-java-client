@@ -26,12 +26,12 @@ import com.google.common.base.Optional;
  * @see Operation#accept(OperationVisitor)
  */
 public interface OperationVisitor<T> {
-	/**
-	 * Visits operation element
-	 *
-	 * @param operation operation element to be visited
-	 * @return Present value means "I've found a value let's finish visiting".
-	 * 		If absent traversal through operation elements will be continued.
-	 */
-	Optional<T> visit(Operation operation);
+    /**
+     * Visits operation element
+     *
+     * @param operation operation element to be visited
+     * @return Present value means "I've found a value let's finish visiting".
+     *         If absent traversal through operation elements will be continued.
+     */
+    Optional<T> visit(Operation operation);
 }

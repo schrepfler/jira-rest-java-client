@@ -24,15 +24,15 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class StatusJsonParser implements JsonElementParser<Status> {
-	@Override
-	public Status parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Status parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI self = JsonParseUtil.getSelfUri(json);
-		final Long id = JsonParseUtil.getOptionalLong(json, "id");
-		final String name = JsonParseUtil.getAsString(json, "name");
-		final String description = JsonParseUtil.getAsString(json, "description");
-		final URI iconUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "iconUrl"));
-		return new Status(self, id, name, description, iconUrl);
-	}
+        final URI self = JsonParseUtil.getSelfUri(json);
+        final Long id = JsonParseUtil.getOptionalLong(json, "id");
+        final String name = JsonParseUtil.getAsString(json, "name");
+        final String description = JsonParseUtil.getAsString(json, "description");
+        final URI iconUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "iconUrl"));
+        return new Status(self, id, name, description, iconUrl);
+    }
 }

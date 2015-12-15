@@ -22,10 +22,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class BasicUserJsonParser implements JsonElementParser<BasicUser> {
-	@Override
-	public BasicUser parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public BasicUser parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		return JsonParseUtil.parseBasicUser(json);
-	}
+        return JsonParseUtil.parseBasicUser(json);
+    }
 }

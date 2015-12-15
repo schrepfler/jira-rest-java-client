@@ -22,22 +22,22 @@ import java.util.ArrayList;
 
 public class GenericJsonArrayParser<T> implements JsonArrayParser<Iterable<T>> {
 
-	public static <K> GenericJsonArrayParser<K> create(JsonElementParser<K> jsonParser) {
-		return new GenericJsonArrayParser<K>(jsonParser);
-	}
+    public static <K> GenericJsonArrayParser<K> create(JsonElementParser<K> jsonParser) {
+        return new GenericJsonArrayParser<K>(jsonParser);
+    }
 
-	private final JsonElementParser<T> jsonParser;
+    private final JsonElementParser<T> jsonParser;
 
-	public GenericJsonArrayParser(JsonElementParser<T> jsonParser) {
-		this.jsonParser = jsonParser;
-	}
+    public GenericJsonArrayParser(JsonElementParser<T> jsonParser) {
+        this.jsonParser = jsonParser;
+    }
 
-	@Override
-	public Iterable<T> parse(JsonArray json) throws JsonParseException {
-		ArrayList<T> res = new ArrayList<T>(json.size());
-		for (int i = 0; i < json.size(); i++) {
-			res.add(jsonParser.parse(json.get(i).getAsJsonObject()));
-		}
-		return res;
-	}
+    @Override
+    public Iterable<T> parse(JsonArray json) throws JsonParseException {
+        ArrayList<T> res = new ArrayList<T>(json.size());
+        for (int i = 0; i < json.size(); i++) {
+            res.add(jsonParser.parse(json.get(i).getAsJsonObject()));
+        }
+        return res;
+    }
 }

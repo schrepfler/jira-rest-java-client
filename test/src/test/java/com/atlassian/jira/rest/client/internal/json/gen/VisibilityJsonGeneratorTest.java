@@ -24,22 +24,22 @@ import org.junit.Test;
 
 public class VisibilityJsonGeneratorTest {
 
-	private final VisibilityJsonGenerator generator = new VisibilityJsonGenerator();
+    private final VisibilityJsonGenerator generator = new VisibilityJsonGenerator();
 
-	@Test
-	public void testGenerateWithGroupType() throws Exception {
-		final Visibility visibility = Visibility.group("jira-users");
-		Assert.assertThat(generator.generate(visibility), JSONObjectMatcher.isEqual(
-				ResourceUtil.getJsonObjectFromResource("/json/visibility/group.json")
-		));
-	}
+    @Test
+    public void testGenerateWithGroupType() throws Exception {
+        final Visibility visibility = Visibility.group("jira-users");
+        Assert.assertThat(generator.generate(visibility), JSONObjectMatcher.isEqual(
+                ResourceUtil.getJsonObjectFromResource("/json/visibility/group.json")
+        ));
+    }
 
-	@Test
-	public void testGenerateWithRoleType() throws Exception {
-		final Visibility visibility = Visibility.role("Developers");
-		Assert.assertThat(generator.generate(visibility), JSONObjectMatcher.isEqual(
-				ResourceUtil.getJsonObjectFromResource("/json/visibility/role.json")
-		));
-	}
+    @Test
+    public void testGenerateWithRoleType() throws Exception {
+        final Visibility visibility = Visibility.role("Developers");
+        Assert.assertThat(generator.generate(visibility), JSONObjectMatcher.isEqual(
+                ResourceUtil.getJsonObjectFromResource("/json/visibility/role.json")
+        ));
+    }
 
 }

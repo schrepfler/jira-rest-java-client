@@ -23,24 +23,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class ChangelogItemJsonParser implements JsonElementParser<ChangelogItem> {
-	@Override
-	public ChangelogItem parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public ChangelogItem parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final String fieldTypeStr = JsonParseUtil.getNestedString(json, "fieldtype");
-		final FieldType fieldType;
-		if ("jira".equalsIgnoreCase(fieldTypeStr)) {
-			fieldType = FieldType.JIRA;
-		} else if ("custom".equalsIgnoreCase(fieldTypeStr)) {
-			fieldType = FieldType.CUSTOM;
-		} else {
-			throw new JsonParseException("[" + fieldTypeStr + "] does not represent a valid field type. Expected [jira] or [custom].");
-		}
-		final String field = JsonParseUtil.getNestedString(json, "field");
-		final String from = JsonParseUtil.getNullableString(json, "from");
-		final String fromString = JsonParseUtil.getNullableString(json, "fromString");
-		final String to = JsonParseUtil.getNullableString(json, "to");
-		final String toString = JsonParseUtil.getNullableString(json, "toString");
-		return new ChangelogItem(fieldType, field, from, fromString, to, toString);
-	}
+        final String fieldTypeStr = JsonParseUtil.getNestedString(json, "fieldtype");
+        final FieldType fieldType;
+        if ("jira".equalsIgnoreCase(fieldTypeStr)) {
+            fieldType = FieldType.JIRA;
+        } else if ("custom".equalsIgnoreCase(fieldTypeStr)) {
+            fieldType = FieldType.CUSTOM;
+        } else {
+            throw new JsonParseException("[" + fieldTypeStr + "] does not represent a valid field type. Expected [jira] or [custom].");
+        }
+        final String field = JsonParseUtil.getNestedString(json, "field");
+        final String from = JsonParseUtil.getNullableString(json, "from");
+        final String fromString = JsonParseUtil.getNullableString(json, "fromString");
+        final String to = JsonParseUtil.getNullableString(json, "to");
+        final String toString = JsonParseUtil.getNullableString(json, "toString");
+        return new ChangelogItem(fieldType, field, from, fromString, to, toString);
+    }
 }

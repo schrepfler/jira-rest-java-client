@@ -24,37 +24,37 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ResourceUtil {
-	public static JsonObject getJsonObjectFromResource(String resourcePath) {
-		final String s = getStringFromResource(resourcePath);
-		try {
-			return JsonParser.GSON_PARSER.parse(s).getAsJsonObject();
-		} catch (JsonParseException e) {
-			throw new RuntimeException(e);
-		}
+    public static JsonObject getJsonObjectFromResource(String resourcePath) {
+        final String s = getStringFromResource(resourcePath);
+        try {
+            return JsonParser.GSON_PARSER.parse(s).getAsJsonObject();
+        } catch (JsonParseException e) {
+            throw new RuntimeException(e);
+        }
 
-	}
+    }
 
-	public static JsonArray getJsonArrayFromResource(String resourcePath) {
-		final String s = getStringFromResource(resourcePath);
-		try {
-			return JsonParser.GSON_PARSER.parse(s).getAsJsonArray();
-		} catch (JsonParseException e) {
-			throw new RuntimeException(e);
-		}
+    public static JsonArray getJsonArrayFromResource(String resourcePath) {
+        final String s = getStringFromResource(resourcePath);
+        try {
+            return JsonParser.GSON_PARSER.parse(s).getAsJsonArray();
+        } catch (JsonParseException e) {
+            throw new RuntimeException(e);
+        }
 
-	}
+    }
 
-	public static String getStringFromResource(String resourcePath) {
-		final String s;
-		try {
-			final InputStream is = ResourceUtil.class.getResourceAsStream(resourcePath);
-			if (is == null) {
-				throw new IOException("Cannot open resource [" + resourcePath + "]");
-			}
-			s = IOUtils.toString(is);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return s;
-	}
+    public static String getStringFromResource(String resourcePath) {
+        final String s;
+        try {
+            final InputStream is = ResourceUtil.class.getResourceAsStream(resourcePath);
+            if (is == null) {
+                throw new IOException("Cannot open resource [" + resourcePath + "]");
+            }
+            s = IOUtils.toString(is);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return s;
+    }
 }

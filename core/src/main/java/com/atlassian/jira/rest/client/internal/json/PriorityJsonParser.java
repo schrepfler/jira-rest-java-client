@@ -25,17 +25,17 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class PriorityJsonParser implements JsonElementParser<Priority> {
-	private final BasicPriorityJsonParser basicPriorityJsonParser = new BasicPriorityJsonParser();
+    private final BasicPriorityJsonParser basicPriorityJsonParser = new BasicPriorityJsonParser();
 
-	@Override
-	public Priority parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Priority parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final BasicPriority basicPriority = basicPriorityJsonParser.parse(json);
-		final String statusColor = JsonParseUtil.getAsString(json, "statusColor");
-		final String description = JsonParseUtil.getAsString(json, "description");
-		final URI iconUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "iconUrl"));
-		return new Priority(basicPriority.getSelf(), basicPriority.getId(), basicPriority
-				.getName(), statusColor, description, iconUri);
-	}
+        final BasicPriority basicPriority = basicPriorityJsonParser.parse(json);
+        final String statusColor = JsonParseUtil.getAsString(json, "statusColor");
+        final String description = JsonParseUtil.getAsString(json, "description");
+        final URI iconUri = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "iconUrl"));
+        return new Priority(basicPriority.getSelf(), basicPriority.getId(), basicPriority
+                .getName(), statusColor, description, iconUri);
+    }
 }

@@ -27,20 +27,20 @@ import java.net.URI;
 
 public class AttachmentJsonParser implements JsonElementParser<Attachment> {
 
-	private static final String THUMBNAIL = "thumbnail";
+    private static final String THUMBNAIL = "thumbnail";
 
-	@Override
-	public Attachment parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Attachment parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final String filename = JsonParseUtil.getAsString(json, "filename");
-		final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
-		final DateTime creationDate = JsonParseUtil.parseDateTime(json.get("created").getAsString());
-		final int size = JsonParseUtil.getAsInt(json, "size");
-		final String mimeType = JsonParseUtil.getAsString(json, "mimeType");
-		final URI contentURI = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "content"));
-		final URI thumbnailURI = JsonParseUtil.parseOptionalURI(json, THUMBNAIL);
-		return new Attachment(selfUri, filename, author, creationDate, size, mimeType, contentURI, thumbnailURI);
-	}
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final String filename = JsonParseUtil.getAsString(json, "filename");
+        final BasicUser author = JsonParseUtil.parseBasicUser(json.getAsJsonObject("author"));
+        final DateTime creationDate = JsonParseUtil.parseDateTime(json.get("created").getAsString());
+        final int size = JsonParseUtil.getAsInt(json, "size");
+        final String mimeType = JsonParseUtil.getAsString(json, "mimeType");
+        final URI contentURI = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "content"));
+        final URI thumbnailURI = JsonParseUtil.parseOptionalURI(json, THUMBNAIL);
+        return new Attachment(selfUri, filename, author, creationDate, size, mimeType, contentURI, thumbnailURI);
+    }
 }

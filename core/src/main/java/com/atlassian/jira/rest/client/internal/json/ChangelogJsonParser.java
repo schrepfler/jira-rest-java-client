@@ -27,15 +27,15 @@ import org.joda.time.DateTime;
 import java.util.Collection;
 
 public class ChangelogJsonParser implements JsonElementParser<ChangelogGroup> {
-	private final ChangelogItemJsonParser changelogItemJsonParser = new ChangelogItemJsonParser();
+    private final ChangelogItemJsonParser changelogItemJsonParser = new ChangelogItemJsonParser();
 
-	@Override
-	public ChangelogGroup parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public ChangelogGroup parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final DateTime created = JsonParseUtil.parseDateTime(json, "created");
-		final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.getAsJsonObject("author")) : null;
-		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.get("items").getAsJsonArray(), changelogItemJsonParser);
-		return new ChangelogGroup(author, created, items);
-	}
+        final DateTime created = JsonParseUtil.parseDateTime(json, "created");
+        final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.getAsJsonObject("author")) : null;
+        final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.get("items").getAsJsonArray(), changelogItemJsonParser);
+        return new ChangelogGroup(author, created, items);
+    }
 }

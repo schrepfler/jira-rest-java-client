@@ -22,27 +22,27 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class VersionPositionInputGenerator implements JsonGenerator<VersionPosition> {
-	@Override
-	public JsonObject generate(VersionPosition versionPosition) throws JsonParseException {
-		final JsonObject res = new JsonObject();
-		final String posValue;
-		switch (versionPosition) {
-			case FIRST:
-				posValue = "First";
-				break;
-			case LAST:
-				posValue = "Last";
-				break;
-			case EARLIER:
-				posValue = "Earlier";
-				break;
-			case LATER:
-				posValue = "Later";
-				break;
-			default:
-				throw new RestClientException("Unsupported position [" + versionPosition + "]", null);
-		}
-		res.addProperty("position", posValue);
-		return res;
-	}
+    @Override
+    public JsonObject generate(VersionPosition versionPosition) throws JsonParseException {
+        final JsonObject res = new JsonObject();
+        final String posValue;
+        switch (versionPosition) {
+            case FIRST:
+                posValue = "First";
+                break;
+            case LAST:
+                posValue = "Last";
+                break;
+            case EARLIER:
+                posValue = "Earlier";
+                break;
+            case LATER:
+                posValue = "Later";
+                break;
+            default:
+                throw new RestClientException("Unsupported position [" + versionPosition + "]", null);
+        }
+        res.addProperty("position", posValue);
+        return res;
+    }
 }

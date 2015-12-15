@@ -30,29 +30,29 @@ import java.util.Map;
  */
 public class IssueInput {
 
-	private final Map<String, FieldInput> fields;
+    private final Map<String, FieldInput> fields;
 
-	public static IssueInput createWithFields(FieldInput... fields) {
-		return new IssueInput(Maps.uniqueIndex(ImmutableList.copyOf(fields), EntityHelper.GET_ENTITY_STRING_ID_FUNCTION));
-	}
+    public static IssueInput createWithFields(FieldInput... fields) {
+        return new IssueInput(Maps.uniqueIndex(ImmutableList.copyOf(fields), EntityHelper.GET_ENTITY_STRING_ID_FUNCTION));
+    }
 
-	public IssueInput(Map<String, FieldInput> fields) {
-		this.fields = fields;
-	}
+    public IssueInput(Map<String, FieldInput> fields) {
+        this.fields = fields;
+    }
 
-	public Map<String, FieldInput> getFields() {
-		return fields;
-	}
+    public Map<String, FieldInput> getFields() {
+        return fields;
+    }
 
-	@SuppressWarnings("unused")
-	public FieldInput getField(String id) {
-		return fields.get(id);
-	}
+    @SuppressWarnings("unused")
+    public FieldInput getField(String id) {
+        return fields.get(id);
+    }
 
-	@Override
-	public String toString() {
-		return Objects.toStringHelper(this)
-				.add("fields", fields)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("fields", fields)
+                .toString();
+    }
 }

@@ -24,13 +24,13 @@ import com.google.gson.JsonParseException;
 import java.net.URI;
 
 public class VersionRelatedIssueCountJsonParser implements JsonElementParser<VersionRelatedIssuesCount> {
-	@Override
-	public VersionRelatedIssuesCount parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public VersionRelatedIssuesCount parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final int issuesFixedCount = JsonParseUtil.getAsInt(json, "issuesFixedCount");
-		final int issuesAffectedCount = JsonParseUtil.getAsInt(json, "issuesAffectedCount");
-		return new VersionRelatedIssuesCount(selfUri, issuesFixedCount, issuesAffectedCount);
-	}
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final int issuesFixedCount = JsonParseUtil.getAsInt(json, "issuesFixedCount");
+        final int issuesAffectedCount = JsonParseUtil.getAsInt(json, "issuesAffectedCount");
+        return new VersionRelatedIssuesCount(selfUri, issuesFixedCount, issuesAffectedCount);
+    }
 }

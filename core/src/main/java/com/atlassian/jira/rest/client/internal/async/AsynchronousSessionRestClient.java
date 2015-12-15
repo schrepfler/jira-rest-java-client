@@ -32,17 +32,17 @@ import java.net.URI;
  */
 public class AsynchronousSessionRestClient extends AbstractAsynchronousRestClient implements SessionRestClient {
 
-	private final SessionJsonParser sessionJsonParser = new SessionJsonParser();
-	private final URI serverUri;
+    private final SessionJsonParser sessionJsonParser = new SessionJsonParser();
+    private final URI serverUri;
 
-	public AsynchronousSessionRestClient(final URI serverUri, final HttpClient client) {
-		super(client);
-		this.serverUri = serverUri;
-	}
+    public AsynchronousSessionRestClient(final URI serverUri, final HttpClient client) {
+        super(client);
+        this.serverUri = serverUri;
+    }
 
-	@Override
-	public Promise<Session> getCurrentSession() throws RestClientException {
-		return getAndParse(UriBuilder.fromUri(serverUri).path("rest/auth/latest/session").build(), sessionJsonParser);
-	}
+    @Override
+    public Promise<Session> getCurrentSession() throws RestClientException {
+        return getAndParse(UriBuilder.fromUri(serverUri).path("rest/auth/latest/session").build(), sessionJsonParser);
+    }
 
 }

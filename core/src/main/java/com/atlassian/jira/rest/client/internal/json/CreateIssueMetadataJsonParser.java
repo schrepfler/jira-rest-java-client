@@ -28,12 +28,12 @@ import com.google.gson.JsonParseException;
  */
 public class CreateIssueMetadataJsonParser implements JsonElementParser<Iterable<CimProject>> {
 
-	private final GenericJsonArrayParser<CimProject> projectsParser = new GenericJsonArrayParser<CimProject>(new CimProjectJsonParser());
+    private final GenericJsonArrayParser<CimProject> projectsParser = new GenericJsonArrayParser<CimProject>(new CimProjectJsonParser());
 
-	@Override
-	public Iterable<CimProject> parse(final JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Iterable<CimProject> parse(final JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		return projectsParser.parse(json.get("projects").getAsJsonArray());
-	}
+        return projectsParser.parse(json.get("projects").getAsJsonArray());
+    }
 }

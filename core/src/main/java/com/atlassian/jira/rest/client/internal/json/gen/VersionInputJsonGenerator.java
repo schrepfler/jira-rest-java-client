@@ -22,19 +22,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class VersionInputJsonGenerator implements JsonGenerator<VersionInput> {
-	@Override
-	public JsonObject generate(VersionInput version) throws JsonParseException {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("name", version.getName());
-		jsonObject.addProperty("project", version.getProjectKey());
-		if (version.getDescription() != null) {
-			jsonObject.addProperty("description", version.getDescription());
-		}
-		if (version.getReleaseDate() != null) {
-			jsonObject.addProperty("releaseDate", JsonParseUtil.formatDate(version.getReleaseDate()));
-		}
-		jsonObject.addProperty("released", version.isReleased());
-		jsonObject.addProperty("archived", version.isArchived());
-		return jsonObject;
-	}
+    @Override
+    public JsonObject generate(VersionInput version) throws JsonParseException {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name", version.getName());
+        jsonObject.addProperty("project", version.getProjectKey());
+        if (version.getDescription() != null) {
+            jsonObject.addProperty("description", version.getDescription());
+        }
+        if (version.getReleaseDate() != null) {
+            jsonObject.addProperty("releaseDate", JsonParseUtil.formatDate(version.getReleaseDate()));
+        }
+        jsonObject.addProperty("released", version.isReleased());
+        jsonObject.addProperty("archived", version.isArchived());
+        return jsonObject;
+    }
 }

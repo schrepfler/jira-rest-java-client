@@ -28,14 +28,14 @@ import static org.junit.Assert.assertEquals;
  * @since v0.1
  */
 public class VotesJsonParserTest {
-	@Test
-	public void testParse() throws Exception {
-		final VotesJsonParser parser = new VotesJsonParser();
-		final Votes votes = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/votes/complete.json"));
-		Assert.assertEquals(2, Iterables.size(votes.getUsers()));
-		Assert.assertEquals(TestConstants.USER1_BASIC_DEPRECATED, Iterables.get(votes.getUsers(), 0));
-		Assert.assertFalse(votes.hasVoted());
-		Assert.assertEquals(2, votes.getVotes());
-		Assert.assertEquals(TestUtil.toUri("http://localhost:8090/jira/rest/api/latest/issue/TST-1/votes"), votes.getSelf());
-	}
+    @Test
+    public void testParse() throws Exception {
+        final VotesJsonParser parser = new VotesJsonParser();
+        final Votes votes = parser.parse(ResourceUtil.getJsonObjectFromResource("/json/votes/complete.json"));
+        Assert.assertEquals(2, Iterables.size(votes.getUsers()));
+        Assert.assertEquals(TestConstants.USER1_BASIC_DEPRECATED, Iterables.get(votes.getUsers(), 0));
+        Assert.assertFalse(votes.hasVoted());
+        Assert.assertEquals(2, votes.getVotes());
+        Assert.assertEquals(TestUtil.toUri("http://localhost:8090/jira/rest/api/latest/issue/TST-1/votes"), votes.getSelf());
+    }
 }

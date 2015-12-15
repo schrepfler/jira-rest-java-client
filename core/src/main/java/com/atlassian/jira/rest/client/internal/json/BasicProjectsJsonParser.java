@@ -25,14 +25,14 @@ import java.util.Collection;
 
 public class BasicProjectsJsonParser implements JsonArrayParser<Iterable<BasicProject>> {
 
-	private final BasicProjectJsonParser basicProjectJsonParser = new BasicProjectJsonParser();
+    private final BasicProjectJsonParser basicProjectJsonParser = new BasicProjectJsonParser();
 
-	@Override
-	public Iterable<BasicProject> parse(JsonArray json) throws JsonParseException {
-		Collection<BasicProject> res = new ArrayList<BasicProject>(json.size());
-		for (int i = 0; i < json.size(); i++) {
-			res.add(basicProjectJsonParser.parse(json.get(i).getAsJsonObject()));
-		}
-		return res;
-	}
+    @Override
+    public Iterable<BasicProject> parse(JsonArray json) throws JsonParseException {
+        Collection<BasicProject> res = new ArrayList<BasicProject>(json.size());
+        for (int i = 0; i < json.size(); i++) {
+            res.add(basicProjectJsonParser.parse(json.get(i).getAsJsonObject()));
+        }
+        return res;
+    }
 }

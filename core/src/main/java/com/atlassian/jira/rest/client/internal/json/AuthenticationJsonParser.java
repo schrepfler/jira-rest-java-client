@@ -25,15 +25,15 @@ import com.google.gson.JsonParseException;
 
 public class AuthenticationJsonParser implements JsonElementParser<Authentication> {
 
-	private final SessionCookieJsonParser sessionCookieJsonParser = new SessionCookieJsonParser();
-	private final LoginInfoJsonParser loginInfoJsonParser = new LoginInfoJsonParser();
+    private final SessionCookieJsonParser sessionCookieJsonParser = new SessionCookieJsonParser();
+    private final LoginInfoJsonParser loginInfoJsonParser = new LoginInfoJsonParser();
 
-	@Override
-	public Authentication parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public Authentication parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final SessionCookie sessionCookie = sessionCookieJsonParser.parse(json.getAsJsonObject("session"));
-		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getAsJsonObject("loginInfo"));
-		return new Authentication(loginInfo, sessionCookie);
-	}
+        final SessionCookie sessionCookie = sessionCookieJsonParser.parse(json.getAsJsonObject("session"));
+        final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getAsJsonObject("loginInfo"));
+        return new Authentication(loginInfo, sessionCookie);
+    }
 }

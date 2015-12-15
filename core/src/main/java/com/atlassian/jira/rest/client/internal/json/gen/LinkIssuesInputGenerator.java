@@ -24,39 +24,39 @@ import com.google.gson.JsonParseException;
 
 public class LinkIssuesInputGenerator implements JsonGenerator<LinkIssuesInput> {
 
-	private final ServerInfo serverInfo;
+    private final ServerInfo serverInfo;
 
-	public LinkIssuesInputGenerator(ServerInfo serverInfo) {
-		this.serverInfo = serverInfo;
-	}
+    public LinkIssuesInputGenerator(ServerInfo serverInfo) {
+        this.serverInfo = serverInfo;
+    }
 
-	@Override
-	public JsonObject generate(LinkIssuesInput linkIssuesInput) throws JsonParseException {
-		JsonObject res = new JsonObject();
+    @Override
+    public JsonObject generate(LinkIssuesInput linkIssuesInput) throws JsonParseException {
+        JsonObject res = new JsonObject();
 
-		final int buildNumber = serverInfo.getBuildNumber();
-		if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-			String propertyName = "name";
-			if (buildNumber >= ServerVersionConstants.BN_JIRA_7_0) {
-				propertyName = "key";
-			}
-			JsonObject name = new JsonObject();
-			name.addProperty("name", linkIssuesInput.getLinkType() );
-			res.add("type", name);
-			JsonObject inward = new JsonObject();
-			inward.addProperty(propertyName, linkIssuesInput.getFromIssueKey() );
-			res.add("inwardIssue", inward);
-			JsonObject outward = new JsonObject();
-			outward.addProperty(propertyName, linkIssuesInput.getToIssueKey() );
-			res.add("outwardIssue", outward);
-		} else {
-			res.addProperty("linkType", linkIssuesInput.getLinkType());
-			res.addProperty("fromIssueKey", linkIssuesInput.getFromIssueKey());
-			res.addProperty("toIssueKey", linkIssuesInput.getToIssueKey());
-		}
-		if (linkIssuesInput.getComment() != null) {
-			res.add("comment", new CommentJsonGenerator(serverInfo).generate(linkIssuesInput.getComment()));
-		}
-		return res;
-	}
+        final int buildNumber = serverInfo.getBuildNumber();
+        if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
+            String propertyName = "name";
+            if (buildNumber >= ServerVersionConstants.BN_JIRA_7_0) {
+                propertyName = "key";
+            }
+            JsonObject name = new JsonObject();
+            name.addProperty("name", linkIssuesInput.getLinkType() );
+            res.add("type", name);
+            JsonObject inward = new JsonObject();
+            inward.addProperty(propertyName, linkIssuesInput.getFromIssueKey() );
+            res.add("inwardIssue", inward);
+            JsonObject outward = new JsonObject();
+            outward.addProperty(propertyName, linkIssuesInput.getToIssueKey() );
+            res.add("outwardIssue", outward);
+        } else {
+            res.addProperty("linkType", linkIssuesInput.getLinkType());
+            res.addProperty("fromIssueKey", linkIssuesInput.getFromIssueKey());
+            res.addProperty("toIssueKey", linkIssuesInput.getToIssueKey());
+        }
+        if (linkIssuesInput.getComment() != null) {
+            res.add("comment", new CommentJsonGenerator(serverInfo).generate(linkIssuesInput.getComment()));
+        }
+        return res;
+    }
 }

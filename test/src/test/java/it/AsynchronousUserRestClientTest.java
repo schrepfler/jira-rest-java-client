@@ -39,98 +39,98 @@ import static org.junit.Assert.*;
 @RestoreOnce(TestConstants.DEFAULT_JIRA_DUMP_FILE)
 public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClientTest {
 
-	@Test
-	public void testGetUser() throws JsonParseException {
-		final User user = client.getUserClient().getUser(ADMIN_USERNAME).claim();
-		assertEquals("wojciech.seliga@spartez.com", user.getEmailAddress());
-		assertEquals("admin", user.getName());
-		assertEquals("Administrator", user.getDisplayName());
-		assertEquals(new ExpandableProperty<String>(3, ImmutableList
-				.of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
-		assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
-		assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
+    @Test
+    public void testGetUser() throws JsonParseException {
+        final User user = client.getUserClient().getUser(ADMIN_USERNAME).claim();
+        assertEquals("wojciech.seliga@spartez.com", user.getEmailAddress());
+        assertEquals("admin", user.getName());
+        assertEquals("Administrator", user.getDisplayName());
+        assertEquals(new ExpandableProperty<String>(3, ImmutableList
+                .of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
+        assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
+        assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
 
-		final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
-		assertEquals(new ExpandableProperty<String>(ImmutableList.of("jira-users")), user2.getGroups());
-	}
+        final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
+        assertEquals(new ExpandableProperty<String>(ImmutableList.of("jira-users")), user2.getGroups());
+    }
 
-	@Test
-	public void testGetUserWithSlash() {
-		final User user = client.getUserClient().getUser(USER_SLASH.getName()).claim();
-		assertEquals(USER_SLASH_60.getSelf(), user.getSelf());
-		assertEquals(USER_SLASH_60.getDisplayName(), user.getDisplayName());
-	}
+    @Test
+    public void testGetUserWithSlash() {
+        final User user = client.getUserClient().getUser(USER_SLASH.getName()).claim();
+        assertEquals(USER_SLASH_60.getSelf(), user.getSelf());
+        assertEquals(USER_SLASH_60.getDisplayName(), user.getDisplayName());
+    }
 
-	@Test
-	public void testGetNonExistingUser() {
-		final String username = "same-fake-user-which-does-not-exist";
-		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "The user named '" + username + "' does not exist",
-				new Runnable() {
-					@Override
-					public void run() {
-						client.getUserClient().getUser(username).claim();
-					}
-				});
-	}
+    @Test
+    public void testGetNonExistingUser() {
+        final String username = "same-fake-user-which-does-not-exist";
+        TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "The user named '" + username + "' does not exist",
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        client.getUserClient().getUser(username).claim();
+                    }
+                });
+    }
 
-	@Test
-	public void testGetUserAnonymously() {
-		TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, new Runnable() {
-			@Override
-			public void run() {
-				setAnonymousMode();
-				client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
-			}
-		});
+    @Test
+    public void testGetUserAnonymously() {
+        TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, new Runnable() {
+            @Override
+            public void run() {
+                setAnonymousMode();
+                client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
+            }
+        });
 
-	}
+    }
 
-	// Email Visibility is respected in REST since 4.3
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
-	@Test
-	public void testGetUserWhenEmailVisibilityIsHidden() throws JsonParseException {
-		administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.HIDDEN);
+    // Email Visibility is respected in REST since 4.3
+    @JiraBuildNumberDependent(BN_JIRA_4_3)
+    @Test
+    public void testGetUserWhenEmailVisibilityIsHidden() throws JsonParseException {
+        administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.HIDDEN);
 
-		try {
-			final User user = client.getUserClient().getUser(ADMIN_USERNAME).claim();
-			assertNull(user.getEmailAddress());
-			assertEquals("admin", user.getName());
-			assertEquals("Administrator", user.getDisplayName());
-			assertEquals(new ExpandableProperty<String>(3, ImmutableList
-					.of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
-			assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
-			assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
+        try {
+            final User user = client.getUserClient().getUser(ADMIN_USERNAME).claim();
+            assertNull(user.getEmailAddress());
+            assertEquals("admin", user.getName());
+            assertEquals("Administrator", user.getDisplayName());
+            assertEquals(new ExpandableProperty<String>(3, ImmutableList
+                    .of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
+            assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
+            assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
 
-			final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
-			assertEquals(new ExpandableProperty<String>(ImmutableList.of("jira-users")), user2.getGroups());
+            final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
+            assertEquals(new ExpandableProperty<String>(ImmutableList.of("jira-users")), user2.getGroups());
 
-		} finally {
-			// Restore e-mail visibility configuration
-			administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.PUBLIC);
-		}
-	}
+        } finally {
+            // Restore e-mail visibility configuration
+            administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.PUBLIC);
+        }
+    }
 
-	// Email Visibility is respected in REST since 4.3
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
-	@Test
-	public void testGetUserWhenEmailVisibilityIsMasked() throws JsonParseException {
-		administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.MASKED);
+    // Email Visibility is respected in REST since 4.3
+    @JiraBuildNumberDependent(BN_JIRA_4_3)
+    @Test
+    public void testGetUserWhenEmailVisibilityIsMasked() throws JsonParseException {
+        administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.MASKED);
 
-		try {
-			final User user = client.getUserClient().getUser(ADMIN_USERNAME).claim();
-			assertEquals("wojciech dot seliga at spartez dot com", user.getEmailAddress());
-			assertEquals("admin", user.getName());
-			assertEquals("Administrator", user.getDisplayName());
-			assertEquals(new ExpandableProperty<String>(3, ImmutableList
-					.of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
-			assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
-			assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
+        try {
+            final User user = client.getUserClient().getUser(ADMIN_USERNAME).claim();
+            assertEquals("wojciech dot seliga at spartez dot com", user.getEmailAddress());
+            assertEquals("admin", user.getName());
+            assertEquals("Administrator", user.getDisplayName());
+            assertEquals(new ExpandableProperty<String>(3, ImmutableList
+                    .of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
+            assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
+            assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
 
-			final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
-			assertEquals(new ExpandableProperty<String>(ImmutableList.of("jira-users")), user2.getGroups());
-		} finally {
-			// Restore e-mail visibility configuration
-			administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.PUBLIC);
-		}
-	}
+            final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
+            assertEquals(new ExpandableProperty<String>(ImmutableList.of("jira-users")), user2.getGroups());
+        } finally {
+            // Restore e-mail visibility configuration
+            administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.PUBLIC);
+        }
+    }
 }

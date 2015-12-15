@@ -32,24 +32,24 @@ import java.util.Collections;
  */
 public class CustomFieldOptionJsonParser implements JsonElementParser<CustomFieldOption> {
 
-	private final JsonArrayParser<Iterable<CustomFieldOption>> childrenParser = GenericJsonArrayParser.create(this);
+    private final JsonArrayParser<Iterable<CustomFieldOption>> childrenParser = GenericJsonArrayParser.create(this);
 
-	@Override
-	public CustomFieldOption parse(JsonElement jsonElement) throws JsonParseException {
-		final JsonObject json = jsonElement.getAsJsonObject();
+    @Override
+    public CustomFieldOption parse(JsonElement jsonElement) throws JsonParseException {
+        final JsonObject json = jsonElement.getAsJsonObject();
 
-		final URI selfUri = JsonParseUtil.getSelfUri(json);
-		final long id = json.get("id").getAsLong();
-		final String value = JsonParseUtil.getAsString(json, "value");
+        final URI selfUri = JsonParseUtil.getSelfUri(json);
+        final long id = json.get("id").getAsLong();
+        final String value = JsonParseUtil.getAsString(json, "value");
 
-		final JsonArray childrenArray = json.getAsJsonArray("children");
-		final Iterable<CustomFieldOption> children = (childrenArray != null)
-				? childrenParser.parse(childrenArray)
-				: Collections.<CustomFieldOption>emptyList();
+        final JsonArray childrenArray = json.getAsJsonArray("children");
+        final Iterable<CustomFieldOption> children = (childrenArray != null)
+                ? childrenParser.parse(childrenArray)
+                : Collections.<CustomFieldOption>emptyList();
 
-		final JsonObject childObject = json.getAsJsonObject("child");
-		final CustomFieldOption child = (childObject != null) ? parse(childObject) : null;
+        final JsonObject childObject = json.getAsJsonObject("child");
+        final CustomFieldOption child = (childObject != null) ? parse(childObject) : null;
 
-		return new CustomFieldOption(id, selfUri, value, children, child);
-	}
+        return new CustomFieldOption(id, selfUri, value, children, child);
+    }
 }
