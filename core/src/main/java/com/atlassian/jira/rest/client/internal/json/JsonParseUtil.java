@@ -132,10 +132,13 @@ public class JsonParseUtil {
 	@Nullable
 	public static JsonElement getNestedOptionalObject(JsonObject json, final String... path) throws JsonParseException {
 		for (int i = 0; i < path.length - 1; i++) {
+			if (json == null) {
+				return null;
+			}
 			String s = path[i];
-			json = json.get(s).getAsJsonObject();
+			json = json.getAsJsonObject(s);
 		}
-		return json.get(path[path.length - 1]);
+		return json == null? null : json.get(path[path.length - 1]);
 	}
 
 	@SuppressWarnings("unused")
@@ -275,6 +278,9 @@ public class JsonParseUtil {
 
 	@Nullable
 	public static String getOptionalString(final JsonObject jsonObject, final String attributeName) {
+		if (jsonObject == null) {
+			return null;
+		}
 		final JsonElement res = jsonObject.get(attributeName);
 		if (res == null || res.isJsonNull()) {
 			return null;
