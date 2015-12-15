@@ -37,10 +37,10 @@ public class ComponentJsonParser implements JsonElementParser<Component> {
 		final Component.AssigneeInfo assigneeInfo;
 		if (assigneeTypeStr != null) {
 			final AssigneeType assigneeType = parseAssigneeType(assigneeTypeStr);
-			final JsonObject assigneeJson = json.get("assignee").getAsJsonObject();
+			final JsonObject assigneeJson = json.getAsJsonObject("assignee");
 			final BasicUser assignee = assigneeJson != null ? JsonParseUtil.parseBasicUser(assigneeJson) : null;
 			final AssigneeType realAssigneeType = parseAssigneeType(JsonParseUtil.getAsString(json, "realAssigneeType"));
-			final JsonObject realAssigneeJson = json.get("realAssignee").getAsJsonObject();
+			final JsonObject realAssigneeJson = json.getAsJsonObject("realAssignee");
 			final BasicUser realAssignee = realAssigneeJson != null ? JsonParseUtil.parseBasicUser(realAssigneeJson) : null;
 			final boolean isAssigneeTypeValid = json.get("isAssigneeTypeValid").getAsBoolean();
 			assigneeInfo = new Component.AssigneeInfo(assignee, assigneeType, realAssignee, realAssigneeType, isAssigneeTypeValid);

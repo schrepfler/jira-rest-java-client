@@ -176,11 +176,13 @@ public class IssueJsonParser implements JsonElementParser<Issue> {
 		final JsonObject fieldsJson = json.getAsJsonObject(FIELDS);
 
 		final JsonElement summaryObject = fieldsJson.get(attributeName);
-		if (summaryObject.isJsonObject()) { // pre JIRA 5.0 way
-			return JsonParseUtil.getAsString(summaryObject.getAsJsonObject(), VALUE_ATTR);
-		}
-		if (summaryObject.isJsonPrimitive() && summaryObject.getAsJsonPrimitive().isString()) { // JIRA 5.0 way
-			return summaryObject.getAsString();
+		if (summaryObject != null) {
+			if (summaryObject.isJsonObject()) { // pre JIRA 5.0 way
+				return JsonParseUtil.getAsString(summaryObject.getAsJsonObject(), VALUE_ATTR);
+			}
+			if (summaryObject.isJsonPrimitive() && summaryObject.getAsJsonPrimitive().isString()) { // JIRA 5.0 way
+				return summaryObject.getAsString();
+			}
 		}
 		throw new JsonParseException("Cannot parse [" + attributeName + "] from available fields");
 	}

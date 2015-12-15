@@ -34,7 +34,7 @@ public class ChangelogJsonParser implements JsonElementParser<ChangelogGroup> {
 		final JsonObject json = jsonElement.getAsJsonObject();
 
 		final DateTime created = JsonParseUtil.parseDateTime(json, "created");
-		final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.get("author").getAsJsonObject()) : null;
+		final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.getAsJsonObject("author")) : null;
 		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.get("items").getAsJsonArray(), changelogItemJsonParser);
 		return new ChangelogGroup(author, created, items);
 	}

@@ -42,7 +42,7 @@ public class FilterJsonParser implements JsonElementParser<Filter> {
 		final String description = json.has("description")? JsonParseUtil.getAsString(json, "description") : "";
 		final URI searchUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "searchUrl"));
 		final URI viewUrl = JsonParseUtil.parseURI(JsonParseUtil.getAsString(json, "viewUrl"));
-		final BasicUser owner = JsonParseUtil.parseBasicUser(json.get("owner").getAsJsonObject());
+		final BasicUser owner = JsonParseUtil.parseBasicUser(json.getAsJsonObject("owner"));
 		final boolean favourite = json.get("favourite").getAsBoolean();
 		return new Filter(selfUri, id, name, description, jql, viewUrl, searchUrl, owner, favourite);
 	}

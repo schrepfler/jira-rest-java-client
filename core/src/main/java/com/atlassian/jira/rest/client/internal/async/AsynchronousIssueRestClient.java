@@ -30,6 +30,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -291,7 +292,7 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 
 	@Override
 	public Promise<Void> addWatcher(final URI watchersUri, final String username) {
-		return post(watchersUri, new JsonPrimitive("\"" + username + "\""));
+		return post(watchersUri, JsonParser.GSON.toJson(username));
 	}
 
 	@Override

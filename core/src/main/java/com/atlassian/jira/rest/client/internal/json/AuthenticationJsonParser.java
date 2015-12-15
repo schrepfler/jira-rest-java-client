@@ -32,8 +32,8 @@ public class AuthenticationJsonParser implements JsonElementParser<Authenticatio
 	public Authentication parse(JsonElement jsonElement) throws JsonParseException {
 		final JsonObject json = jsonElement.getAsJsonObject();
 
-		final SessionCookie sessionCookie = sessionCookieJsonParser.parse(json.get("session").getAsJsonObject());
-		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.get("loginInfo").getAsJsonObject());
+		final SessionCookie sessionCookie = sessionCookieJsonParser.parse(json.getAsJsonObject("session"));
+		final LoginInfo loginInfo = loginInfoJsonParser.parse(json.getAsJsonObject("loginInfo"));
 		return new Authentication(loginInfo, sessionCookie);
 	}
 }

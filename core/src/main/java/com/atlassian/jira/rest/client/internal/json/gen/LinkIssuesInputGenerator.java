@@ -36,14 +36,18 @@ public class LinkIssuesInputGenerator implements JsonGenerator<LinkIssuesInput> 
 
 		final int buildNumber = serverInfo.getBuildNumber();
 		if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
+			String propertyName = "name";
+			if (buildNumber >= ServerVersionConstants.BN_JIRA_7_0) {
+				propertyName = "key";
+			}
 			JsonObject name = new JsonObject();
 			name.addProperty("name", linkIssuesInput.getLinkType() );
 			res.add("type", name);
 			JsonObject inward = new JsonObject();
-			inward.addProperty("name", linkIssuesInput.getFromIssueKey() );
+			inward.addProperty(propertyName, linkIssuesInput.getFromIssueKey() );
 			res.add("inwardIssue", inward);
 			JsonObject outward = new JsonObject();
-			outward.addProperty("name", linkIssuesInput.getToIssueKey() );
+			outward.addProperty(propertyName, linkIssuesInput.getToIssueKey() );
 			res.add("outwardIssue", outward);
 		} else {
 			res.addProperty("linkType", linkIssuesInput.getLinkType());

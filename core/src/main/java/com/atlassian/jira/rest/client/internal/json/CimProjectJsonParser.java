@@ -49,7 +49,7 @@ public class CimProjectJsonParser implements JsonElementParser<CimProject> {
 		final Iterable<CimIssueType> issueTypes = (issueTypesArray != null) ?
 				issueTypesParser.parse(issueTypesArray) : Collections.<CimIssueType>emptyList();
 
-		final Map<String, URI> avatarUris = JsonParseUtil.getAvatarUris(json.get("avatarUrls").getAsJsonObject());
+		final Map<String, URI> avatarUris = JsonParseUtil.getAvatarUris(json.getAsJsonObject("avatarUrls"));
 		return new CimProject(basicProject.getSelf(), basicProject.getKey(), basicProject.getId(),
 				basicProject.getName(), avatarUris, issueTypes);
 	}

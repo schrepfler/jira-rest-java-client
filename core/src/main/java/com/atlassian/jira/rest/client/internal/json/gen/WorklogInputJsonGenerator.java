@@ -41,7 +41,9 @@ public class WorklogInputJsonGenerator implements JsonGenerator<WorklogInput> {
 	@Override
 	public JsonObject generate(final WorklogInput worklogInput) throws JsonParseException {
 		JsonObject res = new JsonObject();
-		res.addProperty("self", worklogInput.getSelf().toString());
+		if (worklogInput.getSelf() != null) {
+			res.addProperty("self", worklogInput.getSelf().toString());
+		}
 		res.addProperty("comment", worklogInput.getComment());
 		res.addProperty("started", dateTimeFormatter.print(worklogInput.getStartDate()));
 		res.addProperty("timeSpent", worklogInput.getMinutesSpent() + "m");

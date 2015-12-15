@@ -284,7 +284,7 @@ public class JsonParseUtil {
 
 	@Nullable
 	public static <T> T getOptionalJsonObject(final JsonObject jsonObject, final String attributeName, final JsonElementParser<T> jsonParser) throws JsonParseException {
-		final JsonObject res = jsonObject.get(attributeName).getAsJsonObject();
+		final JsonObject res = jsonObject.getAsJsonObject(attributeName);
 		if (res == null || res.isJsonNull()) {
 			return null;
 		}
