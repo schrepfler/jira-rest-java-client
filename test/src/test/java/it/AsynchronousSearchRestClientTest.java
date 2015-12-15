@@ -251,7 +251,7 @@ public class AsynchronousSearchRestClientTest extends AbstractAsynchronousRestCl
 
 	@Test
 	public void jqlSearchUsingPostWithAllFieldsRequestedShouldReturnIssueWithAllFields() throws Exception {
-		jqlSearchWithAllFieldsImpl(generateVeryLongJql() + "and key=TST-2");
+		jqlSearchWithAllFieldsImpl(generateVeryLongJql() + " and key=TST-2");
 	}
 
 	private void jqlSearchWithAllFieldsImpl(String jql) {
