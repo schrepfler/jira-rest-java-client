@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Factory for asynchronous http clients.
@@ -143,6 +144,7 @@ public class AsynchronousHttpClientFactory {
 	}
 
 	private static final class MavenUtils {
+		private static final Logger LOGGER = Logger.getLogger(MavenUtils.class.getName());
 		private static final String UNKNOWN_VERSION = "unknown";
 
 		static String getVersion(String groupId, String artifactId) {
@@ -154,8 +156,8 @@ public class AsynchronousHttpClientFactory {
 				props.load(resourceAsStream);
 				return props.getProperty("version", UNKNOWN_VERSION);
 			} catch (Exception e) {
-				System.err.println("Could not find version for maven artifact " + groupId + ":" + artifactId);
-				System.err.println("Got the following exception " + e);
+				LOGGER.fine("Could not find version for maven artifact " + groupId + ":" + artifactId);
+				LOGGER.fine("Got the following exception " + e);
 				return UNKNOWN_VERSION;
 			} finally {
 				if (resourceAsStream != null) {
