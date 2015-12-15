@@ -191,6 +191,9 @@ public class IssueJsonParser implements JsonElementParser<Issue> {
 	private JsonObject getFieldUnisex(final JsonObject json, final String attributeName) throws JsonParseException {
 		final JsonObject fieldsJson = json.getAsJsonObject(FIELDS);
 		final JsonObject fieldJson = fieldsJson.getAsJsonObject(attributeName);
+		if (fieldJson == null) {
+			throw new JsonParseException("JSONObject[\"" + attributeName + "\"] not found.");
+		}
 		if (fieldJson.has(VALUE_ATTR)) {
 			return fieldJson.getAsJsonObject(VALUE_ATTR); // pre 5.0 way
 		} else {
@@ -208,6 +211,9 @@ public class IssueJsonParser implements JsonElementParser<Issue> {
 	private String getFieldStringUnisex(final JsonObject json, final String attributeName) throws JsonParseException {
 		final JsonObject fieldsJson = json.getAsJsonObject(FIELDS);
 		final JsonElement fieldJson = fieldsJson.get(attributeName);
+		if (fieldJson == null) {
+			throw new JsonParseException("JSONObject[\"" + attributeName + "\"] not found.");
+		}
 		if (fieldJson.isJsonObject()) {
 			return JsonParseUtil.getAsString(fieldJson.getAsJsonObject(), VALUE_ATTR); // pre 5.0 way
 		}
@@ -221,7 +227,7 @@ public class IssueJsonParser implements JsonElementParser<Issue> {
 		final BasicIssue basicIssue = basicIssueJsonParser.parse(issueJson);
 		final Iterable<String> expandos = parseExpandos(issueJson);
 		final JsonObject jsonFields = issueJson.getAsJsonObject(FIELDS);
-		final JsonObject commentsJson = jsonFields.getAsJsonObject(COMMENT_FIELD.id);
+		final JsonObject commentsJson = jsonFields == null? null : jsonFields.getAsJsonObject(COMMENT_FIELD.id);
 		final Collection<Comment> comments = (commentsJson == null) ? Collections.<Comment>emptyList()
 				: parseArray(commentsJson, new JsonWeakParserForJsonObject<Comment>(commentJsonParser), "comments");
 
