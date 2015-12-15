@@ -21,7 +21,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import javax.annotation.Nullable;
@@ -39,8 +38,8 @@ public class BasicProjectRoleJsonParser implements JsonElementParser<Collection<
 							@Override
 							public BasicProjectRole apply(@Nullable final String key) {
 								try {
-									return new BasicProjectRole(JsonParseUtil
-											.parseURI(JsonParseUtil.getAsString(json.getAsJsonObject(), key)), key);
+									return new BasicProjectRole(JsonParseUtil.parseURI(
+											JsonParseUtil.getAsString(json.getAsJsonObject(), key)), key);
 								} catch (JsonParseException e) {
 									throw new RestClientException(e);
 								}
