@@ -36,6 +36,5 @@ public class BasicUserJsonParserTest {
 		Assert.assertEquals("Administrator", user.getDisplayName());
 		Assert.assertEquals(toUri("http://localhost:8090/jira/rest/api/latest/user?username=admin"), user.getSelf());
 		Assert.assertFalse(user.isSelfUriIncomplete());
-		System.out.println(user);
 	}
 }

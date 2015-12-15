@@ -21,6 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class BasicProjectsJsonParser implements JsonArrayParser<Iterable<BasicProject>> {
 
@@ -28,7 +29,7 @@ public class BasicProjectsJsonParser implements JsonArrayParser<Iterable<BasicPr
 
 	@Override
 	public Iterable<BasicProject> parse(JsonArray json) throws JsonParseException {
-		ArrayList<BasicProject> res = new ArrayList<BasicProject>(json.size());
+		Collection<BasicProject> res = new ArrayList<BasicProject>(json.size());
 		for (int i = 0; i < json.size(); i++) {
 			res.add(basicProjectJsonParser.parse(json.get(i).getAsJsonObject()));
 		}

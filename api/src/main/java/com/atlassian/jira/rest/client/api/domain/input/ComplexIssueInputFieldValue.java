@@ -31,7 +31,7 @@ public class ComplexIssueInputFieldValue {
 	private final Map<String, Object> valuesMap;
 
 	public static ComplexIssueInputFieldValue with(String key, Object value) {
-		return new ComplexIssueInputFieldValue(ImmutableMap.<String, Object>of(key, value));
+		return new ComplexIssueInputFieldValue(ImmutableMap.of(key, value));
 	}
 
 	public ComplexIssueInputFieldValue(Map<String, Object> valuesMap) {

@@ -236,7 +236,7 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         final AuditRecordsData auditRecordsData = client.getAuditRestClient().getAuditRecords(fromLatestSearchCriteria).claim();
 
         // then
-        assertThat(auditRecordsData.getRecords(), Matchers.<AuditRecord>hasItem(auditRecordWithId(latestCreatedRecord.getId())));
+        assertThat(auditRecordsData.getRecords(), Matchers.hasItem(auditRecordWithId(latestCreatedRecord.getId())));
     }
 
     private Matcher<AuditRecord> auditRecordWithId(final Long expectedId) {

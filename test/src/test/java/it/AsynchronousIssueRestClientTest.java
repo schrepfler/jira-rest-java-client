@@ -178,7 +178,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		final Issue issue = issueClient.getIssue(issueKey).claim();
 		assertEquals(issueKey, issue.getKey());
 		final BasicIssue subtask = addSubtaskToIssue(issue);
-		System.out.println(subtask);
 
 		// delete issue
 		issueClient.deleteIssue(issueKey, true).claim();
@@ -197,7 +196,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		final Issue issue = issueClient.getIssue(issueKey).claim();
 		assertEquals(issueKey, issue.getKey());
 		BasicIssue subtask = addSubtaskToIssue(issue);
-		System.out.println(subtask);
 
 		// delete issue
 		expectedException.expect(rceWithSingleError(400, String.format("The issue '%s' has subtasks.  "

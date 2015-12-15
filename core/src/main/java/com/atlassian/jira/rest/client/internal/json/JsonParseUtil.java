@@ -62,7 +62,7 @@ public class JsonParseUtil {
 		if (jsonArray == null) {
 			return OptionalIterable.absent();
 		} else {
-			return new OptionalIterable<T>(JsonParseUtil.<T>parseJsonArray(jsonArray, jsonParser));
+			return new OptionalIterable<T>(JsonParseUtil.parseJsonArray(jsonArray, jsonParser));
 		}
 	}
 

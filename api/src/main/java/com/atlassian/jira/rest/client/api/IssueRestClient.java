@@ -295,12 +295,12 @@ public interface IssueRestClient {
 	/**
 	 * Expandos supported by {@link IssueRestClient#getIssue(String, Iterable)}
 	 */
-	public enum Expandos {
+	enum Expandos {
 		CHANGELOG("changelog"), OPERATIONS("operations"), SCHEMA("schema"), NAMES("names"), TRANSITIONS("transitions");
 
 		private final String value;
 
-		private Expandos(String value) {
+		Expandos(String value) {
 			this.value = value;
 		}
 

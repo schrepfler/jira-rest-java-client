@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * @since v1.0
  */
 public interface ValueTransformer extends Function<Object, Object> {
-	public static final Object CANNOT_HANDLE = new Object();
+	Object CANNOT_HANDLE = new Object();
 
 	/**
 	 * Transform given object into other representation, that can be used as input for field value generators.

@@ -144,16 +144,16 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 		);
 		assertThat(projectRolesWithoutSelf, containsInAnyOrder(
 				new ProjectRole(10000l, null, "Users", "A project role that represents users in a project",
-						ImmutableList.<RoleActor>of(
+						ImmutableList.of(
 								new RoleActor(10062l, "jira-users", "atlassian-group-role-actor", "jira-users", buildUserAvatarUri(null, 10083L, "16x16"))
 						)),
 				new ProjectRole(10001l, null, "Developers", "A project role that represents developers in a project",
-						ImmutableList.<RoleActor>of(
+						ImmutableList.of(
 								new RoleActor(10061l, "jira-developers", "atlassian-group-role-actor", "jira-developers", buildUserAvatarUri(null, 10083L, "16x16")),
 								new RoleActor(10063l, "My Test User", "atlassian-user-role-actor", "user", buildUserAvatarUri(null, 10082L, "16x16"))
 						)),
 				new ProjectRole(10002l, null, "Administrators", "A project role that represents administrators in a project",
-						ImmutableList.<RoleActor>of(
+						ImmutableList.of(
 								new RoleActor(10060l, "jira-administrators", "atlassian-group-role-actor", "jira-administrators", buildUserAvatarUri(null, 10083L, "16x16"))
 						))
 		));

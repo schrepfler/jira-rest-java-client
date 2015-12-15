@@ -39,7 +39,7 @@ public class IssueInputJsonGeneratorTest {
 				new FieldInput("string", "String value"),
 				new FieldInput("integer", 1),
 				new FieldInput("long", 1L),
-				new FieldInput("complex", new ComplexIssueInputFieldValue(ImmutableMap.<String, Object>of(
+				new FieldInput("complex", new ComplexIssueInputFieldValue(ImmutableMap.of(
 						"string", "string",
 						"integer", 1,
 						"long", 1L,

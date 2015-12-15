@@ -57,7 +57,7 @@ public class BaseValueTransformer implements ValueTransformer {
 
 	private ComplexIssueInputFieldValue transformCustomFieldOption(CustomFieldOption cfo) {
 		if (cfo.getChild() != null) {
-			return new ComplexIssueInputFieldValue(ImmutableMap.<String, Object>of(
+			return new ComplexIssueInputFieldValue(ImmutableMap.of(
 					"id", cfo.getId().toString(),
 					"value", cfo.getValue(),
 					"child", this.apply(cfo.getChild())));

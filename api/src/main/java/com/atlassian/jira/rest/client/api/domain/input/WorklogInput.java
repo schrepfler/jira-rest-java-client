@@ -197,7 +197,7 @@ public class WorklogInput {
 				adjustEstimate, adjustEstimateValue);
 	}
 
-	public static enum AdjustEstimate {
+	public enum AdjustEstimate {
 		/**
 		 * Set remaining estimate to given value.
 		 */
@@ -217,7 +217,7 @@ public class WorklogInput {
 
 		public final String restValue;
 
-		private AdjustEstimate() {
+		AdjustEstimate() {
 			restValue = this.name().toLowerCase();
 		}
 	}

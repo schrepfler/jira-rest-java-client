@@ -60,7 +60,7 @@ public abstract class AbstractAsynchronousRestClient {
 	}
 
 	protected interface ResponseHandler<T> {
-		T handle(Response request) throws IOException;
+		T handle(Response request) throws JsonParseException, IOException;
 	}
 
 	protected final <T> Promise<T> getAndParse(final URI uri, final JsonParser<?, T> parser) {
@@ -211,10 +211,12 @@ public abstract class AbstractAsynchronousRestClient {
 		final ImmutableList.Builder<ErrorCollection> results = ImmutableList.builder();
 		if (issues != null && issues.size() == 0) {
 			final JsonArray errors = jsonObject.getAsJsonArray("errors");
-			for (int i = 0; i < errors.size(); i++) {
-				final JsonObject currentJsonObject = errors.get(i).getAsJsonObject();
-				results.add(getErrorsFromJson(currentJsonObject.get("status").getAsInt(), currentJsonObject
-						.getAsJsonObject("elementErrors")));
+			for (JsonElement error: errors) {
+				if (error.isJsonObject()) {
+					final JsonObject currentJsonObject = error.getAsJsonObject();
+					results.add(getErrorsFromJson(JsonParseUtil.getAsInt(currentJsonObject, "status"),
+							currentJsonObject.getAsJsonObject("elementErrors")));
+				}
 			}
 		} else {
 			results.add(getErrorsFromJson(status, jsonObject));
