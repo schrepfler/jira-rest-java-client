@@ -40,7 +40,6 @@ import java.util.Iterator;
 
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -74,20 +73,16 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 		assertEquals(2, Iterables.size(project.getVersions()));
 		assertEquals(2, Iterables.size(project.getComponents()));
 		final OptionalIterable<IssueType> issueTypes = project.getIssueTypes();
-		if (isJira4x4OrNewer()) {
-			assertTrue(issueTypes.isSupported());
-			final Iterator<IssueType> issueTypesIterator = issueTypes.iterator();
-			assertTrue(issueTypesIterator.hasNext());
-			final IssueType it = issueTypesIterator.next();
-			if (isJira5xOrNewer()) {
-				assertEquals(Long.valueOf(1), it.getId());
-			} else {
-				assertNull(it.getId());
-			}
-			assertEquals(it.getName(), "Bug");
+		assertTrue(issueTypes.isSupported());
+		final Iterator<IssueType> issueTypesIterator = issueTypes.iterator();
+		assertTrue(issueTypesIterator.hasNext());
+		final IssueType it = issueTypesIterator.next();
+		if (isJira5xOrNewer()) {
+			assertEquals(Long.valueOf(1), it.getId());
 		} else {
-			assertFalse(issueTypes.isSupported());
+			assertNull(it.getId());
 		}
+		assertEquals(it.getName(), "Bug");
 	}
 
 	@Test
@@ -108,9 +103,7 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 	}
 
 	private String getCannotViewProjectErrorMessage(String key) {
-		return isJira4x4OrNewer()
-				? (isJira5xOrNewer() ? ("No project could be found with key '" + key + "'.") : "You cannot view this project.")
-				: "You must have the browse project permission to view this project.";
+		return ("No project could be found with key '" + key + "'.");
 	}
 
 	@Test

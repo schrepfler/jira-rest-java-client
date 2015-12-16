@@ -49,10 +49,6 @@ public class AsynchronousVersionRestClientTest extends AbstractAsynchronousRestC
 
 	@Test
 	public void testCreateAndUpdateVersion() throws Exception {
-		if (!isJira4x4OrNewer()) {
-			return;
-		}
-
 		assertThat(Iterables.transform(client.getProjectClient().getProject("TST").claim().getVersions(),
 				new VersionToNameMapper()), containsInAnyOrder("1.1", "1"));
 
@@ -147,9 +143,6 @@ public class AsynchronousVersionRestClientTest extends AbstractAsynchronousRestC
 
 	@Test
 	public void testGetAndRemoveVersion() {
-		if (!isJira4x4OrNewer()) {
-			return;
-		}
 		final Iterable<Version> versionsInTheBeggining = client.getProjectClient().getProject("TST").claim().getVersions();
 		final VersionInput versionInput = VersionInput
 				.create("TST", "My newly created version", "A description\nwith\new line", null, false, false);
@@ -269,9 +262,6 @@ public class AsynchronousVersionRestClientTest extends AbstractAsynchronousRestC
 
 	@Test
 	public void testMoveVersion() {
-		if (!isJira4x4OrNewer()) {
-			return;
-		}
 		final Version v3 = client.getVersionRestClient().createVersion(VersionInput
 				.create("TST", "my added version", "a description", null, false, false)).claim();
 		assertProjectHasOrderedVersions("TST", "1", "1.1", v3.getName());
@@ -303,9 +293,6 @@ public class AsynchronousVersionRestClientTest extends AbstractAsynchronousRestC
 
 	@Test
 	public void testMoveVersionAfter() {
-		if (!isJira4x4OrNewer()) {
-			return;
-		}
 		final Version v3 = client.getVersionRestClient().createVersion(VersionInput
 				.create("TST", "my added version", "a description", null, false, false)).claim();
 		final Version v4 = client.getVersionRestClient().createVersion(VersionInput
