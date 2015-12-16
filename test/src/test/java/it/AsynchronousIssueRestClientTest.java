@@ -364,9 +364,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		final Issue issue = client.getIssueClient().getIssue("TST-1").claim();
 		final Iterable<Transition> transitions = client.getIssueClient().getTransitions(issue).claim();
 		final Transition transitionFound = TestUtil.getTransitionByName(transitions, "Estimate");
-		final String errorMsg = doesJiraServeCorrectlyErrorMessagesForBadRequestWhileTransitioningIssue()
-				? expectedErrorMsg : null;
-		assertErrorCode(Response.Status.BAD_REQUEST, errorMsg, new Runnable() {
+		assertErrorCode(Response.Status.BAD_REQUEST, expectedErrorMsg, new Runnable() {
 			@Override
 			public void run() {
 				client.getIssueClient().transition(issue, new TransitionInput(transitionFound.getId(), comment)).claim();
@@ -514,18 +512,13 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 
 		setUser1();
 		assertTrue(client.getIssueClient().getIssue("TST-1").claim().getWatchers().isWatching());
-		String expectedErrorMsg = isJraDev3516Fixed() ? ("User '" + USER1_USERNAME
-				+ "' is not allowed to add watchers to issue 'TST-1'") : null;
+		String expectedErrorMsg = "User '" + USER1_USERNAME + "' is not allowed to add watchers to issue 'TST-1'";
 		assertErrorCode(Response.Status.UNAUTHORIZED, expectedErrorMsg, new Runnable() {
 			@Override
 			public void run() {
 				client.getIssueClient().addWatcher(issue1.getWatchers().getSelf(), ADMIN_USERNAME).claim();
 			}
 		});
-	}
-
-	private boolean isJraDev3516Fixed() {
-		return true;
 	}
 
 	@Test
@@ -673,21 +666,9 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		assertEquals("Duplicate", targetLink.getIssueLinkType().getName());
 	}
 
-	private boolean doesJiraSupportAddingAttachment() {
-		return true;
-	}
-
-	private boolean doesJiraServeCorrectlyErrorMessagesForBadRequestWhileTransitioningIssue() {
-		return true;
-	}
-
 	@Test
 	// TODO: implement
 	public void testAddAttachment() throws IOException {
-
-		if (!doesJiraSupportAddingAttachment()) {
-			return;
-		}
 		final IssueRestClient issueClient = client.getIssueClient();
 		final Issue issue = issueClient.getIssue("TST-3").claim();
 		assertFalse(issue.getAttachments().iterator().hasNext());
@@ -746,9 +727,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	@Test
 	// TODO: implement
 	public void testAddAttachments() throws IOException {
-		if (!doesJiraSupportAddingAttachment()) {
-			return;
-		}
 		final IssueRestClient issueClient = client.getIssueClient();
 		final Issue issue = issueClient.getIssue("TST-4").claim();
 		assertFalse(issue.getAttachments().iterator().hasNext());
@@ -810,9 +788,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	@Test
 	// TODO: implement
 	public void testAddFileAttachments() throws IOException {
-		if (!doesJiraSupportAddingAttachment()) {
-			return;
-		}
 		final IssueRestClient issueClient = client.getIssueClient();
 		final Issue issue = issueClient.getIssue("TST-5").claim();
 		assertFalse(issue.getAttachments().iterator().hasNext());
