@@ -78,10 +78,6 @@ public abstract class AbstractAsynchronousRestClientTest extends NimbleFuncTestC
 		setClient(TestConstants.USER1_USERNAME, TestConstants.USER1_PASSWORD);
 	}
 
-	protected boolean isJira61xOrNewer() {
-		return true;
-	}
-
 	protected boolean isJira6_3_7_OrNewer() {
 		return true;
 	}

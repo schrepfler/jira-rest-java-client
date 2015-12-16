@@ -86,13 +86,8 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 		final Project restrictedProject = client.getProjectClient().getProject(RESTRICTED_PROJECT_KEY).claim();
 		setAnonymousMode();
 		exception.expect(RestClientException.class);
-		if (isJira61xOrNewer()) {
-			final String expectedError = String.format("No project could be found with id '%s'.", restrictedProject.getId());
-			exception.expect(rceWithSingleError(404, expectedError));
-		}
-		else {
-			exception.expectMessage(String.format("No project could be found with key '%s'", RESTRICTED_PROJECT_KEY));
-		}
+		final String expectedError = String.format("No project could be found with id '%s'.", restrictedProject.getId());
+		exception.expect(rceWithSingleError(404, expectedError));
 		client.getProjectRolesRestClient().getRole(restrictedProject.getSelf(), 10000l).claim();
 	}
 
