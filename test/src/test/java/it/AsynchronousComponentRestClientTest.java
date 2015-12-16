@@ -137,16 +137,13 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		final ComponentInput componentInput = new ComponentInput("my component", "a description", null, null);
 		setUser1();
 
-		final Response.Status expectedForbiddenErrorCode =
-				(doesJiraReturnCorrectErrorCodeForForbiddenOperation()) ? Response.Status.FORBIDDEN
-						: Response.Status.UNAUTHORIZED;
-		TestUtil.assertErrorCode(expectedForbiddenErrorCode, "The user wseliga does not have permission to complete this operation.", new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.FORBIDDEN, "The user wseliga does not have permission to complete this operation.", new Runnable() {
 			@Override
 			public void run() {
 				client.getComponentClient().removeComponent(basicComponent.getSelf(), null).claim();
 			}
 		});
-		TestUtil.assertErrorCode(expectedForbiddenErrorCode, "You cannot edit the configuration of this project.", new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.FORBIDDEN, "You cannot edit the configuration of this project.", new Runnable() {
 			@Override
 			public void run() {
 				client.getComponentClient().createComponent("TST", componentInput).claim();
@@ -172,7 +169,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 			});
 		} else {
 			// IMO for anonymous access still Response.Status.UNAUTHORIZED should be returned - JRADEV-7671
-			TestUtil.assertErrorCode(expectedForbiddenErrorCode, "You cannot edit the configuration of this project.", new Runnable() {
+			TestUtil.assertErrorCode(Response.Status.FORBIDDEN, "You cannot edit the configuration of this project.", new Runnable() {
 				@Override
 				public void run() {
 					client.getComponentClient().createComponent("TST", componentInput).claim();
@@ -318,12 +315,6 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		});
 
 	}
-
-
-	private boolean doesJiraReturnCorrectErrorCodeForForbiddenOperation() {
-		return true;
-	}
-
 
 	private void assertProjectHasComponents(String... names) {
 		assertThat(Iterables.transform(client.getProjectClient().getProject("TST").claim().getComponents(),
