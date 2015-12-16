@@ -41,7 +41,6 @@ import java.util.Iterator;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -77,11 +76,7 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 		final Iterator<IssueType> issueTypesIterator = issueTypes.iterator();
 		assertTrue(issueTypesIterator.hasNext());
 		final IssueType it = issueTypesIterator.next();
-		if (isJira5xOrNewer()) {
-			assertEquals(Long.valueOf(1), it.getId());
-		} else {
-			assertNull(it.getId());
-		}
+		assertEquals(Long.valueOf(1), it.getId());
 		assertEquals(it.getName(), "Bug");
 	}
 

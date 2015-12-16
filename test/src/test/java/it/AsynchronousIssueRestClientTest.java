@@ -396,9 +396,8 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		final Issue issue1 = client.getIssueClient().getIssue("TST-1").claim();
 		assertFalse(issue1.getVotes().hasVoted());
 		assertEquals(1, issue1.getVotes().getVotes()); // the other user has voted
-		final String expectedMessage = isJira5xOrNewer() // JIRA 5.0 comes without Polish translation OOB
-				? "You cannot vote for an issue you have reported."
-				: "Nie mo\u017cesz g\u0142osowa\u0107 na zadanie kt\u00f3re utworzy\u0142e\u015b.";
+		// JIRA 5.0 comes without Polish translation OOB
+		final String expectedMessage =  "You cannot vote for an issue you have reported.";
 
 		// I hope that such Polish special characters (for better testing local specific behaviour of REST
 		assertErrorCode(Response.Status.NOT_FOUND, expectedMessage, new Runnable() {
@@ -546,14 +545,8 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		final Issue issue1 = issueClient.getIssue(issueKey).claim();
 		final String expectedErrorMessage;
 
-		if (isJira5xOrNewer()) {
-			expectedErrorMessage = "The user \"" + USER2_USERNAME + "\" does not have permission to view this issue."
-					+ " This user will not be added to the watch list.";
-		} else if (isJira43xOrNewer()) {
-			expectedErrorMessage = "User '" + ADMIN_USERNAME + "' is not allowed to add watchers to issue '" + issueKey + "'";
-		} else {
-			expectedErrorMessage = "com.sun.jersey.api.client.UniformInterfaceException: Client response status: 401";
-		}
+		expectedErrorMessage = "The user \"" + USER2_USERNAME + "\" does not have permission to view this issue."
+				+ " This user will not be added to the watch list.";
 
 		assertErrorCode(Response.Status.UNAUTHORIZED, expectedErrorMessage,
 				new Runnable() {
@@ -603,9 +596,8 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		});
 
 		setUser1();
-		final String optionalDot = isJira5xOrNewer() ? "." : "";
 		assertErrorCode(Response.Status.NOT_FOUND,
-				"You do not have the permission to see the specified issue" + optionalDot, new Runnable() {
+				"You do not have the permission to see the specified issue.", new Runnable() {
 			@Override
 			public void run() {
 				client.getIssueClient().linkIssue(new LinkIssuesInput("TST-7", "RST-1", "Duplicate", null)).claim();
@@ -922,11 +914,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		assertEquals(1, Iterables.size(issue.getComments()));
 		final Comment comment = issue.getComments().iterator().next();
 		assertEquals(commentText, comment.getBody());
-		if (isJira5xOrNewer()) {
-			assertNotNull(comment.getId());
-		} else {
-			assertNull(comment.getId());
-		}
+		assertNotNull(comment.getId());
 		assertNull(comment.getAuthor());
 		assertNull(comment.getUpdateAuthor());
 	}

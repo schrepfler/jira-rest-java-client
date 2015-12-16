@@ -47,11 +47,9 @@ public class ExamplesTest extends AbstractAsynchronousRestClientTest {
 		assertNotNull(resolution);
 		assertEquals("Incomplete", resolution.getName());
 
-		if (isJira5xOrNewer()) {
-			// changelog
-			final Iterable<ChangelogGroup> changelog = issue.getChangelog();
-			assertEquals(2, Iterables.size(changelog));
-		}
+		// changelog
+		final Iterable<ChangelogGroup> changelog = issue.getChangelog();
+		assertEquals(2, Iterables.size(changelog));
 
 		// comments
 		final Iterable<Comment> comments = issue.getComments();

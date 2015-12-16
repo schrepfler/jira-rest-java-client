@@ -88,7 +88,7 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
 		final IssueType issueType = client.getMetadataClient().getIssueType(getIssueIssueType.getSelf()).claim();
 		assertEquals("Bug", issueType.getName());
 		assertEquals("A problem which impairs or prevents the functions of the product.", issueType.getDescription());
-		Long expectedId = isJira5xOrNewer() ? 1L : null;
+		Long expectedId = 1L;
 		assertEquals(expectedId, issueType.getId());
 		assertThat(issueType.getIconUri().toString(), Matchers.anyOf(
 				endsWith("bug.png"),
@@ -150,7 +150,7 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
 		assertEquals("Major", priority.getName());
 		assertEquals("#009900", priority.getStatusColor());
 		assertEquals("Major loss of function.", priority.getDescription());
-		final Long expectedId = isJira5xOrNewer() ? 3L : null;
+		final Long expectedId = 3L;
 		assertEquals(expectedId, priority.getId());
 		assertThat(priority.getIconUri().toString(), startsWith(jiraUri.toString()));
 		assertThat(priority.getIconUri().toString(),

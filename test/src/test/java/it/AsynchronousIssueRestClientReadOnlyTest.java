@@ -169,39 +169,35 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		final Issue issueWithChangelogAndOperations = client.getIssueClient().getIssue("TST-2", EnumSet.of(CHANGELOG, OPERATIONS))
 				.claim();
 		final Iterable<ChangelogGroup> changelog = issueWithChangelogAndOperations.getChangelog();
-		if (isJira5xOrNewer()) {
-			assertNotNull(changelog);
-			final ChangelogGroup chg1 = Iterables.get(changelog, 18);
-			assertEquals("admin", chg1.getAuthor().getName());
-			assertEquals("Administrator", chg1.getAuthor().getDisplayName());
-			assertEquals(new DateTime(2010, 8, 17, 16, 40, 34, 924).toInstant(), chg1.getCreated().toInstant());
+		assertNotNull(changelog);
+		final ChangelogGroup chg1 = Iterables.get(changelog, 18);
+		assertEquals("admin", chg1.getAuthor().getName());
+		assertEquals("Administrator", chg1.getAuthor().getDisplayName());
+		assertEquals(new DateTime(2010, 8, 17, 16, 40, 34, 924).toInstant(), chg1.getCreated().toInstant());
 
-			assertEquals(Collections
-					.singletonList(new ChangelogItem(FieldType.JIRA, "status", "1", "Open", "3", "In Progress")), chg1
-					.getItems());
+		assertEquals(Collections
+				.singletonList(new ChangelogItem(FieldType.JIRA, "status", "1", "Open", "3", "In Progress")), chg1
+				.getItems());
 
-			final ChangelogGroup chg2 = Iterables.get(changelog, 20);
-			assertEquals("admin", chg2.getAuthor().getName());
-			assertEquals("Administrator", chg2.getAuthor().getDisplayName());
-			assertEquals(new DateTime(2010, 8, 24, 16, 10, 23, 468).toInstant(), chg2.getCreated().toInstant());
+		final ChangelogGroup chg2 = Iterables.get(changelog, 20);
+		assertEquals("admin", chg2.getAuthor().getName());
+		assertEquals("Administrator", chg2.getAuthor().getDisplayName());
+		assertEquals(new DateTime(2010, 8, 24, 16, 10, 23, 468).toInstant(), chg2.getCreated().toInstant());
 
-			final List<ChangelogItem> expected = ImmutableList.of(
-					new ChangelogItem(FieldType.JIRA, "timeoriginalestimate", null, null, "0", "0"),
-					new ChangelogItem(FieldType.CUSTOM, "My Radio buttons", null, null, null, "Another"),
-					new ChangelogItem(FieldType.CUSTOM, "project3", null, null, "10000", "Test Project"),
-					new ChangelogItem(FieldType.CUSTOM, "My Number Field New", null, null, null, "1.45")
-			);
-			assertEquals(expected, chg2.getItems());
-		}
+		final List<ChangelogItem> expected = ImmutableList.of(
+				new ChangelogItem(FieldType.JIRA, "timeoriginalestimate", null, null, "0", "0"),
+				new ChangelogItem(FieldType.CUSTOM, "My Radio buttons", null, null, null, "Another"),
+				new ChangelogItem(FieldType.CUSTOM, "project3", null, null, "10000", "Test Project"),
+				new ChangelogItem(FieldType.CUSTOM, "My Number Field New", null, null, null, "1.45")
+		);
+		assertEquals(expected, chg2.getItems());
 		final Operations operations = issueWithChangelogAndOperations.getOperations();
-		if (isJira5xOrNewer()) {
-			assertThat(operations, notNullValue());
-			assertThat(operations.getOperationById("log-work"), allOf(
-							instanceOf(OperationLink.class),
-							hasProperty("id", is("log-work"))
-					)
-			);
-		}
+		assertThat(operations, notNullValue());
+		assertThat(operations.getOperationById("log-work"), allOf(
+						instanceOf(OperationLink.class),
+						hasProperty("id", is("log-work"))
+				)
+		);
 	}
 
     @Test
@@ -229,9 +225,8 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 	public void testGetVotersWithoutViewIssuePermission() {
 		final Issue issue = client.getIssueClient().getIssue("RST-1").claim();
 		setUser2();
-		final String optionalDot = isJira5xOrNewer() ? "." : "";
 		assertErrorCode(Response.Status.FORBIDDEN,
-				"You do not have the permission to see the specified issue" + optionalDot, new Runnable() {
+				"You do not have the permission to see the specified issue.", new Runnable() {
 			@Override
 			public void run() {
 				client.getIssueClient().getVotes(issue.getVotes().getSelf()).claim();
