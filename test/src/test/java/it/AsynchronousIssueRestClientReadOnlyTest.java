@@ -15,7 +15,6 @@
  */
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptionsBuilder;
@@ -40,7 +39,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
@@ -58,11 +56,21 @@ import static com.atlassian.jira.rest.client.IntegrationTestUtil.getUserUri;
 import static com.atlassian.jira.rest.client.TestUtil.assertErrorCode;
 import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.CHANGELOG;
 import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.OPERATIONS;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static com.google.common.collect.Iterables.toArray;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Those tests mustn't change anything on server side, as jira is restored only once
@@ -265,7 +273,6 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 						.<Transition.Field>emptyList())));
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testGetCreateIssueMetadata() throws URISyntaxException {
 		final Iterable<CimProject> metadataProjects = client
@@ -290,7 +297,6 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		}
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testGetCreateIssueMetadataWithFieldsNotExpanded() throws URISyntaxException {
 		final Iterable<CimProject> metadataProjects = client
@@ -314,7 +320,6 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		}
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testGetCreateIssueMetadataWithProjectKeyFilter() throws URISyntaxException {
 		final Iterable<CimProject> metadataProjects = client.getIssueClient()

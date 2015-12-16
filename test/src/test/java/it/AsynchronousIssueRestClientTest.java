@@ -78,8 +78,6 @@ import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER2;
 import static com.atlassian.jira.rest.client.TestUtil.assertErrorCode;
 import static com.atlassian.jira.rest.client.TestUtil.assertExpectedErrorCollection;
 import static com.atlassian.jira.rest.client.api.domain.EntityHelper.findEntityByName;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_4_3;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.ADMIN_PASSWORD;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.ADMIN_USERNAME;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.DEFAULT_JIRA_DUMP_FILE;
@@ -231,7 +229,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		issueClient.deleteIssue(issueKey, false).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testUpdateField() {
 		final Issue issue = client.getIssueClient().getIssue("TST-1").claim();
@@ -243,7 +240,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		assertEquals(newValue, changedIssue.getField(NUMERIC_CUSTOMFIELD_ID).getValue());
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testUpdateMultipleFields() {
 		final Issue issue = client.getIssueClient().getIssue("TST-1").claim();
@@ -262,7 +258,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		assertEquals(newTextValue, changedIssue.getField(TEXT_CUSTOMFIELD_ID).getValue());
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testUpdateIssueWithInvalidAdditionalField() {
 		final Issue issue = client.getIssueClient().getIssue("TST-1").claim();
@@ -275,7 +270,6 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		client.getIssueClient().updateIssue(issue.getKey(), IssueInput.createWithFields(fieldInput)).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testUpdateIssueWithoutPermissions() {
 		setUser2();
@@ -542,7 +536,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	}
 
 	private boolean isJraDev3516Fixed() {
-		return client.getMetadataClient().getServerInfo().claim().getBuildNumber() >= BN_JIRA_4_3;
+		return true;
 	}
 
 	@Test
@@ -570,31 +564,26 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 				});
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
 	public void testLinkIssuesWithRoleLevel() {
 		testLinkIssuesImpl(Comment.createWithRoleLevel("A comment about linking", "Administrators"));
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
 	public void testLinkIssuesWithGroupLevel() {
 		testLinkIssuesImpl(Comment.createWithGroupLevel("A comment about linking", "jira-administrators"));
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
 	public void testLinkIssuesWithSimpleComment() {
 		testLinkIssuesImpl(Comment.valueOf("A comment about linking"));
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
 	public void testLinkIssuesWithoutComment() {
 		testLinkIssuesImpl(null);
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
 	public void testLinkIssuesWithInvalidParams() {
 		assertErrorCode(Response.Status.NOT_FOUND,
@@ -703,11 +692,11 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	}
 
 	private boolean doesJiraSupportAddingAttachment() {
-		return client.getMetadataClient().getServerInfo().claim().getBuildNumber() >= BN_JIRA_4_3;
+		return true;
 	}
 
 	private boolean doesJiraServeCorrectlyErrorMessagesForBadRequestWhileTransitioningIssue() {
-		return client.getMetadataClient().getServerInfo().claim().getBuildNumber() >= BN_JIRA_4_3;
+		return true;
 	}
 
 	@Test

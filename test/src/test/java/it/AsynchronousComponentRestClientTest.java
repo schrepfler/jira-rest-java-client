@@ -16,7 +16,6 @@
 
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.Restore;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
@@ -25,7 +24,6 @@ import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.Component;
 import com.atlassian.jira.rest.client.api.domain.EntityHelper;
 import com.atlassian.jira.rest.client.api.domain.input.ComponentInput;
-import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.collect.Iterables;
 import org.junit.Test;
@@ -33,7 +31,6 @@ import org.junit.Test;
 import javax.ws.rs.core.Response;
 
 import static com.atlassian.jira.rest.client.api.domain.EntityHelper.findEntityByName;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_4_4;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,7 +53,6 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_4_4)
 	public void testGetComponentOnJira4xOrNewerShouldContainNotNullId() throws Exception {
 		final BasicComponent basicComponent = findEntityByName(client.getProjectClient().getProject("TST").claim()
 				.getComponents(), "Component A");
@@ -110,7 +106,6 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_4_4)
 	public void testCreateAndRemoveComponent() {
 		final Iterable<BasicComponent> components = client.getProjectClient().getProject("TST").claim().getComponents();
 		assertEquals(2, Iterables.size(components));
@@ -134,7 +129,6 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_4_4)
 	public void testCreateAndRemoveComponentAsUnauthorizedUsers() {
 		final Iterable<BasicComponent> components = client.getProjectClient().getProject("TST").claim().getComponents();
 		assertEquals(2, Iterables.size(components));
@@ -210,7 +204,6 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 	@SuppressWarnings({"ConstantConditions"})
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_4_4)
 	public void testCreateComponentWithLead() {
 		final ComponentInput componentInput = new ComponentInput("my component name", "a description", "admin", AssigneeType.COMPONENT_LEAD);
 		final Component component = client.getComponentClient().createComponent("TST", componentInput).claim();
@@ -234,7 +227,6 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_4_4)
 	public void testUpdateComponent() {
 		final BasicComponent basicComponent = Iterables.get(client.getProjectClient().getProject("TST").claim()
 				.getComponents(), 0);
@@ -279,7 +271,6 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_4_4)
 	public void testGetComponentRelatedIssuesCount() {
 		final BasicComponent bc = findEntityByName(client.getProjectClient().getProject("TST").claim()
 				.getComponents(), "Component A");
@@ -330,7 +321,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 
 	private boolean doesJiraReturnCorrectErrorCodeForForbiddenOperation() {
-		return client.getMetadataClient().getServerInfo().claim().getBuildNumber() >= ServerVersionConstants.BN_JIRA_5;
+		return true;
 	}
 
 

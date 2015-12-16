@@ -16,7 +16,6 @@
 
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -39,9 +38,10 @@ import java.util.Set;
 
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.GROUP_JIRA_ADMINISTRATORS;
 import static com.atlassian.jira.rest.client.TestUtil.toUri;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @RestoreOnce(TestConstants.DEFAULT_JIRA_DUMP_FILE)
 public class AsynchronousIssueRestClientWorklogTest extends AbstractAsynchronousRestClientTest {
@@ -49,13 +49,11 @@ public class AsynchronousIssueRestClientWorklogTest extends AbstractAsynchronous
 	public static final String ISSUE_KEY = "TST-5";
 	public static final String ISSUE_KEY_ANONYMOUS = "ANONEDIT-2";
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testAddWorklogAsLoggedUser() {
 		testAddWorklogImpl(ISSUE_KEY, createDefaulWorklogInputBuilder());
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testAddWorklogAsAnonymousWithoutPermissions() {
 		setAnonymousMode();
@@ -69,27 +67,23 @@ public class AsynchronousIssueRestClientWorklogTest extends AbstractAsynchronous
 		}
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testAddWorklogAsAnonymous() {
 		setAnonymousMode();
 		testAddWorklogImpl(ISSUE_KEY_ANONYMOUS, createDefaulWorklogInputBuilder());
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testAddWorklogWithEmptyComment() {
 		testAddWorklogImpl(ISSUE_KEY, createDefaulWorklogInputBuilder().setComment(""));
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testAddWorklogWithVisibility() {
 		Visibility visibility = Visibility.group(GROUP_JIRA_ADMINISTRATORS);
 		testAddWorklogImpl(ISSUE_KEY, createDefaulWorklogInputBuilder().setVisibility(visibility));
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testAddWorklogsWithEstimateAdjustment() {
 		final String issueKey = ISSUE_KEY;
@@ -186,7 +180,6 @@ public class AsynchronousIssueRestClientWorklogTest extends AbstractAsynchronous
 		assertEquals(expectedRemainingEstimate4, actualRemainingEstimate4);
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testAddWorklogsWithEstimateAdjustmentUsingTimeUnits() {
 		final String issueKey = ISSUE_KEY;

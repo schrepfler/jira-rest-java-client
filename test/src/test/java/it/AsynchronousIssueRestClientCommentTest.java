@@ -16,7 +16,6 @@
 
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
@@ -31,7 +30,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -42,20 +40,17 @@ import static org.junit.Assert.assertFalse;
 public class AsynchronousIssueRestClientCommentTest extends AbstractAsynchronousRestClientTest {
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	public void testAddCommentToIssue() {
 		testAddCommentToIssueImpl("TST-5", Comment.valueOf("Simple test comment."));
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	public void testAddCommentToIssueAsAnonymousUser() {
 		setAnonymousMode();
 		testAddCommentToIssueImpl("ANONEDIT-1", Comment.valueOf("Simple test comment."));
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	public void testAddCommentToIssueWithGroupLevelVisibility() {
 		final Comment comment = Comment.createWithGroupLevel("Simple test comment restricted for admins.",
 				IntegrationTestUtil.GROUP_JIRA_ADMINISTRATORS);
@@ -73,7 +68,6 @@ public class AsynchronousIssueRestClientCommentTest extends AbstractAsynchronous
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	public void testAddCommentToIssueWithRoleLevelVisibility() {
 		final Comment comment = Comment.createWithRoleLevel("Simple test comment restricted for role Administrators.",
 				IntegrationTestUtil.ROLE_ADMINISTRATORS);

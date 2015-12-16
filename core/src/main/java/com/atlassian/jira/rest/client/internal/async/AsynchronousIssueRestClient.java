@@ -19,23 +19,52 @@ import com.atlassian.httpclient.apache.httpcomponents.MultiPartEntityBuilder;
 import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.httpclient.api.Response;
 import com.atlassian.httpclient.api.ResponsePromise;
-import com.atlassian.jira.rest.client.api.*;
-import com.atlassian.jira.rest.client.api.domain.*;
-import com.atlassian.jira.rest.client.api.domain.input.*;
-import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
-import com.atlassian.jira.rest.client.internal.json.*;
-import com.atlassian.jira.rest.client.internal.json.gen.*;
+import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptions;
+import com.atlassian.jira.rest.client.api.IssueRestClient;
+import com.atlassian.jira.rest.client.api.MetadataRestClient;
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.SessionRestClient;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.BulkOperationResult;
+import com.atlassian.jira.rest.client.api.domain.CimProject;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.ServerInfo;
+import com.atlassian.jira.rest.client.api.domain.Transition;
+import com.atlassian.jira.rest.client.api.domain.Votes;
+import com.atlassian.jira.rest.client.api.domain.Watchers;
+import com.atlassian.jira.rest.client.api.domain.input.AttachmentInput;
+import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
+import com.atlassian.jira.rest.client.api.domain.input.LinkIssuesInput;
+import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
+import com.atlassian.jira.rest.client.api.domain.input.WorklogInput;
+import com.atlassian.jira.rest.client.internal.json.BasicIssueJsonParser;
+import com.atlassian.jira.rest.client.internal.json.BasicIssuesJsonParser;
+import com.atlassian.jira.rest.client.internal.json.CreateIssueMetadataJsonParser;
+import com.atlassian.jira.rest.client.internal.json.IssueJsonParser;
+import com.atlassian.jira.rest.client.internal.json.JsonElementParser;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
+import com.atlassian.jira.rest.client.internal.json.JsonParser;
+import com.atlassian.jira.rest.client.internal.json.TransitionJsonParser;
+import com.atlassian.jira.rest.client.internal.json.TransitionJsonParserV5;
+import com.atlassian.jira.rest.client.internal.json.VotesJsonParser;
+import com.atlassian.jira.rest.client.internal.json.WatchersJsonParserBuilder;
+import com.atlassian.jira.rest.client.internal.json.gen.CommentJsonGenerator;
+import com.atlassian.jira.rest.client.internal.json.gen.IssueInputJsonGenerator;
+import com.atlassian.jira.rest.client.internal.json.gen.IssueUpdateJsonGenerator;
+import com.atlassian.jira.rest.client.internal.json.gen.IssuesInputJsonGenerator;
+import com.atlassian.jira.rest.client.internal.json.gen.LinkIssuesInputGenerator;
+import com.atlassian.jira.rest.client.internal.json.gen.WorklogInputJsonGenerator;
 import com.atlassian.util.concurrent.Promise;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -48,7 +77,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Map;
 
 /**
  * Asynchronous implementation of IssueRestClient.
@@ -220,30 +253,21 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 		final int buildNumber = getVersionInfo().getBuildNumber();
 		try {
 			JsonObject jsonObject = new JsonObject();
-			if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-				JsonObject obj = new JsonObject();
-				obj.addProperty("id", transitionInput.getId());
-				jsonObject.add("transition", obj);
-			} else {
-				jsonObject.addProperty("transition", transitionInput.getId());
-			}
+			JsonObject obj = new JsonObject();
+			obj.addProperty("id", transitionInput.getId());
+			jsonObject.add("transition", obj);
 			if (transitionInput.getComment() != null) {
-				if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-					JsonObject add = new JsonObject();
-					add.add("add", new CommentJsonGenerator(getVersionInfo())
-							.generate(transitionInput.getComment()));
+				JsonObject add = new JsonObject();
+				add.add("add", new CommentJsonGenerator(getVersionInfo())
+						.generate(transitionInput.getComment()));
 
-					JsonArray comment = new JsonArray();
-					comment.add(add);
+				JsonArray comment = new JsonArray();
+				comment.add(add);
 
-					JsonObject update = new JsonObject();
-					update.add("comment", comment);
+				JsonObject update = new JsonObject();
+				update.add("comment", comment);
 
-					jsonObject.add("update", update);
-				} else {
-					jsonObject.add("comment", new CommentJsonGenerator(getVersionInfo())
-							.generate(transitionInput.getComment()));
-				}
+				jsonObject.add("update", update);
 			}
 			final Iterable<FieldInput> fields = transitionInput.getFields();
 			final JsonObject fieldsJs = new IssueUpdateJsonGenerator().generate(fields);
@@ -298,11 +322,7 @@ public class AsynchronousIssueRestClient extends AbstractAsynchronousRestClient 
 	@Override
 	public Promise<Void> removeWatcher(final URI watchersUri, final String username) {
 		final UriBuilder uriBuilder = UriBuilder.fromUri(watchersUri);
-		if (getVersionInfo().getBuildNumber() >= ServerVersionConstants.BN_JIRA_4_4) {
-			uriBuilder.queryParam("username", username);
-		} else {
-			uriBuilder.path(username).build();
-		}
+		uriBuilder.queryParam("username", username);
 		return delete(uriBuilder.build());
 	}
 

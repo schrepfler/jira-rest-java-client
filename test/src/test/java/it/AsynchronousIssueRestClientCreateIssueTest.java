@@ -16,7 +16,6 @@
 
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptionsBuilder;
@@ -73,8 +72,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.atlassian.jira.rest.client.api.domain.EntityHelper.findEntityByName;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_6;
 import static com.google.common.collect.Iterables.toArray;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
@@ -94,7 +91,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssue() throws JsonParseException {
 		// collect CreateIssueMetadata for project with key TST
@@ -191,7 +187,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 				toArray(EntityHelper.toNamesList(multiUserCustomFieldValues), String.class)));
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateSubtask() {
 		// collect CreateIssueMetadata for project with key TST
@@ -271,7 +266,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		assertEquals(priority.getId(), actualPriority.getId());
 	}
 
-	@JiraBuildNumberDependent(value = BN_JIRA_6)
 	@Test
 	public void testCreateManySubtasksInGivenOrder() throws NoSuchFieldException, IllegalAccessException {
 		// collect CreateIssueMetadata for project with key TST
@@ -370,7 +364,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 	}
 
 
-	@JiraBuildNumberDependent(value = BN_JIRA_6)
 	@Test
 	public void testCreateManySubtasksInGivenOrderWithSomeFailing() throws NoSuchFieldException, IllegalAccessException {
 		// collect CreateIssueMetadata for project with key TST
@@ -481,7 +474,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		}
 	}
 
-	@JiraBuildNumberDependent(value = BN_JIRA_6)
 	@Test
 	public void testCreateManySubtasksInGivenOrderWithAllFailing() throws NoSuchFieldException, IllegalAccessException {
 		// collect CreateIssueMetadata for project with key TST
@@ -555,7 +547,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		}
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithOnlyRequiredFields() {
 		// collect CreateIssueMetadata for project with key TST
@@ -586,7 +577,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		assertEquals(summary, createdIssue.getSummary());
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithoutSummary() {
 		final IssueRestClient issueClient = client.getIssueClient();
@@ -598,7 +588,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithNotExistentProject() {
 		final IssueRestClient issueClient = client.getIssueClient();
@@ -610,7 +599,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithNotExistentIssueType() {
 		final IssueRestClient issueClient = client.getIssueClient();
@@ -623,7 +611,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 	}
 
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithoutProject() {
 		final IssueRestClient issueClient = client.getIssueClient();
@@ -638,7 +625,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithInvalidAdditionalField() {
 		final IssueRestClient issueClient = client.getIssueClient();
@@ -654,7 +640,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithFieldValueThatIsNotAllowed() {
 		final IssueRestClient issueClient = client.getIssueClient();
@@ -671,7 +656,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueAsAnonymous() {
 		setAnonymousMode();
@@ -685,7 +669,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		assertNotNull(createdIssue.getKey());
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueAsAnonymousWhenNotAllowed() {
 		setAnonymousMode();
@@ -700,7 +683,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testJiradev13412BugNotFixedIfThisFailsThenCorrectAffectedTests() {
 		// This test checks if JRADEV-13412 is fixed.
@@ -720,7 +702,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithAssigneeWhenNotAllowedToAssignIssue() {
 		setUser2();
@@ -735,7 +716,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithoutCreateIssuePermission() {
 		setUser1();
@@ -751,7 +731,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 	}
 
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void testCreateIssueWithoutBrowseProjectPermission() {
 		setUser1();
@@ -766,7 +745,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		issueClient.createIssue(issueInput).claim();
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_6)
 	@Test
 	public void testCreateMetaShouldReturnIssueTypeInFieldsListEvenIfIssueTypeIsNotOnCreateIssueScreen() {
 		final IssueRestClient issueClient = client.getIssueClient();
@@ -795,7 +773,6 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
 		}
 	}
 
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	@Test
 	public void interactiveUseCase() throws CannotTransformValueException {
 		final IssueRestClient issueClient = client.getIssueClient();

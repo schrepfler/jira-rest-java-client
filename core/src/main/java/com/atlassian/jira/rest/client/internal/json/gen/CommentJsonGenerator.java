@@ -17,7 +17,6 @@
 package com.atlassian.jira.rest.client.internal.json.gen;
 
 import com.atlassian.jira.rest.client.api.domain.Comment;
-import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.internal.json.CommentJsonParser;
@@ -43,24 +42,12 @@ public class CommentJsonGenerator implements JsonGenerator<Comment> {
 		if (commentVisibility != null) {
 
 			final int buildNumber = serverInfo.getBuildNumber();
-			if (buildNumber >= ServerVersionConstants.BN_JIRA_4_3) {
-				JsonObject visibilityJson = new JsonObject();
-				final String commentVisibilityType;
-				if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-					commentVisibilityType = commentVisibility.getType() == Visibility.Type.GROUP ? "group" : "role";
-				} else {
-					commentVisibilityType = commentVisibility.getType() == Visibility.Type.GROUP ? "GROUP" : "ROLE";
-				}
-				visibilityJson.addProperty("type", commentVisibilityType);
-				visibilityJson.addProperty("value", commentVisibility.getValue());
-				res.add(CommentJsonParser.VISIBILITY_KEY, visibilityJson);
-			} else {
-				if (commentVisibility.getType() == Visibility.Type.ROLE) {
-					res.addProperty("role", commentVisibility.getValue());
-				} else {
-					res.addProperty("group", commentVisibility.getValue());
-				}
-			}
+			JsonObject visibilityJson = new JsonObject();
+			final String commentVisibilityType;
+			commentVisibilityType = commentVisibility.getType() == Visibility.Type.GROUP ? "group" : "role";
+			visibilityJson.addProperty("type", commentVisibilityType);
+			visibilityJson.addProperty("value", commentVisibility.getValue());
+			res.add(CommentJsonParser.VISIBILITY_KEY, visibilityJson);
 		}
 
 		return res;

@@ -15,15 +15,12 @@
  */
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
-import com.atlassian.jira.nimblefunctests.annotation.LongCondition;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.EntityHelper;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.ProjectRole;
 import com.atlassian.jira.rest.client.api.domain.RoleActor;
-import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -43,7 +40,9 @@ import java.net.URI;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.buildUserAvatarUri;
 import static com.atlassian.jira.rest.client.test.matchers.RestClientExceptionMatchers.rceWithSingleError;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RestoreOnce(TestConstants.DEFAULT_JIRA_DUMP_FILE)
 public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousRestClientTest {
@@ -54,7 +53,6 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
-	@JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_4_4)
 	@Test
 	public void testGetProjectRoleWithRoleKeyFromAnonymousProject() {
 		final Project anonProject = client.getProjectClient().getProject(ANONYMOUS_PROJECT_KEY).claim();
@@ -69,7 +67,6 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 		assertEquals(actor.getAvatarUri(), buildUserAvatarUri(null, 10083L, "16x16"));
 	}
 
-	@JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_4_4)
 	@Test
 	public void testGetProjectRoleWithRoleKeyFromRestrictedProject() {
 		final Project restrictedProject = client.getProjectClient().getProject(RESTRICTED_PROJECT_KEY).claim();
@@ -84,7 +81,6 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 		assertEquals(actor.getAvatarUri(), buildUserAvatarUri("admin", 10054L, "16x16"));
 	}
 
-	@JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_4_4)
 	@Test
 	public void testGetProjectRoleWithRoleKeyFromRestrictedProjectWithoutPermission() {
 		final Project restrictedProject = client.getProjectClient().getProject(RESTRICTED_PROJECT_KEY).claim();
@@ -100,7 +96,6 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 		client.getProjectRolesRestClient().getRole(restrictedProject.getSelf(), 10000l).claim();
 	}
 
-	@JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_4_4)
 	@Test
 	public void testGetProjectRoleWithFullURI() {
 		final Project anonProject = client.getProjectClient().getProject(ANONYMOUS_PROJECT_KEY).claim();
@@ -116,13 +111,6 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 		assertEquals(actor.getAvatarUri(), buildUserAvatarUri(null, 10083L, "16x16"));
 	}
 
-	@JiraBuildNumberDependent(value = ServerVersionConstants.BN_JIRA_6_1, condition = LongCondition.LESS_THAN)
-	@Test
-	public void testGetAllRolesForProjectBefore6_1() {
-		testGetAllRolesForProject(ANONYMOUS_PROJECT_KEY);
-	}
-
-	@JiraBuildNumberDependent(value = ServerVersionConstants.BN_JIRA_6_1)
 	@Test
 	public void testGetAllRolesForProject() {
 		testGetAllRolesForProject("10020");
@@ -179,7 +167,6 @@ public class AsynchronousProjectRoleRestClientTest extends AbstractAsynchronousR
 		};
 	}
 
-	@JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_4_4)
 	@Test
 	public void testGetProjectRoleWithRoleKeyErrorCode() {
 		final Project anonProject = client.getProjectClient().getProject(ANONYMOUS_PROJECT_KEY).claim();

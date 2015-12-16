@@ -27,7 +27,6 @@ import com.atlassian.jira.rest.client.api.domain.Transition;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
-import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
@@ -58,19 +57,15 @@ public class Example1 {
 			final int buildNumber = restClient.getMetadataClient().getServerInfo().claim().getBuildNumber();
 
 			// first let's get and print all visible projects (only jira4.3+)
-			if (buildNumber >= ServerVersionConstants.BN_JIRA_4_3) {
-				final Iterable<BasicProject> allProjects = restClient.getProjectClient().getAllProjects().claim();
-				for (BasicProject project : allProjects) {
-					println(project);
-				}
+			final Iterable<BasicProject> allProjects = restClient.getProjectClient().getAllProjects().claim();
+			for (BasicProject project : allProjects) {
+				println(project);
 			}
 
 			// let's now print all issues matching a JQL string (here: all assigned issues)
-			if (buildNumber >= ServerVersionConstants.BN_JIRA_4_3) {
-				final SearchResult searchResult = restClient.getSearchClient().searchJql("assignee is not EMPTY").claim();
-				for (BasicIssue issue : searchResult.getIssues()) {
-					println(issue.getKey());
-				}
+			final SearchResult searchResult = restClient.getSearchClient().searchJql("assignee is not EMPTY").claim();
+			for (BasicIssue issue : searchResult.getIssues()) {
+				println(issue.getKey());
 			}
 
 			final Issue issue = restClient.getIssueClient().getIssue("TST-7").claim();
@@ -97,11 +92,7 @@ public class Example1 {
 			final Collection<FieldInput> fieldInputs;
 
 			// Starting from JIRA 5, fields are handled in different way -
-			if (buildNumber > ServerVersionConstants.BN_JIRA_5) {
-				fieldInputs = Arrays.asList(new FieldInput("resolution", ComplexIssueInputFieldValue.with("name", "Incomplete")));
-			} else {
-				fieldInputs = Arrays.asList(new FieldInput("resolution", "Incomplete"));
-			}
+			fieldInputs = Arrays.asList(new FieldInput("resolution", ComplexIssueInputFieldValue.with("name", "Incomplete")));
 			final TransitionInput transitionInput = new TransitionInput(resolveIssueTransition.getId(), fieldInputs, Comment
 					.valueOf("My comment"));
 			restClient.getIssueClient().transition(issue.getTransitionsUri(), transitionInput).claim();

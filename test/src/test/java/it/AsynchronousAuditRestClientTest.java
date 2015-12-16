@@ -1,13 +1,15 @@
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.Restore;
 import com.atlassian.jira.rest.client.api.AuditRestClient;
-import com.atlassian.jira.rest.client.api.domain.*;
+import com.atlassian.jira.rest.client.api.domain.AuditAssociatedItem;
+import com.atlassian.jira.rest.client.api.domain.AuditChangedValue;
+import com.atlassian.jira.rest.client.api.domain.AuditRecord;
+import com.atlassian.jira.rest.client.api.domain.AuditRecordsData;
+import com.atlassian.jira.rest.client.api.domain.Component;
 import com.atlassian.jira.rest.client.api.domain.input.AuditRecordBuilder;
 import com.atlassian.jira.rest.client.api.domain.input.AuditRecordSearchInput;
 import com.atlassian.jira.rest.client.api.domain.input.ComponentInput;
-import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -20,7 +22,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
-import org.joda.time.*;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Period;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
@@ -39,7 +44,6 @@ import static org.junit.Assert.assertThat;
 @Restore(TestConstants.DEFAULT_JIRA_DUMP_FILE)
 public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestClientTest {
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void testGetRecords() {
 
@@ -83,7 +87,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(value2.getChangedTo(), is("Project Default"));
     }
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void testGetRecordsWithOffset() {
         // given
@@ -100,7 +103,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(offsetedAuditRecords.get(0), auditRecordWithId(allAuditRecords.get(offset).getId()));
     }
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void testGetRecordsWithLimit() {
         // given
@@ -117,7 +119,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(record, auditRecordWithId(Iterables.get(firstPageOfRecords.getRecords(), 0).getId()));
     }
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void testGetRecordsWithFilter() {
         final AuditRecordsData auditRecordsData = client.getAuditRestClient().getAuditRecords(new AuditRecordSearchInput(null, null, "reporter", null, null)).claim();
@@ -127,7 +128,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(record.getId(), is(10001L));
     }
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void testAddSimpleRecord() {
         // given
@@ -198,7 +198,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(item.getTypeName(), is("PROJECT"));
     }
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void shouldReturnNoRecordsWhenFilteringForTomorrow() {
         final DateTime tomorrow = new DateMidnight().plus(Period.days(1)).toDateTime();
@@ -208,7 +207,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(auditRecordsData.getRecords(), Matchers.<AuditRecord>emptyIterable());
     }
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void shouldReturnAllRecordsWhenFilteringToLatestCreationDate() {
         // given
@@ -224,7 +222,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(auditRecordsData.getRecords(), hasSameIdsAs(firstPageOfRecords.getRecords()));
     }
 
-    @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
     @Test
     public void shouldReturnLatestItemWhenFilteringFromLatestCreationDate() {
         final AuditRecord latestCreatedRecord = getLatestCreatedRecord();

@@ -16,7 +16,6 @@
 
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
@@ -48,11 +47,9 @@ import javax.ws.rs.core.Response;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
-import static com.atlassian.jira.nimblefunctests.annotation.LongCondition.LESS_THAN;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.resolveURI;
 import static com.atlassian.jira.rest.client.TestUtil.assertEmptyIterable;
 import static com.atlassian.jira.rest.client.TestUtil.toDateTime;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_6_1;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.hasProperty;
@@ -179,13 +176,6 @@ public class AsynchronousSearchRestClientTest extends AbstractAsynchronousRestCl
 		});
 	}
 
-	@JiraBuildNumberDependent(value = BN_JIRA_6_1, condition = LESS_THAN)
-	@Test
-	public void jqlSearchShouldReturnIssueWithDetailsBefore6_1() throws InvocationTargetException, IllegalAccessException {
-		jqlSearchShouldReturnIssueWithDetails("rest/api/2/project/TST");
-	}
-
-	@JiraBuildNumberDependent(value = BN_JIRA_6_1)
 	@Test
 	public void jqlSearchShouldReturnIssueWithDetails() throws InvocationTargetException, IllegalAccessException {
 		jqlSearchShouldReturnIssueWithDetails("rest/api/2/project/10000");

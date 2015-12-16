@@ -17,11 +17,10 @@
 package it;
 
 import com.atlassian.jira.functest.framework.admin.GeneralConfiguration;
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
-import com.atlassian.jira.rest.client.api.ExpandableProperty;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
+import com.atlassian.jira.rest.client.api.ExpandableProperty;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.collect.ImmutableList;
@@ -32,9 +31,10 @@ import javax.ws.rs.core.Response;
 
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER_SLASH;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER_SLASH_60;
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_4_3;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.ADMIN_USERNAME;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RestoreOnce(TestConstants.DEFAULT_JIRA_DUMP_FILE)
 public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClientTest {
@@ -86,7 +86,6 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 	}
 
 	// Email Visibility is respected in REST since 4.3
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
 	public void testGetUserWhenEmailVisibilityIsHidden() throws JsonParseException {
 		administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.HIDDEN);
@@ -111,7 +110,6 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 	}
 
 	// Email Visibility is respected in REST since 4.3
-	@JiraBuildNumberDependent(BN_JIRA_4_3)
 	@Test
 	public void testGetUserWhenEmailVisibilityIsMasked() throws JsonParseException {
 		administration.generalConfiguration().setUserEmailVisibility(GeneralConfiguration.EmailVisibility.MASKED);

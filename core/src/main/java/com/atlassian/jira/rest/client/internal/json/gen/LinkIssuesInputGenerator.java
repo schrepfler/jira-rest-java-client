@@ -35,25 +35,19 @@ public class LinkIssuesInputGenerator implements JsonGenerator<LinkIssuesInput> 
 		JsonObject res = new JsonObject();
 
 		final int buildNumber = serverInfo.getBuildNumber();
-		if (buildNumber >= ServerVersionConstants.BN_JIRA_5) {
-			String propertyName = "name";
-			if (buildNumber >= ServerVersionConstants.BN_JIRA_7_0) {
-				propertyName = "key";
-			}
-			JsonObject name = new JsonObject();
-			name.addProperty("name", linkIssuesInput.getLinkType() );
-			res.add("type", name);
-			JsonObject inward = new JsonObject();
-			inward.addProperty(propertyName, linkIssuesInput.getFromIssueKey() );
-			res.add("inwardIssue", inward);
-			JsonObject outward = new JsonObject();
-			outward.addProperty(propertyName, linkIssuesInput.getToIssueKey() );
-			res.add("outwardIssue", outward);
-		} else {
-			res.addProperty("linkType", linkIssuesInput.getLinkType());
-			res.addProperty("fromIssueKey", linkIssuesInput.getFromIssueKey());
-			res.addProperty("toIssueKey", linkIssuesInput.getToIssueKey());
+		String propertyName = "name";
+		if (buildNumber >= ServerVersionConstants.BN_JIRA_7_0) {
+			propertyName = "key";
 		}
+		JsonObject name = new JsonObject();
+		name.addProperty("name", linkIssuesInput.getLinkType() );
+		res.add("type", name);
+		JsonObject inward = new JsonObject();
+		inward.addProperty(propertyName, linkIssuesInput.getFromIssueKey() );
+		res.add("inwardIssue", inward);
+		JsonObject outward = new JsonObject();
+		outward.addProperty(propertyName, linkIssuesInput.getToIssueKey() );
+		res.add("outwardIssue", outward);
 		if (linkIssuesInput.getComment() != null) {
 			res.add("comment", new CommentJsonGenerator(serverInfo).generate(linkIssuesInput.getComment()));
 		}

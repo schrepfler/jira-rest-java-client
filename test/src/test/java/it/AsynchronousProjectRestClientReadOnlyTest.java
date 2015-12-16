@@ -16,18 +16,16 @@
 
 package it;
 
-import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.RestoreOnce;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
+import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.AddressableEntity;
 import com.atlassian.jira.rest.client.api.OptionalIterable;
-import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
-import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -40,9 +38,12 @@ import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 
-import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Those tests mustn't change anything on server side, as jira is restored only once
@@ -169,11 +170,10 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 	}
 
 	private boolean isGetAllProjectsSupported() {
-		return client.getMetadataClient().getServerInfo().claim().getBuildNumber() >= ServerVersionConstants.BN_JIRA_4_3;
+		return true;
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	public void testGetPriorities() {
 		final Iterable<Priority> priorities = client.getMetadataClient().getPriorities().claim();
 		assertEquals(5, Iterables.size(priorities));
@@ -186,7 +186,6 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	public void testGetIssueTypes() {
 		final Iterable<IssueType> issueTypes = client.getMetadataClient().getIssueTypes().claim();
 		assertEquals(5, Iterables.size(issueTypes));
@@ -200,7 +199,6 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 	}
 
 	@Test
-	@JiraBuildNumberDependent(BN_JIRA_5)
 	public void testGetResolutions() {
 		final Iterable<Resolution> resolutions = client.getMetadataClient().getResolutions().claim();
 		assertEquals(5, Iterables.size(resolutions));
