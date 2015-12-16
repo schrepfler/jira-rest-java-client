@@ -126,10 +126,6 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 
 	@Test
 	public void testGetAllProject() {
-		if (!isGetAllProjectsSupported()) {
-			return;
-		}
-
 		final Iterable<BasicProject> projects = client.getProjectClient().getAllProjects().claim();
 		assertEquals(4, Iterables.size(projects));
 		final BasicProject tst = Iterables.find(projects, new Predicate<BasicProject>() {
@@ -155,10 +151,6 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 
 		setUser1();
 		assertEquals(3, Iterables.size(client.getProjectClient().getAllProjects().claim()));
-	}
-
-	private boolean isGetAllProjectsSupported() {
-		return true;
 	}
 
 	@Test
