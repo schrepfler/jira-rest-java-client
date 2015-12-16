@@ -17,7 +17,6 @@
 package it;
 
 import com.atlassian.jira.nimblefunctests.annotation.Restore;
-import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
 import com.atlassian.jira.rest.client.api.domain.EntityHelper;
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -70,8 +69,7 @@ public class AsynchronousVersionRestClientTest extends AbstractAsynchronousRestC
 
 		final VersionInput versionInput2 = VersionInput.create("TST", "My newly created version2", "A description\nwith\new line", null, false, false);
 		setAnonymousMode();
-		TestUtil.assertErrorCode(IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? Response.Status.NOT_FOUND
-				: Response.Status.UNAUTHORIZED, new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, new Runnable() {
 			@Override
 			public void run() {
 				client.getVersionRestClient().createVersion(versionInput2).claim();
@@ -103,8 +101,7 @@ public class AsynchronousVersionRestClientTest extends AbstractAsynchronousRestC
 		});
 
 		setAnonymousMode();
-		TestUtil.assertErrorCode(IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? Response.Status.NOT_FOUND
-				: Response.Status.UNAUTHORIZED, new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, new Runnable() {
 			@Override
 			public void run() {
 				client.getVersionRestClient().updateVersion(modifiedVersion.getSelf(), newVersionInput).claim();

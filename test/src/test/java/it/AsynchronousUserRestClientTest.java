@@ -30,7 +30,6 @@ import org.junit.Test;
 import javax.ws.rs.core.Response;
 
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER_SLASH;
-import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER_SLASH_60;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.ADMIN_USERNAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -47,7 +46,7 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 		assertEquals("Administrator", user.getDisplayName());
 		assertEquals(new ExpandableProperty<String>(3, ImmutableList
 				.of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
-		assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
+		assertEquals(IntegrationTestUtil.USER_ADMIN.getSelf(), user.getSelf());
 		assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
 
 		final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
@@ -57,8 +56,8 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 	@Test
 	public void testGetUserWithSlash() {
 		final User user = client.getUserClient().getUser(USER_SLASH.getName()).claim();
-		assertEquals(USER_SLASH_60.getSelf(), user.getSelf());
-		assertEquals(USER_SLASH_60.getDisplayName(), user.getDisplayName());
+		assertEquals(USER_SLASH.getSelf(), user.getSelf());
+		assertEquals(USER_SLASH.getDisplayName(), user.getDisplayName());
 	}
 
 	@Test
@@ -97,7 +96,7 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 			assertEquals("Administrator", user.getDisplayName());
 			assertEquals(new ExpandableProperty<String>(3, ImmutableList
 					.of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
-			assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
+			assertEquals(IntegrationTestUtil.USER_ADMIN.getSelf(), user.getSelf());
 			assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
 
 			final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();
@@ -121,7 +120,7 @@ public class AsynchronousUserRestClientTest extends AbstractAsynchronousRestClie
 			assertEquals("Administrator", user.getDisplayName());
 			assertEquals(new ExpandableProperty<String>(3, ImmutableList
 					.of("jira-administrators", "jira-developers", "jira-users")), user.getGroups());
-			assertEquals(IntegrationTestUtil.USER_ADMIN_60.getSelf(), user.getSelf());
+			assertEquals(IntegrationTestUtil.USER_ADMIN.getSelf(), user.getSelf());
 			assertTrue(user.getAvatarUri().toString().contains("ownerId=" + user.getName()));
 
 			final User user2 = client.getUserClient().getUser(TestConstants.USER1_USERNAME).claim();

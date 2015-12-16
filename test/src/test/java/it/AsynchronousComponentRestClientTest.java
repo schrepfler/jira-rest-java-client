@@ -49,7 +49,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		final Component component = client.getComponentClient().getComponent(basicComponent.getSelf()).claim();
 		assertEquals("Component A", component.getName());
 		assertEquals("this is some description of component A", component.getDescription());
-		assertEquals(IntegrationTestUtil.USER_ADMIN_60, component.getLead());
+		assertEquals(IntegrationTestUtil.USER_ADMIN, component.getLead());
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		assertEquals("Component A", component.getName());
 		assertEquals("this is some description of component A", component.getDescription());
 		assertEquals(Long.valueOf(10000), component.getId());
-		assertEquals(IntegrationTestUtil.USER_ADMIN_60, component.getLead());
+		assertEquals(IntegrationTestUtil.USER_ADMIN, component.getLead());
 	}
 
 	@Test
@@ -85,9 +85,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 		// now as unauthorized user
 		setClient(TestConstants.USER2_USERNAME, TestConstants.USER2_PASSWORD);
-		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ?
-				"The component with id 10010 does not exist."
-				: "The user user does not have permission to complete this operation.", new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "The component with id 10010 does not exist.", new Runnable() {
 			@Override
 			public void run() {
 				client.getComponentClient().getComponent(basicComponent.getSelf()).claim().getName();
@@ -95,9 +93,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		});
 
 		setAnonymousMode();
-		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ?
-				"The component with id 10010 does not exist."
-				: "This user does not have permission to complete this operation.", new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "The component with id 10010 does not exist.", new Runnable() {
 			@Override
 			public void run() {
 				client.getComponentClient().getComponent(basicComponent.getSelf()).claim().getName();
@@ -151,31 +147,19 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		});
 
 		setAnonymousMode();
-		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ?
-				"The component with id 10000 does not exist."
-				: "This user does not have permission to complete this operation.", new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "The component with id 10000 does not exist.", new Runnable() {
 			@Override
 			public void run() {
 				client.getComponentClient().removeComponent(basicComponent.getSelf(), null).claim();
 			}
 		});
 
-		if (IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER) {
-			TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "No project could be found with key 'TST'.", new Runnable() {
-				@Override
-				public void run() {
-					client.getComponentClient().createComponent("TST", componentInput).claim();
-				}
-			});
-		} else {
-			// IMO for anonymous access still Response.Status.UNAUTHORIZED should be returned - JRADEV-7671
-			TestUtil.assertErrorCode(Response.Status.FORBIDDEN, "You cannot edit the configuration of this project.", new Runnable() {
-				@Override
-				public void run() {
-					client.getComponentClient().createComponent("TST", componentInput).claim();
-				}
-			});
-		}
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "No project could be found with key 'TST'.", new Runnable() {
+			@Override
+			public void run() {
+				client.getComponentClient().createComponent("TST", componentInput).claim();
+			}
+		});
 
 
 		setAdmin();
@@ -205,10 +189,10 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		final ComponentInput componentInput = new ComponentInput("my component name", "a description", "admin", AssigneeType.COMPONENT_LEAD);
 		final Component component = client.getComponentClient().createComponent("TST", componentInput).claim();
 		assertNotNull(component.getAssigneeInfo());
-		assertEquals(IntegrationTestUtil.USER_ADMIN_60, component.getAssigneeInfo().getAssignee());
+		assertEquals(IntegrationTestUtil.USER_ADMIN, component.getAssigneeInfo().getAssignee());
 		assertEquals(AssigneeType.COMPONENT_LEAD, component.getAssigneeInfo().getAssigneeType());
 		assertTrue(component.getAssigneeInfo().isAssigneeTypeValid());
-		assertEquals(IntegrationTestUtil.USER_ADMIN_60, component.getAssigneeInfo().getRealAssignee());
+		assertEquals(IntegrationTestUtil.USER_ADMIN, component.getAssigneeInfo().getRealAssignee());
 		assertEquals(AssigneeType.COMPONENT_LEAD, component.getAssigneeInfo().getRealAssigneeType());
 
 		final ComponentInput componentInput2 = new ComponentInput("my component name2", "a description", IntegrationTestUtil.USER1
@@ -218,7 +202,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		assertNull(component2.getAssigneeInfo().getAssignee());
 		assertEquals(AssigneeType.UNASSIGNED, component2.getAssigneeInfo().getAssigneeType());
 		assertFalse(component2.getAssigneeInfo().isAssigneeTypeValid());
-		assertEquals(IntegrationTestUtil.USER_ADMIN_60, component2.getAssigneeInfo().getRealAssignee());
+		assertEquals(IntegrationTestUtil.USER_ADMIN, component2.getAssigneeInfo().getRealAssignee());
 		assertEquals(AssigneeType.PROJECT_DEFAULT, component2.getAssigneeInfo().getRealAssigneeType());
 	}
 
@@ -239,14 +223,15 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 		final String newDescription = "updated description";
 		adjustedComponent = new Component(component.getSelf(), component
-				.getId(), newName, newDescription, IntegrationTestUtil.USER1_60, component.getAssigneeInfo());
+				.getId(), newName, newDescription, IntegrationTestUtil.USER1, component.getAssigneeInfo());
 		updatedComponent = client.getComponentClient().updateComponent(basicComponent
-				.getSelf(), new ComponentInput(null, newDescription, IntegrationTestUtil.USER1_60.getName(), null)).claim();
+				.getSelf(), new ComponentInput(null, newDescription, IntegrationTestUtil.USER1.getName(), null)).claim();
 		assertEquals(adjustedComponent, updatedComponent);
 
 		adjustedComponent = new Component(component.getSelf(), component
-				.getId(), newName, newDescription, IntegrationTestUtil.USER1_60,
-				new Component.AssigneeInfo(IntegrationTestUtil.USER1_60, AssigneeType.COMPONENT_LEAD, IntegrationTestUtil.USER1_60, AssigneeType.COMPONENT_LEAD, true));
+				.getId(), newName, newDescription, IntegrationTestUtil.USER1,
+				new Component.AssigneeInfo(IntegrationTestUtil.USER1, AssigneeType.COMPONENT_LEAD,
+						IntegrationTestUtil.USER1, AssigneeType.COMPONENT_LEAD, true));
 
 		updatedComponent = client.getComponentClient().updateComponent(basicComponent
 				.getSelf(), new ComponentInput(null, newDescription, IntegrationTestUtil.USER1
@@ -256,8 +241,9 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 		// now with non-assignable assignee (thus we are inheriting assignee from project settings and component-level settings are ignored)
 		adjustedComponent = new Component(component.getSelf(), component
-				.getId(), newName, newDescription, IntegrationTestUtil.USER2_60,
-				new Component.AssigneeInfo(IntegrationTestUtil.USER2_60, AssigneeType.COMPONENT_LEAD, IntegrationTestUtil.USER_ADMIN_60, AssigneeType.PROJECT_DEFAULT, false));
+				.getId(), newName, newDescription, IntegrationTestUtil.USER2,
+				new Component.AssigneeInfo(IntegrationTestUtil.USER2, AssigneeType.COMPONENT_LEAD,
+						IntegrationTestUtil.USER_ADMIN, AssigneeType.PROJECT_DEFAULT, false));
 
 		updatedComponent = client.getComponentClient().updateComponent(basicComponent
 				.getSelf(), new ComponentInput(null, newDescription, IntegrationTestUtil.USER2
@@ -281,9 +267,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 
 		// smelly error code/message returned here - JRA-25062
 		setAnonymousMode();
-		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ?
-				"The component with id 10000 does not exist."
-				: "This user does not have permission to complete this operation.", new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "The component with id 10000 does not exist.", new Runnable() {
 			@Override
 			public void run() {
 				client.getComponentClient().getComponentRelatedIssuesCount(component.getSelf()).claim();
@@ -294,9 +278,7 @@ public class AsynchronousComponentRestClientTest extends AbstractAsynchronousRes
 		final BasicComponent restrictedComponent = Iterables.getOnlyElement(client.getProjectClient().getProject("RST").claim()
 				.getComponents());
 		setUser1();
-		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ?
-				"The component with id 10010 does not exist."
-				: "The user wseliga does not have permission to complete this operation.", new Runnable() {
+		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, "The component with id 10010 does not exist.", new Runnable() {
 			@Override
 			public void run() {
 				client.getComponentClient().getComponentRelatedIssuesCount(restrictedComponent.getSelf()).claim();

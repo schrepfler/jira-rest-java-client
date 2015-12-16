@@ -17,7 +17,6 @@
 package it;
 
 import com.atlassian.jira.nimblefunctests.framework.NimbleFuncTestCase;
-import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
@@ -51,8 +50,7 @@ public abstract class AbstractAsynchronousRestClientTest extends NimbleFuncTestC
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-		jiraRestRootUri = UriBuilder.fromUri(jiraUri).path(
-				IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? "/rest/api/2/" : "/rest/api/latest/").build();
+		jiraRestRootUri = UriBuilder.fromUri(jiraUri).path("/rest/api/2/").build();
 		jiraAuthRootUri = UriBuilder.fromUri(jiraUri).path("/rest/auth/latest/").build();
 	}
 

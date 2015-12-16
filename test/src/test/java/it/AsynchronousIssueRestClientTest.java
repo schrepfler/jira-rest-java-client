@@ -70,9 +70,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.NUMERIC_CUSTOMFIELD_ID;
-import static com.atlassian.jira.rest.client.IntegrationTestUtil.NUMERIC_CUSTOMFIELD_TYPE;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.NUMERIC_CUSTOMFIELD_TYPE_V5;
-import static com.atlassian.jira.rest.client.IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.TEXT_CUSTOMFIELD_ID;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER2;
 import static com.atlassian.jira.rest.client.TestUtil.assertErrorCode;
@@ -88,7 +86,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 // Ignore "May produce NPE" warnings, as we know what we are doing in tests
@@ -105,13 +109,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	@Test
 	public void testTransitionWithNumericCustomFieldPolishLocale() throws Exception {
 		final double newValue = 123.45;
-		final FieldInput fieldInput;
-		if (IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER) {
-			fieldInput = new FieldInput(NUMERIC_CUSTOMFIELD_ID, newValue);
-		} else {
-			fieldInput = new FieldInput(NUMERIC_CUSTOMFIELD_ID, NumberFormat.getNumberInstance(new Locale("pl"))
-					.format(newValue));
-		}
+		final FieldInput fieldInput = new FieldInput(NUMERIC_CUSTOMFIELD_ID, newValue);
 		assertTransitionWithNumericCustomField(fieldInput, newValue);
 	}
 
@@ -122,8 +120,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		final FieldInput fieldInput = new FieldInput(NUMERIC_CUSTOMFIELD_ID,
 				NumberFormat.getNumberInstance(new Locale("pl")).format(newValue));
 
-		assertErrorCode(Response.Status.BAD_REQUEST, IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER
-				? "Operation value must be a number" : ("'" + fieldInput.getValue() + "' is an invalid number"), new Runnable() {
+		assertErrorCode(Response.Status.BAD_REQUEST, "Operation value must be a number", new Runnable() {
 			@Override
 			public void run() {
 				assertTransitionWithNumericCustomField(fieldInput, newValue);
@@ -143,8 +140,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 		final Transition transitionFound = TestUtil.getTransitionByName(transitions, "Estimate");
 		assertNotNull(transitionFound);
 		assertTrue(Iterables.contains(transitionFound.getFields(),
-				new Transition.Field(NUMERIC_CUSTOMFIELD_ID, false,
-						IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? NUMERIC_CUSTOMFIELD_TYPE_V5 : NUMERIC_CUSTOMFIELD_TYPE)));
+				new Transition.Field(NUMERIC_CUSTOMFIELD_ID, false, NUMERIC_CUSTOMFIELD_TYPE_V5)));
 		client.getIssueClient().transition(issue, new TransitionInput(transitionFound.getId(), Arrays.asList(fieldInput),
 				Comment.valueOf("My test comment"))).claim();
 		final Issue changedIssue = client.getIssueClient().getIssue("TST-1").claim();
@@ -290,8 +286,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 
 		assertNotNull(transitionFound);
 		assertTrue(Iterables.contains(transitionFound.getFields(),
-				new Transition.Field(NUMERIC_CUSTOMFIELD_ID, false,
-						IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? NUMERIC_CUSTOMFIELD_TYPE_V5 : NUMERIC_CUSTOMFIELD_TYPE)));
+				new Transition.Field(NUMERIC_CUSTOMFIELD_ID, false, NUMERIC_CUSTOMFIELD_TYPE_V5)));
 		final double newValue = 123;
 		final FieldInput fieldInput = new FieldInput(NUMERIC_CUSTOMFIELD_ID, newValue);
 		client.getIssueClient().transition(issue.getTransitionsUri(), new TransitionInput(transitionFound.getId(), Arrays
@@ -310,13 +305,11 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 
 		assertNotNull(transitionFound);
 		assertTrue(Iterables.contains(transitionFound.getFields(),
-				new Transition.Field(NUMERIC_CUSTOMFIELD_ID, false,
-						TESTING_JIRA_5_OR_NEWER ? NUMERIC_CUSTOMFIELD_TYPE_V5 : NUMERIC_CUSTOMFIELD_TYPE)));
+				new Transition.Field(NUMERIC_CUSTOMFIELD_ID, false, NUMERIC_CUSTOMFIELD_TYPE_V5)));
 		final FieldInput fieldInput = new FieldInput(NUMERIC_CUSTOMFIELD_ID, "]432jl");
 		// warning: Polish language here - I am asserting if the messages are indeed localized
 		// since 5.0 messages are changed and not localized
-		assertErrorCode(Response.Status.BAD_REQUEST, TESTING_JIRA_5_OR_NEWER
-				? "Operation value must be a number" : "']432jl' nie jest prawid\u0142ow\u0105 liczb\u0105", new Runnable() {
+		assertErrorCode(Response.Status.BAD_REQUEST,  "Operation value must be a number", new Runnable() {
 			@Override
 			public void run() {
 				client.getIssueClient().transition(issue, new TransitionInput(transitionFound.getId(), Arrays.asList(fieldInput),
@@ -346,11 +339,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 	@Test
 	public void testTransitionWithInvalidRole() {
 		final Comment comment = Comment.createWithRoleLevel("My text which I am just adding " + new DateTime(), "some-fake-role");
-		if (IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER) {
-			assertInvalidCommentInput(comment, "Invalid role level specified.");
-		} else {
-			assertInvalidCommentInput(comment, "Invalid role [some-fake-role]");
-		}
+		assertInvalidCommentInput(comment, "Invalid role level specified.");
 	}
 
 	@Test
@@ -562,9 +551,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
 
 	@Test
 	public void testLinkIssuesWithInvalidParams() {
-		assertErrorCode(Response.Status.NOT_FOUND,
-				IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? "Issue Does Not Exist"
-						: "The issue no longer exists.", new Runnable() {
+		assertErrorCode(Response.Status.NOT_FOUND, "Issue Does Not Exist", new Runnable() {
 			@Override
 			public void run() {
 				client.getIssueClient().linkIssue(new LinkIssuesInput("TST-7", "FAKEKEY-1", "Duplicate", null)).claim();

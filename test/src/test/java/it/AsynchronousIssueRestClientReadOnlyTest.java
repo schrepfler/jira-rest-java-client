@@ -156,8 +156,7 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		final Iterable<Attachment> items = issue.getAttachments();
 		assertNotNull(items);
 		Attachment attachment1 = new Attachment(IntegrationTestUtil.concat(
-				IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? UriBuilder.fromUri(jiraUri).path("/rest/api/2/").build()
-						: jiraRestRootUri, "/attachment/10040"),
+				UriBuilder.fromUri(jiraUri).path("/rest/api/2/").build(), "/attachment/10040"),
 				"dla Paw\u0142a.txt", IntegrationTestUtil.USER_ADMIN, dateTime, 643, "text/plain",
 				IntegrationTestUtil.concat(jiraUri, "/secure/attachment/10040/dla+Paw%C5%82a.txt"), null);
 
