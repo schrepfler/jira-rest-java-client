@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.atlassian.jira</groupId>
         <artifactId>jira-rest-java-client-parent</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>4.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>jira-rest-java-client-api</artifactId>
@@ -22,6 +22,7 @@
         <dependency>
             <groupId>com.atlassian.httpclient</groupId>
             <artifactId>atlassian-httpclient-api</artifactId>
+            <version>${atlassian.httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>

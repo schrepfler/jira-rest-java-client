@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.atlassian.jira</groupId>
     <artifactId>jira-rest-java-client-parent</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>JIRA REST Java Client</name>
     <description>Java library which allows to easily talk to any JIRA 5.0+ instance.</description>
@@ -34,7 +34,8 @@
         <connection>scm:git:ssh://git@bitbucket.org/atlassian/jira-rest-java-client.git</connection>
         <developerConnection>scm:git:ssh://git@bitbucket.org/atlassian/jira-rest-java-client.git</developerConnection>
         <url>https://bitbucket.org/atlassian/jira-rest-java-client/</url>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jira.version>5.2.8</jira.version>
@@ -47,10 +48,11 @@
         <!-- IMPORTANT: keep synchronized with JIRA -->
         <guava.version>10.0.1</guava.version>
         <findbugs.version>1.3.7</findbugs.version>
-        <atlassian.httpclient.version>0.13.2</atlassian.httpclient.version>
-        <atlassian.concurrent.version>2.4.0-M9</atlassian.concurrent.version>
+        <atlassian.httpclient.version>0.23.0</atlassian.httpclient.version>
+        <atlassian.concurrent.version>2.4.2</atlassian.concurrent.version>
         <amps.version>5.1.11</amps.version>
         <testkit.version>5.2-m29</testkit.version>
+        <fugue.version>1.1</fugue.version>
     </properties>
     <modules>
         <module>api</module>
@@ -76,17 +78,7 @@
             </dependency>
             <dependency>
                 <groupId>com.atlassian.httpclient</groupId>
-                <artifactId>atlassian-httpclient-api</artifactId>
-                <version>${atlassian.httpclient.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.atlassian.httpclient</groupId>
-                <artifactId>atlassian-httpclient-spi</artifactId>
-                <version>${atlassian.httpclient.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.atlassian.httpclient</groupId>
-                <artifactId>atlassian-httpclient-apache-httpcomponents</artifactId>
+                <artifactId>atlassian-httpclient-plugin</artifactId>
                 <version>${atlassian.httpclient.version}</version>
             </dependency>
             <dependency>

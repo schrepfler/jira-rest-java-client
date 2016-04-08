@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.atlassian.jira</groupId>
         <artifactId>jira-rest-java-client-parent</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>4.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jira-rest-java-client-test</artifactId>
@@ -15,6 +15,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.atlassian.fugue</groupId>
+            <artifactId>fugue</artifactId>
+            <version>${fugue.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client-api</artifactId>
@@ -164,7 +169,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <jira.version>7.1.0-SNAPSHOT</jira.version>
+                <jira.version>7.1.2</jira.version>
                 <amps.version>5.0.16</amps.version>
                 <testkit.version>7.0.34</testkit.version>
             </properties>
