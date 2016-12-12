@@ -231,8 +231,8 @@
                                     <version>9.4.1208</version>
                                 </libArtifact>
                             </libArtifacts>
-
                             <systemPropertyVariables>
+                                <jira.environment>CI</jira.environment>
                                 <PG_DB_ROLE>jira</PG_DB_ROLE>
                                 <PG_DB_HOST>${docker.host.address}</PG_DB_HOST>
                                 <PG_DB_NAME>jira</PG_DB_NAME>
