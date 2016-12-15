@@ -33,6 +33,11 @@ public interface JiraRestClient extends Closeable {
 	IssueRestClient getIssueClient();
 
 	/**
+	 * @return com.atlassian.jira.rest.client.api for creating and commenting on issues via the email push service
+	 */
+	EmailRestClient getEmailRestClient();
+
+	/**
 	 * @return the com.atlassian.jira.rest.client.api handling session information
 	 */
 	SessionRestClient getSessionClient();
