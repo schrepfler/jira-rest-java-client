@@ -1,23 +1,12 @@
 package com.atlassian.jira.rest.client.internal.async;
 
-import com.atlassian.httpclient.api.EntityBuilders;
 import com.atlassian.httpclient.api.HttpClient;
-import com.atlassian.httpclient.api.Message;
 import com.atlassian.httpclient.api.Response;
-import com.atlassian.httpclient.api.ResponsePromise;
-import com.atlassian.httpclient.api.ResponseTransformation;
 import com.atlassian.jira.rest.client.api.EmailRestClient;
-import com.atlassian.jira.rest.client.internal.json.gen.IssueInputJsonGenerator;
 import com.atlassian.util.concurrent.Promise;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import org.apache.http.client.entity.EntityBuilder;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.net.URI;
 
 /**
