@@ -29,6 +29,7 @@ import java.net.URI;
 public class AsynchronousJiraRestClient implements JiraRestClient {
 
 	private final IssueRestClient issueRestClient;
+	private final EmailRestClient emailRestClient;
 	private final SessionRestClient sessionRestClient;
 	private final UserRestClient userRestClient;
 	private final ProjectRestClient projectRestClient;
@@ -48,6 +49,7 @@ public class AsynchronousJiraRestClient implements JiraRestClient {
 		metadataRestClient = new AsynchronousMetadataRestClient(baseUri, httpClient);
 		sessionRestClient = new AsynchronousSessionRestClient(serverUri, httpClient);
 		issueRestClient = new AsynchronousIssueRestClient(baseUri, httpClient, sessionRestClient, metadataRestClient);
+		emailRestClient = new AsynchronousEmailRestClient(baseUri, httpClient);
 		userRestClient = new AsynchronousUserRestClient(baseUri, httpClient);
 		projectRestClient = new AsynchronousProjectRestClient(baseUri, httpClient);
 		componentRestClient = new AsynchronousComponentRestClient(baseUri, httpClient);
@@ -55,12 +57,17 @@ public class AsynchronousJiraRestClient implements JiraRestClient {
 		versionRestClient = new AsynchronousVersionRestClient(baseUri, httpClient);
 		projectRolesRestClient = new AsynchronousProjectRolesRestClient(serverUri, httpClient);
 		myPermissionsRestClient = new AsynchronousMyPermissionsRestClient(baseUri, httpClient);
-        auditRestClient = new AsynchronousAuditRestClient(httpClient, baseUri);
+    auditRestClient = new AsynchronousAuditRestClient(httpClient, baseUri);
     }
 
 	@Override
 	public IssueRestClient getIssueClient() {
 		return issueRestClient;
+	}
+
+	@Override
+	public EmailRestClient getEmailRestClient() {
+		return emailRestClient;
 	}
 
 	@Override
