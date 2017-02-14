@@ -125,6 +125,45 @@ public class TestUtil {
 		}
 	}
 
+	//this is a temporary workaround for changing issue resource return codes,
+	// see https://jira.atlassian.com/browse/JRA-63541
+	public static void assertErrorCodeAlternative(int errorCode1, String message1, int errorCode2, String message2, Runnable runnable) {
+		try {
+			runnable.run();
+			Assert.fail(RestClientException.class + " exception expected");
+		} catch (com.atlassian.jira.rest.client.api.RestClientException e) {
+			Assert.assertTrue("No status code is present", e.getStatusCode().isPresent());
+			Assert.assertTrue(getErrorMessage(errorCode1, message1, errorCode2, message2, e), holdsFor(errorCode1, message1, e) || holdsFor(errorCode2, message2, e));
+
+		}
+	}
+
+	private static String getErrorMessage(int errorCode1, String message1, int errorCode2, String message2, RestClientException e) {
+		String preformatted = "Expected either error code %d with message %s or error code %d with message %s, but got: %s";
+
+		return String.format(preformatted, errorCode1, message1, errorCode2, message2, e);
+
+	}
+
+	private static boolean holdsFor(int errorCode, String message, RestClientException e) {
+		if(errorCode != e.getStatusCode().get().intValue()) return false;
+		if (!StringUtils.isEmpty(message)) {
+            // We expect a single error message. Either error or error message.
+			Collection<ErrorCollection> errorCollections = e.getErrorCollections();
+			if (1 != errorCollections.size()) return false;
+            if (Iterators.getOnlyElement(errorCollections.iterator()).getErrorMessages().size() > 0) {
+                if(!getOnlyElement(getOnlyElement(errorCollections.iterator()).getErrorMessages()
+                        .iterator()).equals(message)) return false;
+            } else if (Iterators.getOnlyElement(errorCollections.iterator()).getErrors().size() > 0) {
+                if(!getOnlyElement(getOnlyElement(errorCollections.iterator()).getErrors().values()
+                        .iterator()).equals(message)) return false;
+            } else {
+				return false;
+            }
+        }
+		return true;
+	}
+
 	public static void assertErrorCodeWithRegexp(int errorCode, String regExp, Runnable runnable) {
 		try {
 			runnable.run();
@@ -190,4 +229,5 @@ public class TestUtil {
 	public static <K> void assertEmptyIterable(Iterable<K> iterable) {
 		org.junit.Assert.assertThat(iterable, Matchers.<K>emptyIterable());
 	}
+
 }

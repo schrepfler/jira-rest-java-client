@@ -55,6 +55,7 @@ import java.util.Iterator;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER1;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.getUserUri;
 import static com.atlassian.jira.rest.client.TestUtil.assertErrorCode;
+import static com.atlassian.jira.rest.client.TestUtil.assertErrorCodeAlternative;
 import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.CHANGELOG;
 import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.OPERATIONS;
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
@@ -238,6 +239,7 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		final Votes votes = client.getIssueClient().getVotes(issue.getVotes().getSelf()).claim();
 		assertFalse(votes.hasVoted());
 		assertThat(votes.getUsers(), containsInAnyOrder(USER1));
+
 	}
 
 	@Test
@@ -245,13 +247,29 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		final Issue issue = client.getIssueClient().getIssue("RST-1").claim();
 		setUser2();
 		final String optionalDot = isJira5xOrNewer() ? "." : "";
-		assertErrorCode(Response.Status.FORBIDDEN,
-				"You do not have the permission to see the specified issue" + optionalDot, new Runnable() {
-			@Override
-			public void run() {
-				client.getIssueClient().getVotes(issue.getVotes().getSelf()).claim();
-			}
+		if (!isJiraCloud()) {
+			assertErrorCode(Response.Status.FORBIDDEN,
+					"You do not have the permission to see the specified issue" + optionalDot, new Runnable() {
+				@Override
+				public void run() {
+					client.getIssueClient().getVotes(issue.getVotes().getSelf()).claim();
+				}
 		});
+		} else {
+			//this is a temporary workaround for changing issue resource return codes,
+			// see https://jira.atlassian.com/browse/JRA-63541
+			assertErrorCodeAlternative(Response.Status.FORBIDDEN.getStatusCode(),
+					"You do not have the permission to see the specified issue" + optionalDot,
+					Response.Status.NOT_FOUND.getStatusCode(),
+					"Issue Does Not Exist Or No Permission to See It",
+					 new Runnable() {
+						@Override
+						public void run() {
+							client.getIssueClient().getVotes(issue.getVotes().getSelf()).claim();
+						}
+					});
+
+		}
 	}
 
 	@Test
