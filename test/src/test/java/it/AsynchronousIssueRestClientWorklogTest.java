@@ -42,9 +42,7 @@ import static com.atlassian.jira.rest.client.IntegrationTestUtil.GROUP_JIRA_ADMI
 import static com.atlassian.jira.rest.client.TestUtil.toUri;
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class AsynchronousIssueRestClientWorklogTest extends AbstractAsynchronousRestClientTest {
 

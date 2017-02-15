@@ -148,19 +148,19 @@ public class TestUtil {
 	private static boolean holdsFor(int errorCode, String message, RestClientException e) {
 		if(errorCode != e.getStatusCode().get().intValue()) return false;
 		if (!StringUtils.isEmpty(message)) {
-            // We expect a single error message. Either error or error message.
+			// We expect a single error message. Either error or error message.
 			Collection<ErrorCollection> errorCollections = e.getErrorCollections();
 			if (1 != errorCollections.size()) return false;
-            if (Iterators.getOnlyElement(errorCollections.iterator()).getErrorMessages().size() > 0) {
-                if(!getOnlyElement(getOnlyElement(errorCollections.iterator()).getErrorMessages()
-                        .iterator()).equals(message)) return false;
-            } else if (Iterators.getOnlyElement(errorCollections.iterator()).getErrors().size() > 0) {
-                if(!getOnlyElement(getOnlyElement(errorCollections.iterator()).getErrors().values()
-                        .iterator()).equals(message)) return false;
-            } else {
+			if (Iterators.getOnlyElement(errorCollections.iterator()).getErrorMessages().size() > 0) {
+				if(!getOnlyElement(getOnlyElement(errorCollections.iterator()).getErrorMessages()
+						.iterator()).equals(message)) return false;
+			} else if (Iterators.getOnlyElement(errorCollections.iterator()).getErrors().size() > 0) {
+				if(!getOnlyElement(getOnlyElement(errorCollections.iterator()).getErrors().values()
+						.iterator()).equals(message)) return false;
+			} else {
 				return false;
-            }
-        }
+			}
+		}
 		return true;
 	}
 

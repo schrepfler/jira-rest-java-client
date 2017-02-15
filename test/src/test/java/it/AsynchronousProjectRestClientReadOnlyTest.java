@@ -105,7 +105,7 @@ public class AsynchronousProjectRestClientReadOnlyTest extends AbstractAsynchron
 
 		setClient(TestConstants.USER1_USERNAME, TestConstants.USER1_PASSWORD);
 		client.getProjectClient().getProject("TST").claim();
-		// @todo when JRADEV-3519 - instead of NOT_FOUND, UNAUTHORIZED code should be returned by JIRA
+		// @todo when JRADEV-3519 - instead of NOT_FOUND, FORBIDDEN code should be returned by JIRA
 		final String message = getCannotViewProjectErrorMessage("RST");
 		TestUtil.assertErrorCode(Response.Status.NOT_FOUND, message, new Runnable() {
 			@Override

@@ -160,10 +160,10 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 
 		assertEquals(3, size(issue.getComments()));
 
-        final String[] expandosForJira5 = {"renderedFields", "names", "schema", "transitions", "operations", "editmeta", "changelog"};
-        final String[] expandosForJira6_4 = toArray(Lists.asList("versionedRepresentations", expandosForJira5), String.class);
+		final String[] expandosForJira5 = {"renderedFields", "names", "schema", "transitions", "operations", "editmeta", "changelog"};
+		final String[] expandosForJira6_4 = toArray(Lists.asList("versionedRepresentations", expandosForJira5), String.class);
 
-        // here is anyOf matcher because "versionedRepresentations" was introduced in the middle of v6.4
+		// here is anyOf matcher because "versionedRepresentations" was introduced in the middle of v6.4
 		assertThat(issue.getExpandos(), anyOf(containsInAnyOrder(expandosForJira5), containsInAnyOrder(expandosForJira6_4)));
 		assertEquals(new TimeTracking(null, 0, 190), issue.getTimeTracking());
 		assertTrue(size(issue.getFields()) > 0);
@@ -220,7 +220,7 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		}
 	}
 
-    @Test
+	@Test
 	public void testGetIssueWithNonTrivialComments() {
 		final Issue issue = client.getIssueClient().getIssue("TST-2").claim();
 		final Iterable<Comment> comments = issue.getComments();
@@ -239,7 +239,6 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 		final Votes votes = client.getIssueClient().getVotes(issue.getVotes().getSelf()).claim();
 		assertFalse(votes.hasVoted());
 		assertThat(votes.getUsers(), containsInAnyOrder(USER1));
-
 	}
 
 	@Test
