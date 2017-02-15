@@ -86,7 +86,7 @@ public class AsynchronousIssueRestClientWorklogTest extends AbstractAsynchronous
 					break;
 				case NOT_FOUND:
 					assertThat(errors.getErrorMessages(),
-							containsInAnyOrder("Issue Does Not Exist Or No Permission to See It"));
+							containsInAnyOrder("Issue does not exist or you do not have permission to see it."));
 					break;
 				default:
 					fail("Unexpected status code: " + statusCode);

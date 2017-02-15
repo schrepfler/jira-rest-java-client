@@ -41,7 +41,6 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.api.domain.input.LinkIssuesInput;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
-
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -225,7 +224,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
         // delete issue should thrown 404
 
         assertErrorCodeWithRegexp(Response.Status.NOT_FOUND,
-                IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? "Issue Does Not Exist.*"
+                IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? "Issue Does Not Exist|Issue does not exist or you do not have permission to see it."
                         : "The issue no longer exists.", new Runnable() {
                     @Override
                     public void run() {
@@ -614,7 +613,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
     @Test
     public void testLinkIssuesWithInvalidParams() {
         assertErrorCodeWithRegexp(Response.Status.NOT_FOUND,
-                IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? "Issue Does Not Exist.*"
+                IntegrationTestUtil.TESTING_JIRA_5_OR_NEWER ? "Issue Does Not Exist|Issue does not exist or you do not have permission to see it."
                         : "The issue no longer exists.", new Runnable() {
                     @Override
                     public void run() {
@@ -635,7 +634,7 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
                 Response.Status.NOT_FOUND.getStatusCode(),
                 "You do not have the permission to see the specified issue" + optionalDot,
                 Response.Status.NOT_FOUND.getStatusCode(),
-                "Issue Does Not Exist Or No Permission to See It",
+                "Issue does not exist or you do not have permission to see it.",
                 new Runnable() {
                     @Override
                     public void run() {
@@ -1000,8 +999,8 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
         assertTrue(Iterables.contains(transitionsAfterTransition, stopProgressTransition));
     }
 
-    private void assertThatIssueNotExists(String issueKey) {
-        assertErrorCodeWithRegexp(Response.Status.NOT_FOUND.getStatusCode(), "Issue Does Not Exist.*",
+    private void assertThatIssueNotExists(final String issueKey) {
+        assertErrorCodeWithRegexp(Response.Status.NOT_FOUND.getStatusCode(), "Issue Does Not Exist|Issue does not exist or you do not have permission to see it.",
                 new Runnable() {
                     @Override
                     public void run() {

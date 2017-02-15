@@ -261,7 +261,7 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
 			assertErrorCodeAlternative(Response.Status.FORBIDDEN.getStatusCode(),
 					"You do not have the permission to see the specified issue" + optionalDot,
 					Response.Status.NOT_FOUND.getStatusCode(),
-					"Issue Does Not Exist Or No Permission to See It",
+					"Issue does not exist or you do not have permission to see it.",
 					 new Runnable() {
 						@Override
 						public void run() {
