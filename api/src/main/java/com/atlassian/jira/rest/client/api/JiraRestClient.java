@@ -91,7 +91,7 @@ public interface JiraRestClient extends Closeable {
     /**
      * Destroys this instance of JIRA Rest Client.
      *
-     * @throws Exception
+     * @throws IOException if there is a problem closing this client.
      */
     void close() throws IOException;
 }
