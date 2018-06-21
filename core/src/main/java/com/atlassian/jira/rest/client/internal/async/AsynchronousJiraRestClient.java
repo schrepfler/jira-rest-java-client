@@ -18,6 +18,7 @@ package com.atlassian.jira.rest.client.internal.async;
 import com.atlassian.jira.rest.client.api.AuditRestClient;
 import com.atlassian.jira.rest.client.api.ComponentRestClient;
 import com.atlassian.jira.rest.client.api.EmailRestClient;
+import com.atlassian.jira.rest.client.api.GroupRestClient;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
@@ -44,6 +45,7 @@ public class AsynchronousJiraRestClient implements JiraRestClient {
     private final EmailRestClient emailRestClient;
     private final SessionRestClient sessionRestClient;
     private final UserRestClient userRestClient;
+    private final GroupRestClient groupRestClient;
     private final ProjectRestClient projectRestClient;
     private final ComponentRestClient componentRestClient;
     private final MetadataRestClient metadataRestClient;
@@ -63,6 +65,7 @@ public class AsynchronousJiraRestClient implements JiraRestClient {
         issueRestClient = new AsynchronousIssueRestClient(baseUri, httpClient, sessionRestClient, metadataRestClient);
         emailRestClient = new AsynchronousEmailRestClient(baseUri, httpClient);
         userRestClient = new AsynchronousUserRestClient(baseUri, httpClient);
+        groupRestClient  = new AsynchronousGroupRestClient(baseUri, httpClient);
         projectRestClient = new AsynchronousProjectRestClient(baseUri, httpClient);
         componentRestClient = new AsynchronousComponentRestClient(baseUri, httpClient);
         searchRestClient = new AsynchronousSearchRestClient(baseUri, httpClient);
@@ -90,6 +93,11 @@ public class AsynchronousJiraRestClient implements JiraRestClient {
     @Override
     public UserRestClient getUserClient() {
         return userRestClient;
+    }
+
+    @Override
+    public GroupRestClient getGroupClient() {
+        return groupRestClient;
     }
 
     @Override
