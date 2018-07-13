@@ -26,6 +26,7 @@ import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 import com.atlassian.jira.rest.client.api.domain.FieldType;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
@@ -70,7 +71,8 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
     @Before
     public void setup() {
         if (!alreadyRestored) {
-            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE, administration);
+//            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE, administration);
+            IntegrationTestUtil.restoreAppropriateJiraData("foo.xml", administration);
             alreadyRestored = true;
         }
     }
@@ -107,6 +109,17 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
                 endsWith("bug.png"),
                 endsWith("bug.gif"),
                 endsWith("viewavatar?size=xsmall&avatarId=10163&avatarType=issuetype")));
+    }
+
+
+    @Test
+    public void testGetAllIssueTypeSchemes() {
+
+        System.out.println("HIT");
+        final Iterable<IssueTypeScheme> schemesIter =  client.getMetadataClient().getAllIssueTypeSchemes().claim();
+
+        System.out.println("HAT:  " + Iterables.size(schemesIter));
+        assertEquals(2, Iterables.size(schemesIter));
     }
 
     @JiraBuildNumberDependent(BN_JIRA_4_3)

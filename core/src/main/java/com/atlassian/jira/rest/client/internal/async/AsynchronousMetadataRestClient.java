@@ -19,20 +19,24 @@ import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
 import com.atlassian.jira.rest.client.internal.json.FieldJsonParser;
 import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.IssueLinkTypesJsonParser;
 import com.atlassian.jira.rest.client.internal.json.IssueTypeJsonParser;
+import com.atlassian.jira.rest.client.internal.json.IssueTypeSchemeJsonParser;
 import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.PriorityJsonParser;
 import com.atlassian.jira.rest.client.internal.json.ResolutionJsonParser;
 import com.atlassian.jira.rest.client.internal.json.ServerInfoJsonParser;
 import com.atlassian.jira.rest.client.internal.json.StatusJsonParser;
+import com.atlassian.jira.rest.client.internal.json.gen.IssueTypeSchemeInputJsonGenerator;
 import com.atlassian.util.concurrent.Promise;
 
 import javax.ws.rs.core.UriBuilder;
@@ -125,5 +129,17 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
     public Promise<Iterable<Field>> getFields() {
         final URI uri = UriBuilder.fromUri(baseUri).path("field").build();
         return getAndParse(uri, fieldsJsonParser);
+    }
+
+    @Override
+    public Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme) {
+        final URI uri = UriBuilder.fromUri(baseUri).path("issuetypescheme").build();
+        return postAndParse(uri, scheme, new IssueTypeSchemeInputJsonGenerator(), new IssueTypeSchemeJsonParser());
+    }
+
+    @Override
+    public Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes() {
+        final URI uri = UriBuilder.fromUri(baseUri).path("issuetypescheme").build();
+        return getAndParse(uri, IssueTypeSchemeJsonParser.createIssueTypeSchemesArrayParser());
     }
 }

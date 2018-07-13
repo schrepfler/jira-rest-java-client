@@ -18,11 +18,13 @@ package com.atlassian.jira.rest.client.api;
 
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
 import com.atlassian.util.concurrent.Promise;
 
 import java.net.URI;
@@ -132,4 +134,11 @@ public interface MetadataRestClient {
      * @throws RestClientException in case of problems (connectivity, malformed messages, etc.)
      */
     Promise<Iterable<Field>> getFields();
+
+
+
+    //sju:TODO here or elsewhere?
+    Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme);
+
+    Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes();
 }
