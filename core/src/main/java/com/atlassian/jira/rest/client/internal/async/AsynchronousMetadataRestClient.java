@@ -16,6 +16,7 @@
 package com.atlassian.jira.rest.client.internal.async;
 
 import com.atlassian.httpclient.api.HttpClient;
+import com.atlassian.httpclient.api.ResponsePromise;
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
@@ -134,6 +135,7 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
         return getAndParse(uri, fieldsJsonParser);
     }
 
+
     @Override
     public Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme) {
         final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME).build();
@@ -152,6 +154,8 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
         return getAndParse(uri, new IssueTypeSchemeJsonParser());
     }
 
+
+
     @Override
     public Promise<Iterable<Project>> getProjectsAssociatedWithIssueTypeScheme(long schemeId) {
         final URI uri = UriBuilder.fromUri(baseUri)
@@ -164,17 +168,34 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
     }
 
     @Override
-    public Promise<IssueTypeScheme> updateIssueTypeScheme(long id) {
-        throw new UnsupportedOperationException("Not implemented");
+    public Promise<IssueTypeScheme> updateIssueTypeScheme(long id, IssueTypeSchemeInput updatedScheme) {
+        final URI uri = UriBuilder.fromUri(baseUri)
+                .path(ISSUE_TYPE_SCHEME)
+                .path(Long.toString(id))
+                .build();
+
+        return putAndParse(uri, updatedScheme, new IssueTypeSchemeInputJsonGenerator(), new IssueTypeSchemeJsonParser());
     }
 
     @Override
     public Promise<Void> deleteIssueTypeScheme(long id) {
-        throw new UnsupportedOperationException("Not implemented");
+        final URI uri = UriBuilder.fromUri(baseUri)
+                .path(ISSUE_TYPE_SCHEME)
+                .path(Long.toString(id))
+                .build();
+
+        return delete(uri);
     }
 
     @Override
-    public Promise<IssueTypeScheme> assignSchemeToProject(long schemeId, long projectId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public Promise<Void> assignSchemeToProject(long schemeId, long projectId) {
+        final URI uri = UriBuilder.fromUri(baseUri)
+                .path(ISSUE_TYPE_SCHEME)
+                .path(Long.toString(schemeId))
+                .path("associations")
+                .path(Long.toString(projectId))
+                .build();
+
+        return post(uri);
     }
 }

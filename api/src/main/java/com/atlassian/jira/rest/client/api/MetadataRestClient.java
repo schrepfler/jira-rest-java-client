@@ -149,10 +149,10 @@ public interface MetadataRestClient {
 
     Promise<Iterable<Project>> getProjectsAssociatedWithIssueTypeScheme(long schemeId);
 
-    Promise<IssueTypeScheme> updateIssueTypeScheme(long id);
+    Promise<IssueTypeScheme> updateIssueTypeScheme(long id, IssueTypeSchemeInput updatedScheme);
 
     Promise<Void> deleteIssueTypeScheme(long id);
 
-    Promise<IssueTypeScheme> assignSchemeToProject(long schemeId, long projectId);
+    Promise<Void> assignSchemeToProject(long schemeId, long projectId);
 
 }

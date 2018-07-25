@@ -29,6 +29,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
+import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
@@ -38,6 +39,7 @@ import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.atlassian.jira.rest.client.test.matchers.RegularExpressionMatcher;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
@@ -47,8 +49,10 @@ import org.junit.Test;
 
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_4_3;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -71,6 +75,12 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("ConstantConditions")
 public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchronousRestClientTest {
 
+    //Scheme Ids
+    private final static long DEFAULT_SCHEME_ID = 10000L;
+    private final static long LITTLE_SCHEMER_ID = 10138L;
+
+
+
     @Before
     public void setup() {
         IntegrationTestUtil.restoreAppropriateJiraData("foo.xml", administration);
@@ -87,20 +97,21 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
 
         //TODO: how do we want to handle bad input cases here?
         IssueTypeScheme schemer = client.getMetadataClient().createIssueTypeScheme(
-                new IssueTypeSchemeInput("fooName", "some description", Arrays.asList(1L, 2L, 3L), 1L)).claim();
+                new IssueTypeSchemeInput("foo name", "some description", Arrays.asList(3L, 2L, 1L), 1L)).claim();
 
-        assertEquals("fooname", schemer.getName());
+        assertEquals("foo name", schemer.getName());
         assertEquals("some description", schemer.getDescription());
         assertEquals(Long.valueOf(1L), schemer.getDefaultIssueType().getId());
         assertEquals("Bug", schemer.getDefaultIssueType().getName());
-
+        assertEquals(Arrays.asList(3L,2L,1L),
+                schemer.getIssueTypes().stream().map(it -> it.getId()).collect(Collectors.toList()));
 
         //Now our total count should've been incremented
         assertEquals(3,
                 Iterables.size(client.getMetadataClient().getAllIssueTypeSchemes().claim()));
 
         //and ensure that what was returned from the Post matches what gets stored in JIRA
-        assertEquals(schemer, client.getMetadataClient().getIssueTypeScheme(schemer.getId()));
+        assertEquals(schemer, client.getMetadataClient().getIssueTypeScheme(schemer.getId()).claim());
     }
 
 
@@ -108,6 +119,11 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
     public void testCreateIssueTypeSchemeWithBadInput() {
         //TODO: little helper that drops things in a runnable and then returns a result.
         //a way to test lots of different error permutations in one method.
+
+        //issue types that don't exist
+        //a default type that isn't in the list of types
+        //null name
+        //null description?
     }
 
 
@@ -136,41 +152,76 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
         //even though it has a project assigned to it, deleting "Little Schemer" shouldn't be a problem
         //the project will just get re-assigned to the default IssueTypeScheme which contains all IssueTypes
 
-        client.getMetadataClient().deleteIssueTypeScheme(10138L).claim();
+        client.getMetadataClient().deleteIssueTypeScheme(LITTLE_SCHEMER_ID).claim();
 
         assertEquals(1,
                 Iterables.size(client.getMetadataClient().getAllIssueTypeSchemes().claim()));
 
         IssueTypeScheme onlyOne = Iterables.getOnlyElement(client.getMetadataClient().getAllIssueTypeSchemes().claim());
-        assertEquals(Long.valueOf(10000L), onlyOne.getId());
+        assertEquals(Long.valueOf(DEFAULT_SCHEME_ID), onlyOne.getId());
     }
 
     @Test
     public void testDeleteDefaultIssueTypeScheme() {
-        //sju: FIXME
-        fail("this is a no-no. do we let it happen, though?");
+        TestUtil.assertErrorCode(Response.Status.FORBIDDEN,
+                () -> client.getMetadataClient().deleteIssueTypeScheme(DEFAULT_SCHEME_ID).claim());
     }
 
     @Test
     public void testUpdateIssueType() {//happy path
 
-        client.getMetadataClient().updateIssueTypeScheme(10138)
+        IssueTypeSchemeInput input = new IssueTypeSchemeInput("New Name", "new description", Arrays.asList(1L, 2L, 3L));
+        IssueTypeScheme updated = client.getMetadataClient().updateIssueTypeScheme(LITTLE_SCHEMER_ID, input).claim();
 
-        Assert.fail("implement me");
+        assertEquals(Long.valueOf(LITTLE_SCHEMER_ID), updated.getId());
+        assertEquals("New Name", updated.getName());
+        assertEquals("new description", updated.getDescription());
+        assertNull(updated.getDefaultIssueType());
+        assertEquals(Arrays.asList(1L,2L,3L),
+                updated.getIssueTypes().stream().map(it -> it.getId()).collect(Collectors.toList()));
+
+        assertEquals(updated, client.getMetadataClient().getIssueTypeScheme(LITTLE_SCHEMER_ID));
     }
 
     @Test
     public void testUpdateIssueTypeWithMigrationRequired() {
-        Assert.fail("implement me");
+
+        fail("Add a new project + IST and then remove a type required by that project!");
     }
 
     @Test
     public void testAssignSchemeToProject() {
-        Assert.fail("implement me");
+        final Iterable<Project> projects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(LITTLE_SCHEMER_ID).claim();
+
+        //check that we're starting off w/1 project associated
+        assertEquals(1, Iterables.size(projects));
+        Project onlyProj =  Iterables.getOnlyElement(projects);
+        assertEquals(Long.valueOf(10040), onlyProj.getId());
+        assertEquals("IssueTypeScheme Of Its Own", onlyProj.getName());
+
+        //associate another project with "Little Schemer" IssueTypeScheme
+        client.getMetadataClient().assignSchemeToProject(LITTLE_SCHEMER_ID, 10030).claim();
+
+
+        //make sure that the newly associated project does in fact show up on subsequent requests
+        final Iterable<Project> updatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(LITTLE_SCHEMER_ID).claim();
+        assertEquals("Couldn't find the newly associated project", 2, Iterables.size(updatedProjects));
+        assertEquals("Couldn't find the newly associated project", 1, Lists.newArrayList(updatedProjects).stream()
+                .filter(p -> p.getId() == 10030L && "Test of anonymous Attachments".equals(p.getName()))
+                .count());
+
     }
 
+    //sju::TODO: just put this into the general error-case bracket?
     @Test
     public void testAssignSchemeToProjectWithMigrationRequired() {
-        Assert.fail("implement me");
+
+        assertEquals(1,
+                Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(LITTLE_SCHEMER_ID).claim()));
+
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST,
+                () -> client.getMetadataClient().assignSchemeToProject(LITTLE_SCHEMER_ID, 10020L).claim());
     }
+
+
 }

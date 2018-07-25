@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * TODO: Document this class / interface here
  *
- * @since v7.4
+ * @since v8.0
  */
 public class IssueTypeSchemeInput {
 

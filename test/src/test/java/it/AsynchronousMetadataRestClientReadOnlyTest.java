@@ -245,7 +245,7 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
         assertEquals(2, Iterables.size(schemes));
 
         Iterator<IssueTypeScheme> iter = schemes.iterator();
-        assertEquals(Long.valueOf(1000L), iter.next().getId());
+        assertEquals(Long.valueOf(10000L), iter.next().getId());
         assertEquals(Long.valueOf(10138), iter.next().getId());
     }
 

@@ -71,25 +71,27 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
                 .add("id", id)
                 .add("name", name)
                 .add("description",description)
-                .add("defaultIssueType", defaultIssueType);
+                .add("defaultIssueType", defaultIssueType)
+                .add("issueTypes", issueTypes);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof IssueType) {
+        if (obj instanceof IssueTypeScheme) {
             IssueTypeScheme that = (IssueTypeScheme) obj;
             return Objects.equal(this.self, that.self)
                     && Objects.equal(this.id, that.id)
                     && Objects.equal(this.name, that.name)
                     && Objects.equal(this.description, that.description)
-                    && Objects.equal(this.defaultIssueType, that.defaultIssueType);
+                    && Objects.equal(this.defaultIssueType, that.defaultIssueType)
+                    && Objects.equal(this.issueTypes, that.issueTypes);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(self, id, name, description, defaultIssueType);
+        return Objects.hashCode(self, id, name, description, defaultIssueType, issueTypes);
     }
 
     @Override

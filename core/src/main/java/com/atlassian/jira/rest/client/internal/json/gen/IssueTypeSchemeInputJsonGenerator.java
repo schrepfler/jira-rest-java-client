@@ -16,11 +16,7 @@
 
 package com.atlassian.jira.rest.client.internal.json.gen;
 
-import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
-import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
-import com.atlassian.jira.rest.client.api.domain.input.PropertyInput;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -43,10 +39,10 @@ public class IssueTypeSchemeInputJsonGenerator implements JsonGenerator<IssueTyp
             res.put("description", schemeInput.getDescription());
         }
         if (schemeInput.getIssueTypeIds() != null) {
-            res.put("issueTypes", schemeInput.getIssueTypeIds());
+            res.put("issueTypeIds", schemeInput.getIssueTypeIds());
         }
         if (schemeInput.getDefaultIssueTypeId() != null) {
-            res.put("defaultIssueType", schemeInput.getDefaultIssueTypeId());
+            res.put("defaultIssueTypeId", schemeInput.getDefaultIssueTypeId());
         }
 
         return res;
