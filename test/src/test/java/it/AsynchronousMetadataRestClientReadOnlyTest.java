@@ -29,21 +29,25 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
+import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Transition;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
-import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.atlassian.jira.rest.client.test.matchers.RegularExpressionMatcher;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.sun.jersey.api.client.async.ITypeListener;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_4_3;
@@ -58,6 +62,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Those tests mustn't change anything on server side, as jira is restored only once
@@ -111,16 +116,6 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
                 endsWith("viewavatar?size=xsmall&avatarId=10163&avatarType=issuetype")));
     }
 
-
-    @Test
-    public void testGetAllIssueTypeSchemes() {
-
-        System.out.println("HIT");
-        final Iterable<IssueTypeScheme> schemesIter =  client.getMetadataClient().getAllIssueTypeSchemes().claim();
-
-        System.out.println("HAT:  " + Iterables.size(schemesIter));
-        assertEquals(2, Iterables.size(schemesIter));
-    }
 
     @JiraBuildNumberDependent(BN_JIRA_4_3)
     @Test
@@ -240,4 +235,65 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
                         new FieldSchema("number", null, "workratio", null, null))
         ));
     }
+
+
+    @Test
+    public void testGetAllIssueTypeSchemes() {
+
+        final Iterable<IssueTypeScheme> schemes =  client.getMetadataClient().getAllIssueTypeSchemes().claim();
+
+        assertEquals(2, Iterables.size(schemes));
+
+        Iterator<IssueTypeScheme> iter = schemes.iterator();
+        assertEquals(Long.valueOf(1000L), iter.next().getId());
+        assertEquals(Long.valueOf(10138), iter.next().getId());
+    }
+
+    @Test
+    public void testGetIssueTypeScheme() {
+        final IssueTypeScheme scheme =  client.getMetadataClient().getIssueTypeScheme(10138).claim();
+
+        assertEquals("Little Schemer", scheme.getName());
+
+        IssueType defType = scheme.getDefaultIssueType();
+        assertEquals("Task", defType.getName());
+        assertEquals(Long.valueOf(3L), defType.getId());
+
+        assertEquals("((( )))", scheme.getDescription());
+
+        List<IssueType> types = scheme.getIssueTypes();
+        assertEquals(2, types.size());
+        assertEquals("Bug", types.get(0).getName());
+        assertEquals(defType, types.get(1));
+    }
+
+    @Test
+    public void testGetIssueTypeSchemeWithoutDefault() {
+        fail("test me!");
+    }
+
+    @Test
+    public void testGetNonExistentIssueTypeScheme() {
+        TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
+                () -> client.getMetadataClient().getIssueTypeScheme(999).claim());
+    }
+
+    @Test
+    public void testGetAssociatedProjects() {
+        final Iterable<Project> projIds = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(10138).claim();
+
+        assertEquals(1, Iterables.size(projIds));
+        Project onlyProj =  Iterables.getOnlyElement(projIds);
+        assertEquals(Long.valueOf(10040), onlyProj.getId());
+
+        assertEquals("IssueTypeScheme Of Its Own", onlyProj.getName());
+    }
+
+    @Test
+    public void testGetAssociatedProjectsForNonExistentIssueTypeScheme() {
+        TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
+                () -> client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(999).claim());
+    }
+
+
 }

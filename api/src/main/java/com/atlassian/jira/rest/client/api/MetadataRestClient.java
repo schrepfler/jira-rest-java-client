@@ -21,6 +21,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
+import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
@@ -138,7 +139,20 @@ public interface MetadataRestClient {
 
 
     //sju:TODO here or elsewhere?
+
+    //TODO:docs --> @Since ___?
     Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme);
 
     Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes();
+
+    Promise<IssueTypeScheme> getIssueTypeScheme(long id);
+
+    Promise<Iterable<Project>> getProjectsAssociatedWithIssueTypeScheme(long schemeId);
+
+    Promise<IssueTypeScheme> updateIssueTypeScheme(long id);
+
+    Promise<Void> deleteIssueTypeScheme(long id);
+
+    Promise<IssueTypeScheme> assignSchemeToProject(long schemeId, long projectId);
+
 }

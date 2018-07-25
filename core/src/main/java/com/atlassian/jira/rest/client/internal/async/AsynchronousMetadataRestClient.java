@@ -22,6 +22,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
+import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
@@ -33,6 +34,7 @@ import com.atlassian.jira.rest.client.internal.json.IssueTypeJsonParser;
 import com.atlassian.jira.rest.client.internal.json.IssueTypeSchemeJsonParser;
 import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.PriorityJsonParser;
+import com.atlassian.jira.rest.client.internal.json.ProjectJsonParser;
 import com.atlassian.jira.rest.client.internal.json.ResolutionJsonParser;
 import com.atlassian.jira.rest.client.internal.json.ServerInfoJsonParser;
 import com.atlassian.jira.rest.client.internal.json.StatusJsonParser;
@@ -49,6 +51,7 @@ import java.net.URI;
  */
 public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClient implements MetadataRestClient {
 
+    private static final String ISSUE_TYPE_SCHEME = "issuetypescheme";
     private static final String SERVER_INFO_RESOURCE = "/serverInfo";
     private final ServerInfoJsonParser serverInfoJsonParser = new ServerInfoJsonParser();
     private final IssueTypeJsonParser issueTypeJsonParser = new IssueTypeJsonParser();
@@ -133,13 +136,45 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
 
     @Override
     public Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme) {
-        final URI uri = UriBuilder.fromUri(baseUri).path("issuetypescheme").build();
+        final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME).build();
         return postAndParse(uri, scheme, new IssueTypeSchemeInputJsonGenerator(), new IssueTypeSchemeJsonParser());
     }
 
     @Override
     public Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes() {
-        final URI uri = UriBuilder.fromUri(baseUri).path("issuetypescheme").build();
+        final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME).build();
         return getAndParse(uri, IssueTypeSchemeJsonParser.createIssueTypeSchemesArrayParser());
+    }
+
+    @Override
+    public Promise<IssueTypeScheme> getIssueTypeScheme(long id) {
+        final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME).path(Long.toString(id)).build();
+        return getAndParse(uri, new IssueTypeSchemeJsonParser());
+    }
+
+    @Override
+    public Promise<Iterable<Project>> getProjectsAssociatedWithIssueTypeScheme(long schemeId) {
+        final URI uri = UriBuilder.fromUri(baseUri)
+                .path(ISSUE_TYPE_SCHEME)
+                .path(Long.toString(schemeId))
+                .path("associations")
+                .build();
+
+        return getAndParse(uri, GenericJsonArrayParser.create(new ProjectJsonParser()));
+    }
+
+    @Override
+    public Promise<IssueTypeScheme> updateIssueTypeScheme(long id) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public Promise<Void> deleteIssueTypeScheme(long id) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public Promise<IssueTypeScheme> assignSchemeToProject(long schemeId, long projectId) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

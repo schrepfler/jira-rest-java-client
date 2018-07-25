@@ -42,8 +42,11 @@ public class IssueTypeSchemeInputJsonGenerator implements JsonGenerator<IssueTyp
         if (schemeInput.getDescription() != null) {
             res.put("description", schemeInput.getDescription());
         }
-        if (schemeInput.getDefaultIssueType() != null) {
-            res.put("defaultIssueType", schemeInput.getDefaultIssueType());
+        if (schemeInput.getIssueTypeIds() != null) {
+            res.put("issueTypes", schemeInput.getIssueTypeIds());
+        }
+        if (schemeInput.getDefaultIssueTypeId() != null) {
+            res.put("defaultIssueType", schemeInput.getDefaultIssueTypeId());
         }
 
         return res;

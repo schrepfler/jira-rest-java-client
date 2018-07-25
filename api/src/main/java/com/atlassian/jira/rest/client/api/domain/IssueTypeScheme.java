@@ -6,6 +6,7 @@ import com.atlassian.jira.rest.client.api.NamedEntity;
 import com.google.common.base.Objects;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * TODO: Document this class / interface here
@@ -13,18 +14,34 @@ import java.net.URI;
  */
 public class IssueTypeScheme implements AddressableEntity, NamedEntity, IdentifiableEntity<Long> {
 
+    @Override
+    public String toString() {
+        return "IssueTypeScheme{" +
+                "self=" + self +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", defaultIssueType='" + defaultIssueType + '\'' +
+                ", issueTypes=" + issueTypes +
+                '}';
+    }
+
     private final URI self;
     private final Long id;
     private final String name;
     private final String description;
-    private final String defaultIssueType;
+    private final IssueType defaultIssueType;
 
-    public IssueTypeScheme(URI self, Long id, String name, String description, String defaultIssueType) {
+
+    private final List<IssueType> issueTypes;
+
+    public IssueTypeScheme(URI self, Long id, String name, String description, IssueType defaultIssueType, List<IssueType> issueTypes) {
         this.self = self;
         this.id = id;
         this.name = name;
         this.description = description;
         this.defaultIssueType = defaultIssueType;
+        this.issueTypes = issueTypes;
     }
 
 
@@ -40,7 +57,7 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
         return description;
     }
 
-    public String getDefaultIssueType() {
+    public IssueType getDefaultIssueType() {
         return defaultIssueType;
     }
 
@@ -55,11 +72,6 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
                 .add("name", name)
                 .add("description",description)
                 .add("defaultIssueType", defaultIssueType);
-    }
-
-    @Override
-    public String toString() {
-        return getToStringHelper().toString();
     }
 
     @Override
@@ -83,4 +95,7 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
     @Override
     public URI getSelf() { return self; }
 
+    public List<IssueType> getIssueTypes() {
+        return issueTypes;
+    }
 }
