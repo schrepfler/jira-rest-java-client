@@ -28,6 +28,7 @@ import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
+import com.atlassian.jira.rest.client.api.domain.input.ProjectIdOrKey;
 import com.atlassian.jira.rest.client.internal.json.FieldJsonParser;
 import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.IssueLinkTypesJsonParser;
@@ -41,6 +42,7 @@ import com.atlassian.jira.rest.client.internal.json.ServerInfoJsonParser;
 import com.atlassian.jira.rest.client.internal.json.StatusJsonParser;
 import com.atlassian.jira.rest.client.internal.json.gen.IssueTypeSchemeInputJsonGenerator;
 import com.atlassian.util.concurrent.Promise;
+import org.codehaus.jettison.json.JSONObject;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -188,14 +190,14 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
     }
 
     @Override
-    public Promise<Void> assignSchemeToProject(long schemeId, long projectId) {
+    public Promise<Void> assignSchemeToProject(long schemeId, String projectKey) {
         final URI uri = UriBuilder.fromUri(baseUri)
                 .path(ISSUE_TYPE_SCHEME)
                 .path(Long.toString(schemeId))
                 .path("associations")
-                .path(Long.toString(projectId))
                 .build();
 
-        return post(uri);
+        return post(uri, new ProjectIdOrKey(projectKey),
+                    k -> new JSONObject().put("idOrKey", k.getIdOrKey()));
     }
 }

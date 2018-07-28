@@ -80,7 +80,6 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
     private final static long LITTLE_SCHEMER_ID = 10138L;
 
 
-
     @Before
     public void setup() {
         IntegrationTestUtil.restoreAppropriateJiraData("foo.xml", administration);
@@ -168,7 +167,7 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
     }
 
     @Test
-    public void testUpdateIssueType() {//happy path
+    public void testUpdateIssueTypeScheme() {//happy path
 
         IssueTypeSchemeInput input = new IssueTypeSchemeInput("New Name", "new description", Arrays.asList(1L, 2L, 3L));
         IssueTypeScheme updated = client.getMetadataClient().updateIssueTypeScheme(LITTLE_SCHEMER_ID, input).claim();
@@ -180,13 +179,22 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
         assertEquals(Arrays.asList(1L,2L,3L),
                 updated.getIssueTypes().stream().map(it -> it.getId()).collect(Collectors.toList()));
 
-        assertEquals(updated, client.getMetadataClient().getIssueTypeScheme(LITTLE_SCHEMER_ID));
+        assertEquals(updated, client.getMetadataClient().getIssueTypeScheme(LITTLE_SCHEMER_ID).claim());
     }
 
     @Test
-    public void testUpdateIssueTypeWithMigrationRequired() {
+    public void testUpdateIssueTypeSchemeUnhappyPaths() {
 
-        fail("Add a new project + IST and then remove a type required by that project!");
+        //non-existent issue type scheme id
+        fail("test me");
+        //Missing required pieces of the body
+
+
+        //default issue type isn't part of the list of issue types
+
+        //migration would be required
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST,
+                () -> client.getMetadataClient().assignSchemeToProject(LITTLE_SCHEMER_ID, 10020L).claim());
     }
 
     @Test
@@ -199,10 +207,13 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
         assertEquals(Long.valueOf(10040), onlyProj.getId());
         assertEquals("IssueTypeScheme Of Its Own", onlyProj.getName());
 
+        System.out.println("*****GOT HERE*******");
+
         //associate another project with "Little Schemer" IssueTypeScheme
         client.getMetadataClient().assignSchemeToProject(LITTLE_SCHEMER_ID, 10030).claim();
 
 
+        System.out.println("*****AND HERE*******");
         //make sure that the newly associated project does in fact show up on subsequent requests
         final Iterable<Project> updatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(LITTLE_SCHEMER_ID).claim();
         assertEquals("Couldn't find the newly associated project", 2, Iterables.size(updatedProjects));
@@ -210,6 +221,8 @@ public class AsynchronousMetadataRestClientMutatorTest extends AbstractAsynchron
                 .filter(p -> p.getId() == 10030L && "Test of anonymous Attachments".equals(p.getName()))
                 .count());
 
+
+        //TODO: test w/key in a separate test
     }
 
     //sju::TODO: just put this into the general error-case bracket?

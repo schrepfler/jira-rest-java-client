@@ -153,6 +153,11 @@ public interface MetadataRestClient {
 
     Promise<Void> deleteIssueTypeScheme(long id);
 
-    Promise<Void> assignSchemeToProject(long schemeId, long projectId);
+    Promise<Void> assignSchemeToProject(long schemeId, String projectKey);
+
+    default Promise<Void> assignSchemeToProject(long schemeId, long projectId) {
+        return assignSchemeToProject(schemeId, Long.toString(projectId));
+    }
+
 
 }
