@@ -94,7 +94,7 @@ public class AsynchronousIssueRestClientReadOnlyTest extends AbstractAsynchronou
     @Before
     public void setup() {
         if (!alreadyRestored) {
-            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_WITH_COMMENT_AND_WORKLOG_FROM_REMOVED_USER_FILE, administration);
+            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_WITH_COMMENT_AND_WORKLOG_FROM_REMOVED_USER_FILE);
             alreadyRestored = true;
         }
     }

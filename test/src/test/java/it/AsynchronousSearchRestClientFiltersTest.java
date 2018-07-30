@@ -47,7 +47,7 @@ public class AsynchronousSearchRestClientFiltersTest extends AbstractAsynchronou
     @Before
     public void setup() {
         if (!alreadyRestored) {
-            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_WITH_FILTERS_FILE, administration);
+            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_WITH_FILTERS_FILE);
             alreadyRestored = true;
         }
     }

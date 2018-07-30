@@ -51,7 +51,7 @@ public class AsynchronousVersionRestClientTest extends AbstractAsynchronousRestC
 
     @Before
     public void setup() {
-        IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE, administration);
+        IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE);
     }
 
     @Test
