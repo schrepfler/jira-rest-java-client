@@ -290,14 +290,25 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         assertEquals(2,
                 Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
         client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, "TASKS2");
-        assertEquals("TASKS",
-                Iterables.getOnlyElement(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()).getKey());
 
+        Iterable<Project> projects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim();
+
+        assertEquals(1, Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
+        System.out.println("$ize; " + Lists.newArrayList(projects).size());
+
+
+        assertEquals("TSKS", Iterables.getOnlyElement(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()).getKey());
 
         //Then, remove the Tasks project by its ID
         client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, TSKS_PROJECT_ID);
+//        Iterable<Project> decoy = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         assertEquals(0,
-                Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim()));
+                Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
     }
 
     @Test
