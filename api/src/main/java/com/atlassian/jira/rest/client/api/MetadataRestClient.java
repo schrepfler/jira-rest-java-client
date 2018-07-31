@@ -27,8 +27,11 @@ import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
 import com.atlassian.util.concurrent.Promise;
+import com.google.common.collect.Lists;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Serves information about JIRA metadata like server information, issue types defined, stati, priorities and resolutions.
@@ -153,11 +156,35 @@ public interface MetadataRestClient {
 
     Promise<Void> deleteIssueTypeScheme(long id);
 
-    Promise<Void> assignSchemeToProject(long schemeId, String projectKey);
+    //only one; delete doesn't make sense w/a body. Could do multi-delete via PUT, I suppose.
+    Promise<Void> unassignProjectFromScheme(long schemeId, String projKey);
 
-    default Promise<Void> assignSchemeToProject(long schemeId, long projectId) {
-        return assignSchemeToProject(schemeId, Long.toString(projectId));
+    default Promise<Void> unassignProjectFromScheme(long schemeId, Long projId) {
+        return unassignProjectFromScheme(schemeId, Long.toString(projId));
     }
 
 
+    Promise<Void> unassignAllProjectsFromScheme(long schemeId);
+
+
+    Promise<Void> addProjectAssociatonsToScheme(long schemeId, String... projKeys);
+
+    default Promise<Void> addProjectAssociatonsToScheme(long schemeId, Long... projIds) {
+        return addProjectAssociatonsToScheme(schemeId, Arrays.asList(projIds)
+                                                            .stream()
+                                                            .map(id -> Long.toString(id))
+                                                            .collect(Collectors.toList())
+                                                            .toArray(new String[0]));
+    }
+
+
+    Promise<Void> setProjectAssociationsForScheme(long schemeId, String... projKeys);
+
+    default Promise<Void> setProjectAssociationsForScheme(long schemeId, Long... projIds) {
+        return addProjectAssociatonsToScheme(schemeId, Arrays.asList(projIds)
+                .stream()
+                .map(id -> Long.toString(id))
+                .collect(Collectors.toList())
+                .toArray(new String[0]));
+    }
 }

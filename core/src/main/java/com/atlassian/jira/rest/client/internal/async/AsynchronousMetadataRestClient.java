@@ -42,10 +42,14 @@ import com.atlassian.jira.rest.client.internal.json.ServerInfoJsonParser;
 import com.atlassian.jira.rest.client.internal.json.StatusJsonParser;
 import com.atlassian.jira.rest.client.internal.json.gen.IssueTypeSchemeInputJsonGenerator;
 import com.atlassian.util.concurrent.Promise;
+import com.google.common.collect.Lists;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Asynchronous implementation of MetadataRestClient.
@@ -190,14 +194,65 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
     }
 
     @Override
-    public Promise<Void> assignSchemeToProject(long schemeId, String projectKey) {
+    public Promise<Void> addProjectAssociatonsToScheme(long schemeId, String... projKeys) {
+
         final URI uri = UriBuilder.fromUri(baseUri)
                 .path(ISSUE_TYPE_SCHEME)
                 .path(Long.toString(schemeId))
                 .path("associations")
                 .build();
 
-        return post(uri, new ProjectIdOrKey(projectKey),
-                    k -> new JSONObject().put("idOrKey", k.getIdOrKey()));
+        List<String> keysOrIds = projKeys != null ? Lists.newArrayList(projKeys) : Collections.emptyList();
+
+        return post(uri, keysOrIds,
+                l -> {
+                    JSONArray arry = new JSONArray();
+                    l.forEach(e -> arry.put(e));
+                    return new JSONObject().put("idsOrKeys", arry);
+                });
+    }
+
+    @Override
+    public Promise<Void> setProjectAssociationsForScheme(long schemeId, String... projKeys) {
+        final URI uri = UriBuilder.fromUri(baseUri)
+                .path(ISSUE_TYPE_SCHEME)
+                .path(Long.toString(schemeId))
+                .path("associations")
+                .build();
+
+        List<String> keysOrIds = projKeys != null ? Lists.newArrayList(projKeys) : Collections.emptyList();
+
+        return put(uri, keysOrIds,
+                l -> {
+                    JSONArray arry = new JSONArray();
+                    l.forEach(e -> arry.put(e));
+                    return new JSONObject().put("idsOrKeys", arry);
+                });
+    }
+
+
+    @Override
+    public Promise<Void> unassignProjectFromScheme(long schemeId, String projectKey) {
+
+        final URI uri = UriBuilder.fromUri(baseUri)
+                .path(ISSUE_TYPE_SCHEME)
+                .path(Long.toString(schemeId))
+                .path("associations")
+                .path(projectKey)
+                .build();
+
+        return delete(uri);
+    }
+
+    @Override
+    public Promise<Void> unassignAllProjectsFromScheme(long schemeId) {
+
+       final URI uri = UriBuilder.fromUri(baseUri)
+                .path(ISSUE_TYPE_SCHEME)
+                .path(Long.toString(schemeId))
+                .path("associations")
+                .build();
+
+       return delete(uri);
     }
 }

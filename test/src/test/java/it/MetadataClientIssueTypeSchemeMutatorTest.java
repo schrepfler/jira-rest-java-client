@@ -18,7 +18,6 @@ package it;
 
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
-import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
@@ -31,14 +30,8 @@ import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -50,6 +43,7 @@ import static org.junit.Assert.fail;
 public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchronousRestClientTest {
 
     //Scheme Ids
+    private final static long ALL_SCRUM_TYPES_SCHEME = 10001L;
     private final static long DEFAULT_SCHEME_ID = 10000L;
     private final static long NO_BUGS_SCHEME = 10300L;
     private final static long TASKS_AND_BUGS_SCHEME = 10202L;
@@ -61,6 +55,10 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
     private final static long IMPROVEMENT = 10103;
     private final static long STORY = 10001L;
     private final static long TASK = 10100L;
+
+    //projects
+    private final static long TSKS_PROJECT_ID =  10000L;
+    private final static long TSKSBUGS_PROJECT_ID =  10001L;
 
     @Before
     public void setup() {
@@ -153,7 +151,7 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         assertEquals(6, Iterables.size(remaining));
 
         assertEquals(0,
-                Lists.newArrayList(remaining).stream().filter(its -> its.getName().equals(TASKS_ONLY_SCHEME)).count());
+                Lists.newArrayList(remaining).stream().filter(its -> its.getName().equals("Tasks Only Scheme")).count());
     }
 
     @Test
@@ -187,49 +185,47 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
 
         //default issue type isn't part of the list of issue types
-
-        //migration would be required
-        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST,
-                () -> client.getMetadataClient().assignSchemeToProject(TASKS_AND_BUGS_SCHEME, null).claim());
     }
 
     @Test
-    public void testAssignSchemeToProject() {//happy path, smaller scheme to larger superset scheme
-        final Iterable<Project> projects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
+    public void testAddProjectAssociationsToScheme() {
+
+        final Iterable<Project> initialProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(ALL_SCRUM_TYPES_SCHEME).claim();
 
         //check that we're starting off w/1 project associated
-        Project onlyProj =  Iterables.getOnlyElement(projects);
-        assertEquals("TasksBugs", onlyProj.getName());
-        assertEquals("TSKBUGS", onlyProj.getKey());
+        Project onlyProj =  Iterables.getOnlyElement(initialProjects);
+        assertEquals("All Scrum Types Project", onlyProj.getName());
+        assertEquals("ALLSCRUMTP", onlyProj.getKey());
 
         System.out.println("*****GOT HERE*******");
 
-        //associate another project with the "Only Tasks And Bugs Scheme" IssueTypeScheme
-        client.getMetadataClient().assignSchemeToProject(TASKS_AND_BUGS_SCHEME, "TSKS").claim();
+        //associate two more projects with the "All Scrum Types" IssueTypeScheme
+        client.getMetadataClient().addProjectAssociatonsToScheme(ALL_SCRUM_TYPES_SCHEME, "TSKS", "TASKS2").claim();
 
         System.out.println("*****AND HERE*******");
-        //make sure that the newly associated project does in fact show up on subsequent requests
-        final Iterable<Project> updatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
-        assertEquals("Couldn't find the newly associated project", 2, Iterables.size(updatedProjects));
-        assertEquals("Couldn't find the newly associated project", 1, Lists.newArrayList(updatedProjects).stream()
-                .filter(p -> "TasksProject".equals(p.getName()))
+        //make sure that the newly associated projects do in fact show up on subsequent requests
+        final Iterable<Project> updatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(ALL_SCRUM_TYPES_SCHEME).claim();
+        assertEquals("Couldn't find the newly associated projects", 3, Iterables.size(updatedProjects));
+        assertEquals("Couldn't find the newly associated projects", 2, Lists.newArrayList(updatedProjects).stream()
+                .filter(p -> "TasksProject".equals(p.getName()) || "TasksProject2".equals(p.getName()))
                 .count());
 
 
         //Now, do the test again, but using the proj ID rather than the key
-        //associate a third project with the "Only Tasks And Bugs Scheme" IssueTypeScheme
-        client.getMetadataClient().assignSchemeToProject(TASKS_AND_BUGS_SCHEME, 10100).claim(); //"TasksProject2"
+        //associate a third project with the "All Scrum Types" IssueTypeScheme
+        client.getMetadataClient().addProjectAssociatonsToScheme(ALL_SCRUM_TYPES_SCHEME, TSKSBUGS_PROJECT_ID).claim();
 
-        final Iterable<Project> newlyUpdatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
-        assertEquals("Couldn't find the newly associated project", 3, Iterables.size(newlyUpdatedProjects));
+        final Iterable<Project> newlyUpdatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(ALL_SCRUM_TYPES_SCHEME).claim();
+        assertEquals("Couldn't find the newly associated project", 4, Iterables.size(newlyUpdatedProjects));
         assertEquals("Couldn't find the newly associated project", 1, Lists.newArrayList(newlyUpdatedProjects).stream()
-                .filter(p -> "TasksProject2".equals(p.getName()))
+                .filter(p -> "TasksBugs".equals(p.getName()))
                 .count());
     }
 
-    //sju::TODO: just put this into the general error-case bracket?
     @Test
-    public void testAssignSchemeToProjectWithMigrationRequired() {
+    public void testAddProjectAssociationsToSchemeUnhappyPaths() {
+        fail("test me");
+
 
         assertEquals(1,
                 Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim()));
@@ -237,8 +233,104 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         //The 'All Scrum Types' project has existing issues that can't be forced into the smaller "Only Tasks And Bugs" IssueTypeScheme
         TestUtil.assertErrorCode(Response.Status.BAD_REQUEST,
-                () -> client.getMetadataClient().assignSchemeToProject(TASKS_AND_BUGS_SCHEME, "ALLSCRUMTP").claim());
+                () -> client.getMetadataClient().addProjectAssociatonsToScheme(TASKS_AND_BUGS_SCHEME, "ALLSCRUMTP", "TSKS", "TASKS2").claim());
+    }
+
+    @Test
+    public void testSetProjectAssociationsForScheme() {
+        final Iterable<Project> initialProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
+
+        //check that we're starting off w/1 project associated
+        Project onlyProj =  Iterables.getOnlyElement(initialProjects);
+        assertEquals("TasksBugs", onlyProj.getName());
+
+        System.out.println("*****GOT HERE*******");
+
+        //associate 0  projects with the "Only Tasks And Bugs" IssueTypeScheme--effectively a deleteAll
+        client.getMetadataClient().setProjectAssociationsForScheme(TASKS_AND_BUGS_SCHEME, new String[]{}).claim();
+        final Iterable<Project> emptyProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
+        assertEquals("shouldn't have any projects associated at this point", 0, Iterables.size(emptyProjects));
+
+
+        //Assign 2 at once
+        client.getMetadataClient().setProjectAssociationsForScheme(TASKS_AND_BUGS_SCHEME, "TSKS", "TASKS2").claim();
+
+        final Iterable<Project> newlyUpdatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
+        assertEquals("Couldn't find the newly associated projects", 2, Iterables.size(newlyUpdatedProjects));
+        assertEquals("Couldn't find the newly associated projects", 2,
+                Lists.newArrayList(newlyUpdatedProjects).stream()
+                    .filter(p -> "Tasks".equals(p.getName()) || "Tasks2".equals(p.getName()))
+                    .count());
+
+
+        //Finally, set the original project as the only association, using its ID
+        client.getMetadataClient().setProjectAssociationsForScheme(TASKS_AND_BUGS_SCHEME, TSKSBUGS_PROJECT_ID).claim();
+
+        final Iterable<Project> oneProjAgain = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
+        assertEquals("expected just the one project, 'TASKSBUGS'", 1, Iterables.size(oneProjAgain));
+        assertEquals("expected just the one project, 'TASKSBUGS'", 1,
+                Lists.newArrayList(oneProjAgain).stream()
+                                                .filter(p -> "TasksBugs".equals(p.getName()))
+                                                .count());
+    }
+
+    @Test
+    public void testSetProjectAssociationsToSchemeUnhappyPaths() {
+
+        //everywhere: what of empty strings where they're allowed??
+        fail("test me");
     }
 
 
+
+    @Test
+    public void testUnAssignProjectFromScheme() {
+
+        //first, remove Tasks2 project using KEY
+        assertEquals(2,
+                Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
+        client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, "TASKS2");
+        assertEquals("TASKS",
+                Iterables.getOnlyElement(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()).getKey());
+
+
+        //Then, remove the Tasks project by its ID
+        client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, TSKS_PROJECT_ID);
+        assertEquals(0,
+                Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim()));
+    }
+
+    @Test
+    public void testUnAssignProjectFromSchemeUnHappyPaths() {
+        //can't unassign from the default issue type scheme!
+
+        //unknown scheme
+
+        //unknown project
+
+        //repeats?
+        fail("test me");
+    }
+
+
+    @Test
+    public void testUnAssignAllProjectsFromScheme() {
+        assertEquals(2,
+                Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
+        client.getMetadataClient().unassignAllProjectsFromScheme(TASKS_ONLY_SCHEME).claim();
+        assertEquals(0,
+                Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
+    }
+
+    @Test
+    public void testUnAssignAllProjectsFromSchemeUnHappyPaths() {
+        //can't unassign from the default issue type scheme!
+
+        //unknown scheme
+
+        //unknown project
+
+        //repeats?
+        fail("test me");
+    }
 }
