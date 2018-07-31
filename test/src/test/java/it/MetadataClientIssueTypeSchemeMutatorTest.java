@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
 public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchronousRestClientTest {
 
     //Scheme Ids
-    private final static long ALL_SCRUM_TYPES_SCHEME = 10001L;
+    private final static long ALL_SCRUM_TYPES_SCHEME = 10204L;
     private final static long DEFAULT_SCHEME_ID = 10000L;
     private final static long NO_BUGS_SCHEME = 10300L;
     private final static long TASKS_AND_BUGS_SCHEME = 10202L;
@@ -194,7 +194,7 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         //check that we're starting off w/1 project associated
         Project onlyProj =  Iterables.getOnlyElement(initialProjects);
-        assertEquals("All Scrum Types Project", onlyProj.getName());
+        assertEquals("AllScrumTypesProject", onlyProj.getName());
         assertEquals("ALLSCRUMTP", onlyProj.getKey());
 
         System.out.println("*****GOT HERE*******");
@@ -257,9 +257,9 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         final Iterable<Project> newlyUpdatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
         assertEquals("Couldn't find the newly associated projects", 2, Iterables.size(newlyUpdatedProjects));
-        assertEquals("Couldn't find the newly associated projects", 2,
+        assertEquals("Couldn't find the newly associated projects by name", 2,
                 Lists.newArrayList(newlyUpdatedProjects).stream()
-                    .filter(p -> "Tasks".equals(p.getName()) || "Tasks2".equals(p.getName()))
+                    .filter(p -> "TasksProject".equals(p.getName()) || "TasksProject2".equals(p.getName()))
                     .count());
 
 
@@ -267,7 +267,7 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         client.getMetadataClient().setProjectAssociationsForScheme(TASKS_AND_BUGS_SCHEME, TSKSBUGS_PROJECT_ID).claim();
 
         final Iterable<Project> oneProjAgain = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
-        assertEquals("expected just the one project, 'TASKSBUGS'", 1, Iterables.size(oneProjAgain));
+        assertEquals("expected just one project", 1, Iterables.size(oneProjAgain));
         assertEquals("expected just the one project, 'TASKSBUGS'", 1,
                 Lists.newArrayList(oneProjAgain).stream()
                                                 .filter(p -> "TasksBugs".equals(p.getName()))

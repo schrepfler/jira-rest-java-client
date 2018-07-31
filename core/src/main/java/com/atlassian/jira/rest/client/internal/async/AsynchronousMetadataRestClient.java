@@ -226,7 +226,8 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
                 l -> {
                     JSONArray arry = new JSONArray();
                     l.forEach(e -> arry.put(e));
-                    return new JSONObject().put("idsOrKeys", arry);
+                    JSONObject obj = new JSONObject().put("idsOrKeys", arry);
+                    return obj;
                 });
     }
 

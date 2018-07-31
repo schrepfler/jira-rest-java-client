@@ -181,7 +181,7 @@ public interface MetadataRestClient {
     Promise<Void> setProjectAssociationsForScheme(long schemeId, String... projKeys);
 
     default Promise<Void> setProjectAssociationsForScheme(long schemeId, Long... projIds) {
-        return addProjectAssociatonsToScheme(schemeId, Arrays.asList(projIds)
+        return  setProjectAssociationsForScheme(schemeId, Arrays.asList(projIds)
                 .stream()
                 .map(id -> Long.toString(id))
                 .collect(Collectors.toList())
