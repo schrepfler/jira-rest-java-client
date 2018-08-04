@@ -41,12 +41,16 @@ import static org.junit.Assert.assertTrue;
  */
 // Ignore "May produce NPE" warnings, as we know what we are doing in tests
 @SuppressWarnings("ConstantConditions")
-public class MetadataClientIssueTypeSchemeReadOnlyTest extends AbstractAsynchronousRestClientTest {
+public class MetadataClientIssueTypeSchemeReadOnlyTest extends AbstractAsynchronousMetadataRestClientTest {
 
     private static boolean alreadyRestored;
 
+
     @Before
     public void setup() {
+
+        setAdmin();//some unhappy paths stray from this
+
         if (!alreadyRestored) {
             //data from jira 8.0
             IntegrationTestUtil.restoreAppropriateJiraData("jira-dump-issue-type-scheme-tests.xml");
@@ -57,24 +61,29 @@ public class MetadataClientIssueTypeSchemeReadOnlyTest extends AbstractAsynchron
     @Test
     public void testGetAllIssueTypeSchemes() {
 
-        final Iterable<IssueTypeScheme> schemes =  client.getMetadataClient().getAllIssueTypeSchemes().claim();
+        final Iterable<IssueTypeScheme> schemes = client.getMetadataClient().getAllIssueTypeSchemes().claim();
 
         assertEquals(7, Iterables.size(schemes));
 
-        Set<String> expected = Sets.newHashSet( "Default Issue Type Scheme",
-                                                            "Tasks Only Scheme",
-                                                            "Only Tasks And Bugs Scheme",
-                                                            "Tasks Bugs And Subtasks Scheme",
-                                                            "All Scrum Types Scheme",
-                                                            "All Types But No Default Scheme",
-                                                            "No Bugs Scheme");
+        Set<String> expected = Sets.newHashSet("Default Issue Type Scheme",
+                "Tasks Only Scheme",
+                "Only Tasks And Bugs Scheme",
+                "Tasks Bugs And Subtasks Scheme",
+                "All Scrum Types Scheme",
+                "All Types But No Default Scheme",
+                "No Bugs Scheme");
 
         assertEquals(expected, Sets.newHashSet(schemes).stream().map(its -> its.getName()).collect(Collectors.toSet()));
     }
 
     @Test
+    public void testGetAllIssueTypeSchemes_UnhappyPaths() {
+        unhappyAuthenticationAndAuthorization(() -> client.getMetadataClient().getAllIssueTypeSchemes().claim());
+    }
+
+    @Test
     public void testGetIssueTypeScheme() {
-        final IssueTypeScheme scheme =  client.getMetadataClient().getIssueTypeScheme(10204).claim();
+        final IssueTypeScheme scheme = client.getMetadataClient().getIssueTypeScheme(ALL_SCRUM_TYPES_SCHEME).claim();
 
         assertEquals("All Scrum Types Scheme", scheme.getName());
 
@@ -97,7 +106,7 @@ public class MetadataClientIssueTypeSchemeReadOnlyTest extends AbstractAsynchron
     @Test
     public void testGetIssueTypeSchemeWithoutDefault() {
 
-        final IssueTypeScheme scheme =  client.getMetadataClient().getIssueTypeScheme(10205).claim();
+        final IssueTypeScheme scheme = client.getMetadataClient().getIssueTypeScheme(ALL_TYPES_BUT_NO_DEFAULT_SCHEME).claim();
         assertEquals("All Types But No Default Scheme", scheme.getName());
 
         assertNull(scheme.getDefaultIssueType());
@@ -110,34 +119,40 @@ public class MetadataClientIssueTypeSchemeReadOnlyTest extends AbstractAsynchron
     }
 
     @Test
-    public void testGetNonExistentIssueTypeScheme() {
-        TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
-                () -> client.getMetadataClient().getIssueTypeScheme(999).claim());
+    public void testGetIssueTypeScheme_UnhappyPaths() {
+        unhappyAuthenticationAndAuthorization(() -> client.getMetadataClient().getIssueTypeScheme(ALL_SCRUM_TYPES_SCHEME).claim());
+
+        TestUtil.assertErrorCode(Response.Status.NOT_FOUND, () -> client.getMetadataClient().getIssueTypeScheme(99L).claim());
     }
+
 
     @Test
     public void testGetAssociatedProjects() {
         final Iterable<Project> twoProjects = //Tasks Only Scheme
-                client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(10201).claim();
+                client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim();
         final Set<String> expected = Sets.newHashSet("TasksProject", "TasksProject2");
         assertEquals(expected,
                 Sets.newHashSet(twoProjects.iterator()).stream().map(p -> p.getName()).collect(Collectors.toSet()));
 
 
         final Iterable<Project> oneProj = //Only Tasks And Bugs Scheme
-                client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(10202).claim();
+                client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_AND_BUGS_SCHEME).claim();
         assertEquals("TasksBugs", Iterables.getOnlyElement(oneProj).getName());
 
 
         final Iterable<Project> noProjects = //Tasks Bugs And Subtasks Scheme
-                client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(10203).claim();
-       assertTrue(Iterables.isEmpty(noProjects));
+                client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_BUGS_AND_SUBTASKS_SCHEME).claim();
+        assertTrue(Iterables.isEmpty(noProjects));
 
     }
 
     @Test
-    public void testGetAssociatedProjectsForNonExistentIssueTypeScheme() {
+    public void testGetAssociatedProjects_UnhappyPaths() {
+
+        unhappyAuthenticationAndAuthorization(() -> client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim());
+
         TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
                 () -> client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(999).claim());
     }
+
 }

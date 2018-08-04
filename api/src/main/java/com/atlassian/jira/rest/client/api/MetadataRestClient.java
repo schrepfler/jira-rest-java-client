@@ -141,11 +141,20 @@ public interface MetadataRestClient {
 
 
 
-    //sju:TODO here or elsewhere?
-
-    //TODO:docs --> @Since ___?
+    /**
+     * Creates a new IssueTypeScheme.
+     *
+     * @param scheme input that specifies the new IssueTypeScheme's properties
+     * @return a JRJC-side IssueTypeScheme that reflects the newly created one in Jira
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since FIXME: jira 8.0, JRJC _._?
+     */
     Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme);
 
+    /**
+     * Retrieves all of the
+     * @return
+     */
     Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes();
 
     Promise<IssueTypeScheme> getIssueTypeScheme(long id);
