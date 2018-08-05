@@ -34,7 +34,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Serves information about JIRA metadata like server information, issue types defined, stati, priorities and resolutions.
+ * Serves information about JIRA metadata like server information, issue types defined, issue type scheme operations,
+ * stati, priorities and resolutions.
  * This data constitutes a data dictionary which then JIRA issues base on.
  *
  * @since v2.0
@@ -142,42 +143,74 @@ public interface MetadataRestClient {
 
 
     /**
-     * Creates a new IssueTypeScheme.
+     * Creates a new issue type scheme.
      *
-     * @param scheme input that specifies the new IssueTypeScheme's properties
+     * @param scheme input that specifies the new IssueTypeScheme's properties.
      * @return a JRJC-side IssueTypeScheme that reflects the newly created one in Jira
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
-     * @since FIXME: jira 8.0, JRJC _._?
+     * @since 5.2
      */
     Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme);
 
     /**
-     * Retrieves all of the
-     * @return
+     * Retrieves all of the issue type schemes in this Jira instance.
+     * @return an iterable of JRJC-side IssueTypeSchemes that reflect those found in the Jira.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
      */
     Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes();
 
+    /**
+     * Retrieves the issue type scheme associated with the specified id.
+     * @param id unique identifier of the issue type scheme to retrieve.
+     * @return a JRJC-side IssueTypeScheme that reflects the one with the specified id in the Jira.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
     Promise<IssueTypeScheme> getIssueTypeScheme(long id);
 
-    Promise<Iterable<Project>> getProjectsAssociatedWithIssueTypeScheme(long schemeId);
-
+    /**
+     * Updates the issue type scheme associated with the specified id to reflect the changes given by the IssueTypeSchemeInput.
+     * @param id unique identifier of an issue type scheme to update.
+     * @param updatedScheme pojo encapsulating a set of changes to be made to the issue type scheme.
+     * @return JRJC-side IssueTypeScheme that reflects the changes made by the update operation.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
     Promise<IssueTypeScheme> updateIssueTypeScheme(long id, IssueTypeSchemeInput updatedScheme);
 
+    /**
+     * Removes the specified issue type scheme from the Jira.
+     * @param id unique identifier for the issue type scheme that we want to delete.
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
     Promise<Void> deleteIssueTypeScheme(long id);
 
-    //only one; delete doesn't make sense w/a body. Could do multi-delete via PUT, I suppose.
-    Promise<Void> unassignProjectFromScheme(long schemeId, String projKey);
-
-    default Promise<Void> unassignProjectFromScheme(long schemeId, Long projId) {
-        return unassignProjectFromScheme(schemeId, Long.toString(projId));
-    }
 
 
-    Promise<Void> unassignAllProjectsFromScheme(long schemeId);
 
-
+    /**
+     * For the issue type scheme specified by the <code>shemeId</code>, adds the given projects (specified by their keys)
+     * to the collection of projects associated with the scheme.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to expand.
+     * @param projKeys specifies which projects should be added to the issue type scheme's collection of associated projects
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
     Promise<Void> addProjectAssociatonsToScheme(long schemeId, String... projKeys);
 
+    /**
+     * For the issue type scheme specified by the <code>shemeId</code>, adds the given projects (specified by their own
+     * unique ids) to the collection of projects associated with the scheme.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to expand.
+     * @param projIds specifies which projects should be added to the issue type scheme's collection of associated projects
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
     default Promise<Void> addProjectAssociatonsToScheme(long schemeId, Long... projIds) {
         return addProjectAssociatonsToScheme(schemeId, Arrays.asList(projIds)
                                                             .stream()
@@ -186,9 +219,34 @@ public interface MetadataRestClient {
                                                             .toArray(new String[0]));
     }
 
+    /**
+     *  Retrieves the collection of Projects which are associated with the
+     * @param schemeId
+     * @return
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Iterable<Project>> getProjectsAssociatedWithIssueTypeScheme(long schemeId);
 
+
+    /**
+     *
+     * @param schemeId
+     * @param projKeys
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
     Promise<Void> setProjectAssociationsForScheme(long schemeId, String... projKeys);
 
+    /**
+     *
+     * @param schemeId
+     * @param projIds
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
     default Promise<Void> setProjectAssociationsForScheme(long schemeId, Long... projIds) {
         return  setProjectAssociationsForScheme(schemeId, Arrays.asList(projIds)
                 .stream()
@@ -196,4 +254,38 @@ public interface MetadataRestClient {
                 .collect(Collectors.toList())
                 .toArray(new String[0]));
     }
+
+    /**
+     *
+     * @param schemeId
+     * @param projKey
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Void> unassignProjectFromScheme(long schemeId, String projKey);
+
+    /**
+     *
+     * @param schemeId
+     * @param projId
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    default Promise<Void> unassignProjectFromScheme(long schemeId, Long projId) {
+        return unassignProjectFromScheme(schemeId, Long.toString(projId));
+    }
+
+
+    /**
+     *
+     * @param schemeId
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Void> unassignAllProjectsFromScheme(long schemeId);
+
+
 }

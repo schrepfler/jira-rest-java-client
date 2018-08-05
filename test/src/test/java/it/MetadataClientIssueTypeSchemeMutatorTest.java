@@ -265,6 +265,7 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         System.out.println("*****AND HERE*******");
         //make sure that the newly associated projects do in fact show up on subsequent requests
+        delay(4);
         final Iterable<Project> updatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(ALL_SCRUM_TYPES_SCHEME).claim();
         assertEquals("Couldn't find the newly associated projects", 3, Iterables.size(updatedProjects));
         assertEquals("Couldn't find the newly associated projects", 2, Lists.newArrayList(updatedProjects).stream()
@@ -388,11 +389,9 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         //Then, remove the Tasks project by its ID
         client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, TSKS_PROJECT_ID);
-//        Iterable<Project> decoy = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim();
 
         //@Konrad: --> respond with a 202 response in this sort of case, instead
-
-        delay(1);
+        delay(1);//TODO: so is every non-readonly operation a 202??
         assertEquals(0,
                 Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
     }
