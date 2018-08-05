@@ -223,28 +223,28 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         //no issue types specified
         IssueTypeSchemeInput noTypesInput = new IssueTypeSchemeInput("New Name", "new description", Collections.emptyList());
-        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, input).claim());
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME,noTypesInput).claim());
 
         //issue types that don't exist
         IssueTypeSchemeInput nonexistentTypesInput = new IssueTypeSchemeInput("New Name", "new description", Arrays.asList(TASK, 999L), TASK);
-        TestUtil.assertErrorCode(Response.Status.NOT_FOUND, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, nonexistentTypesInput).claim());
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, nonexistentTypesInput).claim());
 
         //default issue type isn't part of the list of issue types
         IssueTypeSchemeInput invalidDefaultInput = new IssueTypeSchemeInput("New Name", "new description", Arrays.asList(TASK,BUG), EPIC);
-        TestUtil.assertErrorCode(Response.Status.NOT_FOUND, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, invalidDefaultInput).claim());
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, invalidDefaultInput).claim());
 
         //null name
         IssueTypeSchemeInput nullNameInput = new IssueTypeSchemeInput(null, "new description", Arrays.asList(TASK,BUG, STORY), STORY);
-        TestUtil.assertErrorCode(Response.Status.NOT_FOUND, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, nullNameInput).claim());
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, nullNameInput).claim());
 
         //empty string name
         IssueTypeSchemeInput emptyNameInput = new IssueTypeSchemeInput("", "new description", Arrays.asList(TASK,BUG, STORY), STORY);
-        TestUtil.assertErrorCode(Response.Status.NOT_FOUND, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, emptyNameInput).claim());
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, emptyNameInput).claim());
 
 
         //updates that would require a migration: here, the TasksBugs Project depends on both bug & task types--changing the scheme to only have tasks means migrating
-        IssueTypeSchemeInput onlyTasksInput = new IssueTypeSchemeInput("name", "description", Arrays.asList(TASK), TASK);
-        TestUtil.assertErrorCode(Response.Status.NOT_FOUND, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, onlyTasksInput).claim());
+        IssueTypeSchemeInput onlyTasksInput = new IssueTypeSchemeInput("some name", "some description", Arrays.asList(TASK), TASK);
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_AND_BUGS_SCHEME, onlyTasksInput).claim());
 
     }
 
@@ -405,23 +405,23 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         //unknown scheme
         TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
-                () -> client.getMetadataClient().unassignProjectFromScheme(798, "TASKS2"));
+                () -> client.getMetadataClient().unassignProjectFromScheme(798, "TASKS2").claim());
 
         //project not currently associated with the scheme
         TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
-                () -> client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, TSKSBUGS_PROJECT_ID));
+                () -> client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, TSKSBUGS_PROJECT_ID).claim());
 
         //unknown project key
-        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST,
-                () -> client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, "GOJIRA"));
+        TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
+                () -> client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, "GOJIRA").claim());
 
         //unknown project id
-        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST,
-                () -> client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, 789L));
+        TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
+                () -> client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, 789L).claim());
 
         //can't unassign from the default issue type scheme (i think...TODO)??
         TestUtil.assertErrorCode(Response.Status.FORBIDDEN,
-                () -> client.getMetadataClient().unassignProjectFromScheme(DEFAULT_SCHEME_ID, "TASKS2"));
+                () -> client.getMetadataClient().unassignProjectFromScheme(DEFAULT_SCHEME_ID, "TASKS2").claim());
     }
 
 
@@ -442,10 +442,10 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         //unknown scheme
         TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
-                () -> client.getMetadataClient().unassignAllProjectsFromScheme(798));
+                () -> client.getMetadataClient().unassignAllProjectsFromScheme(798).claim());
 
         //can't unassign from the default issue type scheme (i think...TODO)??
         TestUtil.assertErrorCode(Response.Status.FORBIDDEN,
-                () -> client.getMetadataClient().unassignAllProjectsFromScheme(DEFAULT_SCHEME_ID));
+                () -> client.getMetadataClient().unassignAllProjectsFromScheme(DEFAULT_SCHEME_ID).claim());
     }
 }

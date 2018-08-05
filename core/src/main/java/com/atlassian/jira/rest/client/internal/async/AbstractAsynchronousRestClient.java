@@ -157,6 +157,7 @@ public abstract class AbstractAsynchronousRestClient {
                 .ok(constant((Void) null))
                 .created(constant((Void) null))
                 .noContent(constant((Void) null))
+                .on(202, constant((Void) null))//"accepted" but not yet complete. For longer-running, async tasks.
                 .others(AbstractAsynchronousRestClient.errorFunction())
                 .build();
         return new DelegatingPromise(responsePromise.transform(responseTransformation));
