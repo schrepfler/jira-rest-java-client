@@ -27,7 +27,6 @@ import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
 import com.atlassian.util.concurrent.Promise;
-import com.google.common.collect.Lists;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -192,9 +191,9 @@ public interface MetadataRestClient {
 
 
     /**
-     * For the issue type scheme specified by the <code>shemeId</code>, adds the given projects (specified by their keys)
+     * For the issue type scheme specified by the <code>schemeId</code>, adds the given projects (specified by their keys)
      * to the collection of projects associated with the scheme.
-     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to expand.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to augment.
      * @param projKeys specifies which projects should be added to the issue type scheme's collection of associated projects
      * @return if successful, an empty confirmation--no body.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
@@ -203,9 +202,9 @@ public interface MetadataRestClient {
     Promise<Void> addProjectAssociatonsToScheme(long schemeId, String... projKeys);
 
     /**
-     * For the issue type scheme specified by the <code>shemeId</code>, adds the given projects (specified by their own
+     * For the issue type scheme specified by the <code>schemeId</code>, adds the given projects (specified by their own
      * unique ids) to the collection of projects associated with the scheme.
-     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to expand.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to augment.
      * @param projIds specifies which projects should be added to the issue type scheme's collection of associated projects
      * @return if successful, an empty confirmation--no body.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
@@ -220,9 +219,9 @@ public interface MetadataRestClient {
     }
 
     /**
-     *  Retrieves the collection of Projects which are associated with the
-     * @param schemeId
-     * @return
+     *  Retrieves the collection of Projects which are associated with the specified issue type scheme.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're retrieving.
+     * @return an Iterable of JRJC-side Projects that reflect those asociated with the issue type scheme in the Jira.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
      * @since 5.2
      */
@@ -230,9 +229,10 @@ public interface MetadataRestClient {
 
 
     /**
-     *
-     * @param schemeId
-     * @param projKeys
+     * Overwrites any project associations for the specified issue type scheme with those indicated by the collection of
+     * <code>projKeys</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're updating/overwriting.
+     * @param projKeys specifies which projects should replace the issue type scheme's current collection of associated projects
      * @return if successful, an empty confirmation--no body.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
      * @since 5.2
@@ -240,9 +240,10 @@ public interface MetadataRestClient {
     Promise<Void> setProjectAssociationsForScheme(long schemeId, String... projKeys);
 
     /**
-     *
-     * @param schemeId
-     * @param projIds
+     * Overwrites any project associations for the specified issue type scheme with those indicated by the collection of
+     * <code>projIds</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're updating/overwriting.
+     * @param projIds specifies which projects should replace the issue type scheme's current collection of associated projects
      * @return if successful, an empty confirmation--no body.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
      * @since 5.2
@@ -255,10 +256,11 @@ public interface MetadataRestClient {
                 .toArray(new String[0]));
     }
 
+
     /**
-     *
-     * @param schemeId
-     * @param projKey
+     * For the specified issue type scheme, removes the project association given by the <code>projKey</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project association we're removing.
+     * @param projKey unique key that specifies which project should be un-associated with the issue type scheme
      * @return if successful, an empty confirmation--no body.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
      * @since 5.2
@@ -266,9 +268,9 @@ public interface MetadataRestClient {
     Promise<Void> unassignProjectFromScheme(long schemeId, String projKey);
 
     /**
-     *
-     * @param schemeId
-     * @param projId
+     * For the specified issue type scheme, removes the project association given by the <code>projKey</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project association we're removing.
+     * @param projId unique identifier that specifies which project should be un-associated with the issue type scheme
      * @return if successful, an empty confirmation--no body.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
      * @since 5.2
@@ -279,13 +281,11 @@ public interface MetadataRestClient {
 
 
     /**
-     *
-     * @param schemeId
+     * For the specified issue type scheme, removes all project associations.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're removing.
      * @return if successful, an empty confirmation--no body.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
      * @since 5.2
      */
     Promise<Void> unassignAllProjectsFromScheme(long schemeId);
-
-
 }

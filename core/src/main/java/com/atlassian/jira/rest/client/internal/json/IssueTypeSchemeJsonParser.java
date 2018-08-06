@@ -12,9 +12,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * TODO: Document this class / interface here
- *
- * @since v7.4
+ * JSON --> {@link IssueTypeScheme} parser & converter.
+ * @since 5.2
  */
 public class IssueTypeSchemeJsonParser implements JsonObjectParser<IssueTypeScheme> {
 
@@ -32,7 +31,11 @@ public class IssueTypeSchemeJsonParser implements JsonObjectParser<IssueTypeSche
     }
 
 
-
+    /**
+     * Creates parser for handling JsonArrays of IssueTypeSchemes
+     *
+     * @return a JsonArrayParser set up to handle IssueTypeSchemes
+     */
     public static JsonArrayParser<Iterable<IssueTypeScheme>> createIssueTypeSchemesArrayParser() {
         return GenericJsonArrayParser.create(new IssueTypeSchemeJsonParser());
     }

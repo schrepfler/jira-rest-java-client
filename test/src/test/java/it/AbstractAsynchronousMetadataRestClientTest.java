@@ -5,8 +5,10 @@ import com.atlassian.jira.rest.client.TestUtil;
 import javax.ws.rs.core.Response;
 
 /**
- * TODO: Or just make this a static utility? want to have access to the client, though...could take it in & be an instance :-/
+ *  Common parent of MetaClient rest tests--geared towards providing common functionality used by tests related to issue
+ *  type schemes.
  *
+ * @since 5.2
  */
 class AbstractAsynchronousMetadataRestClientTest extends AbstractAsynchronousRestClientTest {
 
@@ -33,42 +35,35 @@ class AbstractAsynchronousMetadataRestClientTest extends AbstractAsynchronousRes
     final static long TSKSBUGS_PROJECT_ID =  10001L;
 
 
-
-    void unhappyAuthenticationAndAuthorization(Runnable badCase) {
+    /**
+     * Takes the specified runnable (which should reach out and ping a running Jira) and executes it under a number of
+     * faulty login scenarios.
+     *
+     * @param restRequest rest client request that will be tried under different login scenarios.
+     */
+    void unhappyAuthenticationAndAuthorization(Runnable restRequest) {
 
         System.out.println("zero");
         //authentication--anonymous requests/those from unknown users aren't allowed
         setAnonymousMode();
-        TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, badCase);
+        TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, restRequest);
 
         System.out.println("one");
         //unknown user
         setClient("idont", "exist");
-        TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, badCase);
+        TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, restRequest);
 
         System.out.println("two");
         //bad password of known user
         setClient("jsmith", "i forgot");
-        TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, badCase);
+        TestUtil.assertErrorCode(Response.Status.UNAUTHORIZED, restRequest);
 
         System.out.println("three");
         //insufficient privileges--only admin should be allowed to do this action
         setClient("jsmith", "password");
-        TestUtil.assertErrorCode(Response.Status.FORBIDDEN, badCase);
+        TestUtil.assertErrorCode(Response.Status.FORBIDDEN, restRequest);
 
         //revert back to the default
         setAdmin();
-    }
-
-    /**
-     * FIXME:needs to go
-     * @param secs
-     */
-    void delay(long secs) {
-        try {
-            Thread.sleep(secs *1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

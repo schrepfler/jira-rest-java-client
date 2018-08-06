@@ -3,9 +3,9 @@ package com.atlassian.jira.rest.client.api.domain.input;
 import java.util.List;
 
 /**
- * TODO: Document this class / interface here
+ * Pojo representing the input parameters (i.e. body of a request) for the creation or update of an issue type scheme.
  *
- * @since v8.0
+ * @since 5.2
  */
 public class IssueTypeSchemeInput {
 
@@ -15,6 +15,14 @@ public class IssueTypeSchemeInput {
 
     private final Long defaultIssueTypeId;
 
+    /**
+     * Creates a new IsssueTypeSchemeInput with the specified name, description, issue type ids and default issue type id.
+     * Note that a null default issue type id implies no default.
+     * @param name
+     * @param description
+     * @param issueTypeIds
+     * @param defaultIssueTypeId
+     */
     public IssueTypeSchemeInput(String name, String description, List<Long> issueTypeIds, Long defaultIssueTypeId) {
         this.name = name;
         this.description = description;
@@ -22,6 +30,14 @@ public class IssueTypeSchemeInput {
         this.issueTypeIds = issueTypeIds;
     }
 
+    /**
+     * Creates a new IsssueTypeSchemeInput with the specified name, description, issue type ids and nothing specified for
+     * the default issue type.
+     *
+     * @param name
+     * @param description
+     * @param issueTypeIds
+     */
     public IssueTypeSchemeInput(String name, String description, List<Long> issueTypeIds) {
         this(name, description, issueTypeIds, null);
     }

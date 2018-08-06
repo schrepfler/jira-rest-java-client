@@ -9,8 +9,8 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * TODO: Document this class / interface here
- *
+ * JRJC-side POJO that's a full mapping of an IssueTypeScheme defined in Jira.
+ * @since 5.2
  */
 public class IssueTypeScheme implements AddressableEntity, NamedEntity, IdentifiableEntity<Long> {
 
@@ -31,8 +31,6 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
     private final String name;
     private final String description;
     private final IssueType defaultIssueType;
-
-
     private final List<IssueType> issueTypes;
 
     public IssueTypeScheme(URI self, Long id, String name, String description, IssueType defaultIssueType, List<IssueType> issueTypes) {
@@ -45,13 +43,9 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
     }
 
 
-    // TODO : list of the issue types associated with the scheme
-    //see @ bulk user edits & such for an example
-
     public String getName() {
         return name;
     }
-
 
     public String getDescription() {
         return description;
@@ -64,6 +58,15 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
     public Long getId() {
         return id;
     }
+
+
+    @Override
+    public URI getSelf() { return self; }
+
+    public List<IssueType> getIssueTypes() {
+        return issueTypes;
+    }
+
 
     protected Objects.ToStringHelper getToStringHelper() {
         return Objects.toStringHelper(this)
@@ -94,10 +97,4 @@ public class IssueTypeScheme implements AddressableEntity, NamedEntity, Identifi
         return Objects.hashCode(self, id, name, description, defaultIssueType, issueTypes);
     }
 
-    @Override
-    public URI getSelf() { return self; }
-
-    public List<IssueType> getIssueTypes() {
-        return issueTypes;
-    }
 }

@@ -23,7 +23,7 @@ import org.codehaus.jettison.json.JSONObject;
 /**
  * Json Generator for IssueTypeScheme Input
  *
- * @since ??FIXME
+ * @since 5.2
  */
 public class IssueTypeSchemeInputJsonGenerator implements JsonGenerator<IssueTypeSchemeInput> {
 

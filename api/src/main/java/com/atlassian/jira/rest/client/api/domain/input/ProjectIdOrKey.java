@@ -1,9 +1,9 @@
 package com.atlassian.jira.rest.client.api.domain.input;
 
 /**
- * TODO: Document this class / interface here
+ * Pojo representing either a unique id OR key for a project within a Jira system.
  *
- * @since v7.4
+ * @since 5.2
  */
 public class ProjectIdOrKey {
 

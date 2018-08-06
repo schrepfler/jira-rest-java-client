@@ -35,8 +35,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- * Tests that <i><b>do</b></i> change state.
+ * Tests dealing with issue type schemes that <i><b>do</b></i> change state.
  *
+ * @since 5.2
  */
 // Ignore "May produce NPE" warnings, as we know what we are doing in tests
 @SuppressWarnings("ConstantConditions")
@@ -51,8 +52,6 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
     @Test
     public void testCreateIssueTypeScheme() {
-
-        System.out.println("HIT");
 
         //start out w/just 7--default + 6 custom
         assertEquals(7,
@@ -87,7 +86,7 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         assertEquals("bar name", schemer.getName());
         assertEquals("bazz description", schemer.getDescription());
-        assertNull(schemer.getDefaultIssueType());//sju: TODO null defaults are ok; what of empty ones?
+        assertNull(schemer.getDefaultIssueType());
 
 
         assertEquals("bar name", schemer.getName());
@@ -258,14 +257,11 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         assertEquals("AllScrumTypesProject", onlyProj.getName());
         assertEquals("ALLSCRUMTP", onlyProj.getKey());
 
-        System.out.println("*****GOT HERE*******");
 
         //associate two more projects with the "All Scrum Types" IssueTypeScheme
         client.getMetadataClient().addProjectAssociatonsToScheme(ALL_SCRUM_TYPES_SCHEME, "TSKS", "TASKS2").claim();
 
-        System.out.println("*****AND HERE*******");
         //make sure that the newly associated projects do in fact show up on subsequent requests
-        delay(4);
         final Iterable<Project> updatedProjects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(ALL_SCRUM_TYPES_SCHEME).claim();
         assertEquals("Couldn't find the newly associated projects", 3, Iterables.size(updatedProjects));
         assertEquals("Couldn't find the newly associated projects", 2, Lists.newArrayList(updatedProjects).stream()
@@ -316,7 +312,6 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         Project onlyProj =  Iterables.getOnlyElement(initialProjects);
         assertEquals("TasksBugs", onlyProj.getName());
 
-        System.out.println("*****GOT HERE*******");
 
         //associate 0  projects with the "Only Tasks And Bugs" IssueTypeScheme--effectively a deleteAll
         client.getMetadataClient().setProjectAssociationsForScheme(TASKS_AND_BUGS_SCHEME, new String[]{}).claim();
@@ -382,16 +377,11 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         Iterable<Project> projects = client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim();
 
         assertEquals(1, Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
-        System.out.println("$ize; " + Lists.newArrayList(projects).size());
-
-
         assertEquals("TSKS", Iterables.getOnlyElement(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()).getKey());
 
         //Then, remove the Tasks project by its ID
-        client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, TSKS_PROJECT_ID);
+        client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, TSKS_PROJECT_ID).claim();
 
-        //@Konrad: --> respond with a 202 response in this sort of case, instead
-        delay(1);//TODO: so is every non-readonly operation a 202??
         assertEquals(0,
                 Iterables.size(client.getMetadataClient().getProjectsAssociatedWithIssueTypeScheme(TASKS_ONLY_SCHEME).claim()));
     }
@@ -418,7 +408,7 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
                 () -> client.getMetadataClient().unassignProjectFromScheme(TASKS_ONLY_SCHEME, 789L).claim());
 
-        //can't unassign from the default issue type scheme (i think...TODO)??
+        //can't unassign from the default issue type scheme
         TestUtil.assertErrorCode(Response.Status.FORBIDDEN,
                 () -> client.getMetadataClient().unassignProjectFromScheme(DEFAULT_SCHEME_ID, "TASKS2").claim());
     }
@@ -443,7 +433,7 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         TestUtil.assertErrorCode(Response.Status.NOT_FOUND,
                 () -> client.getMetadataClient().unassignAllProjectsFromScheme(798).claim());
 
-        //can't unassign from the default issue type scheme (i think...TODO)??
+        //can't unassign from the default issue type scheme
         TestUtil.assertErrorCode(Response.Status.FORBIDDEN,
                 () -> client.getMetadataClient().unassignAllProjectsFromScheme(DEFAULT_SCHEME_ID).claim());
     }

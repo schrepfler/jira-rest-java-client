@@ -37,7 +37,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Those tests mustn't change anything on server side, as jira is restored only once
+ * Tests the various getters related to issue type schemes.
+ * Read-only because these tests mustn't change anything on server side, as jira is restored only once.
+ *
+ * @since 5.2
  */
 // Ignore "May produce NPE" warnings, as we know what we are doing in tests
 @SuppressWarnings("ConstantConditions")
