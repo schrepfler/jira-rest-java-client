@@ -31,7 +31,7 @@ public class AsynchronousIssueRestClientWithAnonymousThingsAsynchronousRestClien
     @Before
     public void setup() {
         if (!alreadyRestored) {
-            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_UNASSIGNED_FILE, administration);
+            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_UNASSIGNED_FILE);
             alreadyRestored = true;
         }
     }

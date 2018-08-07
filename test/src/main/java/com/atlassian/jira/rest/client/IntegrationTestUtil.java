@@ -16,7 +16,6 @@
 
 package com.atlassian.jira.rest.client;
 
-import com.atlassian.jira.functest.framework.Administration;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.User;
@@ -195,8 +194,7 @@ public class IntegrationTestUtil {
         return resolveURI(TestUtil.toUri(relativeUri));
     }
 
-    public static void restoreAppropriateJiraData(String filename, Administration administration) {
-        String pathtoFile = administration.getBuildNumber() >= 70107 ? "cloud/" + filename : filename;
-        backdoor.restoreDataFromResource(pathtoFile);
+    public static void restoreAppropriateJiraData(String fileName) {
+        backdoor.restoreDataFromResource(fileName);
     }
 }

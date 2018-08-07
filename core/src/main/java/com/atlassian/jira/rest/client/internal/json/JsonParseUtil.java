@@ -36,6 +36,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class JsonParseUtil {
@@ -44,9 +45,9 @@ public class JsonParseUtil {
     public static final DateTimeFormatter JIRA_DATE_FORMATTER = ISODateTimeFormat.date();
     public static final String SELF_ATTR = "self";
 
-    public static <T> Collection<T> parseJsonArray(final JSONArray jsonArray, final JsonObjectParser<T> jsonParser)
+    public static <T> List<T> parseJsonArray(final JSONArray jsonArray, final JsonObjectParser<T> jsonParser)
             throws JSONException {
-        final Collection<T> res = new ArrayList<T>(jsonArray.length());
+        final List<T> res = new ArrayList<T>(jsonArray.length());
         for (int i = 0; i < jsonArray.length(); i++) {
             res.add(jsonParser.parse(jsonArray.getJSONObject(i)));
         }

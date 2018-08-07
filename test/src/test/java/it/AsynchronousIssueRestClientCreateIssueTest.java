@@ -101,7 +101,7 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
     @Before
     public void setup() {
         if (!alreadyRestored) {
-            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_CREATING_ISSUE_TESTS_FILE, administration);
+            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.JIRA_DUMP_CREATING_ISSUE_TESTS_FILE);
             alreadyRestored = true;
         }
     }

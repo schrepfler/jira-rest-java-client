@@ -70,7 +70,7 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
     @Before
     public void setup() {
         if (!alreadyRestored) {
-            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE, administration);
+            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE);
             alreadyRestored = true;
         }
     }
@@ -108,6 +108,7 @@ public class AsynchronousMetadataRestClientReadOnlyTest extends AbstractAsynchro
                 endsWith("bug.gif"),
                 endsWith("viewavatar?size=xsmall&avatarId=10163&avatarType=issuetype")));
     }
+
 
     @JiraBuildNumberDependent(BN_JIRA_4_3)
     @Test

@@ -18,17 +18,23 @@ package com.atlassian.jira.rest.client.api;
 
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssueTypeScheme;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Priority;
+import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.input.IssueTypeSchemeInput;
 import com.atlassian.util.concurrent.Promise;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
- * Serves information about JIRA metadata like server information, issue types defined, stati, priorities and resolutions.
+ * Serves information about JIRA metadata like server information, issue types defined, issue type scheme operations,
+ * stati, priorities and resolutions.
  * This data constitutes a data dictionary which then JIRA issues base on.
  *
  * @since v2.0
@@ -132,4 +138,154 @@ public interface MetadataRestClient {
      * @throws RestClientException in case of problems (connectivity, malformed messages, etc.)
      */
     Promise<Iterable<Field>> getFields();
+
+
+
+    /**
+     * Creates a new issue type scheme.
+     *
+     * @param scheme input that specifies the new IssueTypeScheme's properties.
+     * @return a JRJC-side IssueTypeScheme that reflects the newly created one in Jira
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<IssueTypeScheme> createIssueTypeScheme(IssueTypeSchemeInput scheme);
+
+    /**
+     * Retrieves all of the issue type schemes in this Jira instance.
+     * @return an iterable of JRJC-side IssueTypeSchemes that reflect those found in the Jira.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes();
+
+    /**
+     * Retrieves the issue type scheme associated with the specified id.
+     * @param id unique identifier of the issue type scheme to retrieve.
+     * @return a JRJC-side IssueTypeScheme that reflects the one with the specified id in the Jira.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<IssueTypeScheme> getIssueTypeScheme(long id);
+
+    /**
+     * Updates the issue type scheme associated with the specified id to reflect the changes given by the IssueTypeSchemeInput.
+     * @param id unique identifier of an issue type scheme to update.
+     * @param updatedScheme pojo encapsulating a set of changes to be made to the issue type scheme.
+     * @return JRJC-side IssueTypeScheme that reflects the changes made by the update operation.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<IssueTypeScheme> updateIssueTypeScheme(long id, IssueTypeSchemeInput updatedScheme);
+
+    /**
+     * Removes the specified issue type scheme from the Jira.
+     * @param id unique identifier for the issue type scheme that we want to delete.
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Void> deleteIssueTypeScheme(long id);
+
+
+
+
+    /**
+     * For the issue type scheme specified by the <code>schemeId</code>, adds the given projects (specified by their keys)
+     * to the collection of projects associated with the scheme.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to augment.
+     * @param projKeys specifies which projects should be added to the issue type scheme's collection of associated projects
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Void> addProjectAssociatonsToScheme(long schemeId, String... projKeys);
+
+    /**
+     * For the issue type scheme specified by the <code>schemeId</code>, adds the given projects (specified by their own
+     * unique ids) to the collection of projects associated with the scheme.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we'd like to augment.
+     * @param projIds specifies which projects should be added to the issue type scheme's collection of associated projects
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    default Promise<Void> addProjectAssociatonsToScheme(long schemeId, Long... projIds) {
+        return addProjectAssociatonsToScheme(schemeId, Arrays.asList(projIds)
+                                                            .stream()
+                                                            .map(id -> Long.toString(id))
+                                                            .collect(Collectors.toList())
+                                                            .toArray(new String[0]));
+    }
+
+    /**
+     *  Retrieves the collection of Projects which are associated with the specified issue type scheme.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're retrieving.
+     * @return an Iterable of JRJC-side Projects that reflect those asociated with the issue type scheme in the Jira.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Iterable<Project>> getProjectsAssociatedWithIssueTypeScheme(long schemeId);
+
+
+    /**
+     * Overwrites any project associations for the specified issue type scheme with those indicated by the collection of
+     * <code>projKeys</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're updating/overwriting.
+     * @param projKeys specifies which projects should replace the issue type scheme's current collection of associated projects
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Void> setProjectAssociationsForScheme(long schemeId, String... projKeys);
+
+    /**
+     * Overwrites any project associations for the specified issue type scheme with those indicated by the collection of
+     * <code>projIds</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're updating/overwriting.
+     * @param projIds specifies which projects should replace the issue type scheme's current collection of associated projects
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    default Promise<Void> setProjectAssociationsForScheme(long schemeId, Long... projIds) {
+        return  setProjectAssociationsForScheme(schemeId, Arrays.asList(projIds)
+                .stream()
+                .map(id -> Long.toString(id))
+                .collect(Collectors.toList())
+                .toArray(new String[0]));
+    }
+
+
+    /**
+     * For the specified issue type scheme, removes the project association given by the <code>projKey</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project association we're removing.
+     * @param projKey unique key that specifies which project should be un-associated with the issue type scheme
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Void> unassignProjectFromScheme(long schemeId, String projKey);
+
+    /**
+     * For the specified issue type scheme, removes the project association given by the <code>projKey</code>.
+     * @param schemeId unique identifier for the issue type scheme whose project association we're removing.
+     * @param projId unique identifier that specifies which project should be un-associated with the issue type scheme
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    default Promise<Void> unassignProjectFromScheme(long schemeId, Long projId) {
+        return unassignProjectFromScheme(schemeId, Long.toString(projId));
+    }
+
+
+    /**
+     * For the specified issue type scheme, removes all project associations.
+     * @param schemeId unique identifier for the issue type scheme whose project associations we're removing.
+     * @return if successful, an empty confirmation--no body.
+     * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
+     * @since 5.2
+     */
+    Promise<Void> unassignAllProjectsFromScheme(long schemeId);
 }

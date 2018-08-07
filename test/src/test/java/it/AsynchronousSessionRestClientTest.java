@@ -42,7 +42,7 @@ public class AsynchronousSessionRestClientTest extends AbstractAsynchronousRestC
     @Before
     public void setup() {
         if (!alreadyRestored) {
-            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE, administration);
+            IntegrationTestUtil.restoreAppropriateJiraData(TestConstants.DEFAULT_JIRA_DUMP_FILE);
             alreadyRestored = true;
         }
     }
