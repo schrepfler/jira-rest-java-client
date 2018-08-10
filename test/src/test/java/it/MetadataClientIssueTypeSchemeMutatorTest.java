@@ -135,6 +135,11 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
         TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().createIssueTypeScheme(
                 new IssueTypeSchemeInput("", "some description",
                         Arrays.asList(STORY, TASK), STORY)).claim());
+
+        //chosen name is already in use by another IssueTypeScheme
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().createIssueTypeScheme(
+                new IssueTypeSchemeInput("No Bugs Scheme", "some description",
+                        Arrays.asList(STORY, TASK), STORY)).claim());
     }
 
 
@@ -180,6 +185,22 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         assertEquals(Long.valueOf(NO_BUGS_SCHEME), updated.getId());
         assertEquals("New Name", updated.getName());
+        assertEquals("new description", updated.getDescription());
+        assertNull(updated.getDefaultIssueType());
+        assertEquals(Arrays.asList(STORY,EPIC),
+                updated.getIssueTypes().stream().map(it -> it.getId()).collect(Collectors.toList()));
+
+        assertEquals(updated, client.getMetadataClient().getIssueTypeScheme(NO_BUGS_SCHEME).claim());
+    }
+
+    @Test
+    public void testUpdateIssueTypeSchemeAndKeepNameTheSame() {//happy path--no projects are assigned to this scheme
+
+        IssueTypeSchemeInput input = new IssueTypeSchemeInput("No Bugs Scheme", "new description", Arrays.asList(STORY, EPIC));
+        IssueTypeScheme updated = client.getMetadataClient().updateIssueTypeScheme(NO_BUGS_SCHEME, input).claim();
+
+        assertEquals(Long.valueOf(NO_BUGS_SCHEME), updated.getId());
+        assertEquals("No Bugs Scheme", updated.getName());
         assertEquals("new description", updated.getDescription());
         assertNull(updated.getDefaultIssueType());
         assertEquals(Arrays.asList(STORY,EPIC),
@@ -238,6 +259,11 @@ public class MetadataClientIssueTypeSchemeMutatorTest extends AbstractAsynchrono
 
         //empty string name
         IssueTypeSchemeInput emptyNameInput = new IssueTypeSchemeInput("", "new description", Arrays.asList(TASK,BUG, STORY), STORY);
+        TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, emptyNameInput).claim());
+
+
+        //name that's already in use (& isn't this guy's)
+        IssueTypeSchemeInput existingNameInput = new IssueTypeSchemeInput("No Bugs Scheme", "new description", Arrays.asList(TASK,BUG, STORY), STORY);
         TestUtil.assertErrorCode(Response.Status.BAD_REQUEST, () -> client.getMetadataClient().updateIssueTypeScheme(TASKS_ONLY_SCHEME, emptyNameInput).claim());
 
 
