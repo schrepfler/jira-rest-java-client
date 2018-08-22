@@ -153,6 +153,7 @@ public interface MetadataRestClient {
 
     /**
      * Retrieves all of the issue type schemes in this Jira instance.
+     * Note, this method uses all available expands by default to return the most complete IssueTypeSchemes it can.
      * @return an iterable of JRJC-side IssueTypeSchemes that reflect those found in the Jira.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)
      * @since 5.2
@@ -161,6 +162,7 @@ public interface MetadataRestClient {
 
     /**
      * Retrieves the issue type scheme associated with the specified id.
+     * Note, this method uses all available expands by default to return the most complete IssueTypeScheme it can.
      * @param id unique identifier of the issue type scheme to retrieve.
      * @return a JRJC-side IssueTypeScheme that reflects the one with the specified id in the Jira.
      * @throws RestClientException in case of problems (connectivity, malformed messages, invalid argument, etc.)

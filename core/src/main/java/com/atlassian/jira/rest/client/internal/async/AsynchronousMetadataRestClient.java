@@ -34,6 +34,7 @@ import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.IssueLinkTypesJsonParser;
 import com.atlassian.jira.rest.client.internal.json.IssueTypeJsonParser;
 import com.atlassian.jira.rest.client.internal.json.IssueTypeSchemeJsonParser;
+import com.atlassian.jira.rest.client.internal.json.IssueTypeSchemeListJsonParser;
 import com.atlassian.jira.rest.client.internal.json.JsonArrayParser;
 import com.atlassian.jira.rest.client.internal.json.PriorityJsonParser;
 import com.atlassian.jira.rest.client.internal.json.ProjectJsonParser;
@@ -150,13 +151,18 @@ public class AsynchronousMetadataRestClient extends AbstractAsynchronousRestClie
 
     @Override
     public Promise<Iterable<IssueTypeScheme>> getAllIssueTypeSchemes() {
-        final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME).build();
-        return getAndParse(uri, IssueTypeSchemeJsonParser.createIssueTypeSchemesArrayParser());
+        final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME)
+                .queryParam("expand", "schemes.defaultIssueType", "schemes.issueTypes")
+                .build();
+        return getAndParse(uri, new IssueTypeSchemeListJsonParser())
+                .map(itsList -> itsList.getIssueTypeSchemes());
     }
 
     @Override
     public Promise<IssueTypeScheme> getIssueTypeScheme(long id) {
-        final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME).path(Long.toString(id)).build();
+        final URI uri = UriBuilder.fromUri(baseUri).path(ISSUE_TYPE_SCHEME).path(Long.toString(id))
+                .queryParam("expand", "defaultIssueType", "issueTypes")
+                .build();
         return getAndParse(uri, new IssueTypeSchemeJsonParser());
     }
 

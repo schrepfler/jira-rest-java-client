@@ -29,14 +29,4 @@ public class IssueTypeSchemeJsonParser implements JsonObjectParser<IssueTypeSche
 
         return new IssueTypeScheme(selfUri, id, name, description, defaultIssueType, issueTypes);
     }
-
-
-    /**
-     * Creates parser for handling JsonArrays of IssueTypeSchemes
-     *
-     * @return a JsonArrayParser set up to handle IssueTypeSchemes
-     */
-    public static JsonArrayParser<Iterable<IssueTypeScheme>> createIssueTypeSchemesArrayParser() {
-        return GenericJsonArrayParser.create(new IssueTypeSchemeJsonParser());
-    }
 }
