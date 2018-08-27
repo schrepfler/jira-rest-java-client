@@ -33,8 +33,6 @@ import java.net.URISyntaxException;
 
 public abstract class AbstractAsynchronousRestClientTest extends NimbleFuncTestCase {
 
-    BaseJiraRestTest foo;
-
     protected URI jiraUri;
     protected JiraRestClient client;
     protected URI jiraRestRootUri;

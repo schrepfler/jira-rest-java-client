@@ -274,25 +274,6 @@
             </dependencies>
         </profile>
         <profile>
-            <id>jira-8.0</id>
-            <activation>
-                <property>
-                    <name>jira.version</name>
-                    <value>8.0.0-SNAPSHOT</value>
-                </property>
-            </activation>
-            <properties>
-                <testkit.version>7.6.1</testkit.version>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.atlassian.jira</groupId>
-                    <artifactId>jira-func-tests-legacy</artifactId>
-                    <version>${jira.test-lib.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>jira-master</id>
             <activation>
                 <property>
