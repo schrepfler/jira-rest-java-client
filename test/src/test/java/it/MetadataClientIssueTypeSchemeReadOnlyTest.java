@@ -128,7 +128,6 @@ public class MetadataClientIssueTypeSchemeReadOnlyTest extends AbstractAsynchron
         TestUtil.assertErrorCode(Response.Status.NOT_FOUND, () -> client.getMetadataClient().getIssueTypeScheme(99L).claim());
     }
 
-
     @Test
     public void testGetAssociatedProjects() {
         final Iterable<Project> twoProjects = //Tasks Only Scheme

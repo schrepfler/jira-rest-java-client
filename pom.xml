@@ -60,6 +60,7 @@
         <httpclient.version>4.5.3</httpclient.version>
         <httpcore.version>4.4.8</httpcore.version>
         <amps.version>6.3.7</amps.version>
+        <!-- TODO consider bumping this guy to 7.12.1 (or latest) if backdoor keeps failing-->
         <testkit.version>7.1.9</testkit.version>
     </properties>
 
