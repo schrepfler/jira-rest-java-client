@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.atlassian.jira</groupId>
         <artifactId>jira-rest-java-client-parent</artifactId>
-        <version>5.1.0-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jira-rest-java-client-test</artifactId>
@@ -263,6 +263,25 @@
             </activation>
             <properties>
                 <jira.version>7.6.0</jira.version>
+                <testkit.version>7.6.1</testkit.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.atlassian.jira</groupId>
+                    <artifactId>jira-func-tests-legacy</artifactId>
+                    <version>${jira.test-lib.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>jira-8.0</id>
+            <activation>
+                <property>
+                    <name>jira.version</name>
+                    <value>8.0.0-SNAPSHOT</value>
+                </property>
+            </activation>
+            <properties>
                 <testkit.version>7.6.1</testkit.version>
             </properties>
             <dependencies>

@@ -16,6 +16,7 @@
 
 package it;
 
+import com.atlassian.jira.functest.framework.BaseJiraRestTest;
 import com.atlassian.jira.nimblefunctests.framework.NimbleFuncTestCase;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
@@ -31,6 +32,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public abstract class AbstractAsynchronousRestClientTest extends NimbleFuncTestCase {
+
+    BaseJiraRestTest foo;
 
     protected URI jiraUri;
     protected JiraRestClient client;
