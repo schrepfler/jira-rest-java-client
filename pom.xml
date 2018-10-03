@@ -59,7 +59,7 @@
         <atlassian.httpclient.version>1.0.0</atlassian.httpclient.version>
         <httpclient.version>4.5.3</httpclient.version>
         <httpcore.version>4.4.8</httpcore.version>
-        <amps.version>6.3.7</amps.version>
+        <amps.version>6.3.21-f275b4bf</amps.version>
         <testkit.version>7.1.9</testkit.version>
     </properties>
 
