@@ -3,8 +3,8 @@ package com.atlassian.jira.rest.client.internal.async;
 import com.atlassian.httpclient.api.HttpClient;
 import com.atlassian.httpclient.api.Response;
 import com.atlassian.jira.rest.client.api.EmailRestClient;
-import com.atlassian.util.concurrent.Promise;
 import com.google.common.annotations.VisibleForTesting;
+import io.atlassian.util.concurrent.Promise;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
