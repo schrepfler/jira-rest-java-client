@@ -32,98 +32,121 @@ import java.util.Map;
  */
 public class User extends BasicUser {
 
-	public static String S16_16 = "16x16";
-	public static String S48_48 = "48x48";
+    public static final String S16_16 = "16x16";
+    public static final String S48_48 = "48x48";
 
-	private final String emailAddress;
+    private final String emailAddress;
+    private final boolean active;
 
-	private final ExpandableProperty<String> groups;
+    private final ExpandableProperty<String> groups;
 
-	private Map<String, URI> avatarUris;
+    private Map<String, URI> avatarUris;
 
-	/**
-	 * @since com.atlassian.jira.rest.client.api 0.5, server: 4.4
-	 */
-	@Nullable
-	private String timezone;
+    /**
+     * @since com.atlassian.jira.rest.client.api 0.5, server: 4.4
+     */
+    @Nullable
+    private String timezone;
 
-	public User(URI self, String name, String displayName, String emailAddress, @Nullable ExpandableProperty<String> groups,
-			Map<String, URI> avatarUris, @Nullable String timezone) {
-		super(self, name, displayName);
-		Preconditions.checkNotNull(avatarUris.get(S48_48), "At least one avatar URL is expected - for 48x48");
-		this.timezone = timezone;
-		this.emailAddress = emailAddress;
-		this.avatarUris = Maps.newHashMap(avatarUris);
-		this.groups = groups;
-	}
+    public User(URI self, String name, String displayName, String accountId, String emailAddress, boolean active,
+            @Nullable ExpandableProperty<String> groups, Map<String, URI> avatarUris, @Nullable String timezone) {
+        super(self, name, displayName, accountId);
+        Preconditions.checkNotNull(avatarUris.get(S48_48), "At least one avatar URL is expected - for 48x48");
+        this.timezone = timezone;
+        this.emailAddress = emailAddress;
+        this.active = active;
+        this.avatarUris = Maps.newHashMap(avatarUris);
+        this.groups = groups;
+    }
 
-	public String getEmailAddress() {
-		return emailAddress;
-	}
+    public User(URI self, String name, String displayName, String emailAddress, boolean active,
+                @Nullable ExpandableProperty<String> groups, Map<String, URI> avatarUris, @Nullable String timezone) {
+        this(self, name, displayName, null, emailAddress, true, groups, avatarUris, timezone);
+    }
 
-	public URI getAvatarUri() {
-		return avatarUris.get(S48_48);
-	}
+    /**
+     * This constructor is used to create an active user per default.
+     *
+     * @deprecated since v5.1.0. Use {@link #User(URI,String,String,String,boolean,ExpandableProperty,Map,String)} instead.
+     */
+    @Deprecated
+    public User(URI self, String name, String displayName, String emailAddress, @Nullable ExpandableProperty<String> groups,
+            Map<String, URI> avatarUris, @Nullable String timezone) {
+        this(self, name, displayName, emailAddress, true, groups, avatarUris, timezone);
+    }
 
-	/**
-	 * @return user avatar image URI for 16x16 pixels
-	 * @since 0.5 com.atlassian.jira.rest.client.api, 5.0 server
-	 */
-	@Nullable
-	public URI getSmallAvatarUri() {
-		return avatarUris.get(S16_16);
-	}
+    public String getEmailAddress() {
+        return emailAddress;
+    }
 
-	/**
-	 * As of JIRA 5.0 there can be several different user avatar URIs - for different size.
-	 *
-	 * @param sizeDefinition size like "16x16" or "48x48". URI for 48x48 should be always defined.
-	 * @return URI for specified size or <code>null</code> when there is no avatar image with given dimensions specified for this user
-	 */
-	@SuppressWarnings("UnusedDeclaration")
-	@Nullable
-	public URI getAvatarUri(String sizeDefinition) {
-		return avatarUris.get(sizeDefinition);
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	/**
-	 * @return groups given user belongs to
-	 */
-	@Nullable
-	public ExpandableProperty<String> getGroups() {
-		return groups;
-	}
+    public URI getAvatarUri() {
+        return avatarUris.get(S48_48);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof User) {
-			User that = (User) obj;
-			return super.equals(obj) && Objects.equal(this.emailAddress, that.emailAddress)
-					&& Objects.equal(this.avatarUris, that.avatarUris);
-		}
-		return false;
-	}
+    /**
+     * @return user avatar image URI for 16x16 pixels
+     * @since 0.5 com.atlassian.jira.rest.client.api, 5.0 server
+     */
+    @Nullable
+    public URI getSmallAvatarUri() {
+        return avatarUris.get(S16_16);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(super.hashCode(), emailAddress, avatarUris, groups, timezone);
-	}
+    /**
+     * As of JIRA 5.0 there can be several different user avatar URIs - for different size.
+     *
+     * @param sizeDefinition size like "16x16" or "48x48". URI for 48x48 should be always defined.
+     * @return URI for specified size or <code>null</code> when there is no avatar image with given dimensions specified for this user
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    @Nullable
+    public URI getAvatarUri(String sizeDefinition) {
+        return avatarUris.get(sizeDefinition);
+    }
 
-	/**
-	 * @return user timezone, like "Europe/Berlin" or <code>null</code> if timezone info is not available
-	 * @since com.atlassian.jira.rest.client.api 0.5, server 4.4
-	 */
-	@Nullable
-	public String getTimezone() {
-		return timezone;
-	}
+    /**
+     * @return groups given user belongs to
+     */
+    @Nullable
+    public ExpandableProperty<String> getGroups() {
+        return groups;
+    }
 
-	@Override
-	protected Objects.ToStringHelper getToStringHelper() {
-		return super.getToStringHelper().add("emailAddress", emailAddress).
-				add("avatarUris", avatarUris).
-				add("groups", groups).
-				add("timezone", timezone);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User) {
+            User that = (User) obj;
+            return super.equals(obj) && Objects.equal(this.emailAddress, that.emailAddress)
+                    && Objects.equal(this.avatarUris, that.avatarUris);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), emailAddress, avatarUris, groups, timezone);
+    }
+
+    /**
+     * @return user timezone, like "Europe/Berlin" or <code>null</code> if timezone info is not available
+     * @since com.atlassian.jira.rest.client.api 0.5, server 4.4
+     */
+    @Nullable
+    public String getTimezone() {
+        return timezone;
+    }
+
+    @Override
+    protected Objects.ToStringHelper getToStringHelper() {
+        return super.getToStringHelper().add("emailAddress", emailAddress).
+                add("active", active).
+                add("avatarUris", avatarUris).
+                add("groups", groups).
+                add("timezone", timezone);
+    }
 
 }

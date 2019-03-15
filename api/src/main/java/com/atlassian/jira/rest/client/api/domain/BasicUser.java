@@ -27,43 +27,54 @@ import java.net.URI;
  */
 public class BasicUser extends AddressableNamedEntity {
 
-	/**
-	 * This value is used to mark incomplete user URI - when server response with user without selfUri set.
-	 * This may happen due to bug in JIRA REST API - for example in JRA-30263 bug, JIRA REST API will return
-	 * user without selfUri for deleted author of worklog entry.
-	 */
-	public static URI INCOMPLETE_URI = URI.create("incomplete://user");
+    /**
+     * This value is used to mark incomplete user URI - when server response with user without selfUri set.
+     * This may happen due to bug in JIRA REST API - for example in JRA-30263 bug, JIRA REST API will return
+     * user without selfUri for deleted author of worklog entry.
+     */
+    public static URI INCOMPLETE_URI = URI.create("incomplete://user");
 
-	private final String displayName;
+    private final String displayName;
+    private final String accountId;
 
-	public BasicUser(URI self, String name, String displayName) {
-		super(self, name);
-		this.displayName = displayName;
-	}
+    public BasicUser(URI self, String name, String displayName, String accountId) {
+        super(self, name);
+        this.displayName = displayName;
+        this.accountId = accountId;
+    }
+
+    public BasicUser(URI self, String name, String displayName) {
+        this(self, name, displayName, null);
+    }
 
 	public String getDisplayName() {
 		return displayName;
 	}
 
-	@Override
-	protected Objects.ToStringHelper getToStringHelper() {
-		return super.getToStringHelper()
-				.add("displayName", displayName);
-	}
+    public String getAccountId() {
+        return accountId;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof BasicUser) {
-			BasicUser that = (BasicUser) obj;
-			return super.equals(that) && Objects.equal(this.displayName, that.displayName);
-		}
-		return false;
-	}
+    @Override
+    protected Objects.ToStringHelper getToStringHelper() {
+        return super.getToStringHelper()
+                .add("displayName", displayName)
+                .add("accountId", accountId);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(super.hashCode(), displayName);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BasicUser) {
+            BasicUser that = (BasicUser) obj;
+            return super.equals(that) && Objects.equal(this.displayName, that.displayName) && Objects.equal(this.accountId, that.accountId);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), displayName, accountId);
+    }
 
 	/**
 	 * @return true when URI returned from server was incomplete. See {@link BasicUser#INCOMPLETE_URI} for more detail.
