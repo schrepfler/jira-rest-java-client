@@ -3,11 +3,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
+    <!-- <parent>
         <groupId>com.atlassian.pom</groupId>
         <artifactId>public-pom</artifactId>
         <version>5.0.8</version>
-    </parent>
+    </parent> -->
 
     <groupId>com.atlassian.jira</groupId>
     <artifactId>jira-rest-java-client-parent</artifactId>
@@ -67,7 +67,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
+            <!-- <dependency>
                 <groupId>com.atlassian.platform</groupId>
                 <artifactId>platform</artifactId>
                 <version>${platform.version}</version>
@@ -80,7 +80,7 @@
                 <version>${platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
+            </dependency> -->
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
