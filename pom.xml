@@ -42,6 +42,23 @@
         <url>https://ecosystem.atlassian.net/browse/JRJC</url>
     </issueManagement>
 
+    <!--
+         We push the docs up to `docs.atlassian.com` via a separate script (defined in the plan template).
+         However, to generate docs with proper links between modules, calling `mvn site` at
+         the top-level isn't enough. You need to call site-deploy (or site:stage).
+         And, in order to either site-deploy or site:stage, a url for deployment has to exist. ¯\_(ツ)_/¯
+
+         So, `site-deploy` (invoked on `release:perform`) now dumps the full site into the local user's
+         directory: ~/jrjc-local-site-deployment.
+         From there, the follow-on script takes-over to get them up to docs.atlassian.com
+    -->
+    <distributionManagement>
+		<site>
+			<id>local-target</id>
+			<url>file://${user.home}/jrjc-local-site-deployment</url>
+		</site>
+	</distributionManagement>
+
     <properties>
         <platform.version>3.1.7</platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
