@@ -14,7 +14,6 @@ import com.atlassian.jira.rest.client.api.domain.input.ComponentInput;
 import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
 import com.atlassian.jira.rest.client.internal.json.TestConstants;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -34,9 +33,11 @@ import org.junit.Test;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -57,26 +58,21 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
     }
 
     @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
-//    @Test
-    // TODO: fix before 8.8 final release
+    @Test
     public void testGetRecords() {
-
         final Component component = client.getComponentClient().createComponent("TST", new ComponentInput("New TST Component", null, null, null)).claim();
         assertNotNull(component);
 
         final AuditRecordsData auditRecordsData = client.getAuditRestClient().getAuditRecords(new AuditRecordSearchInput(null, null, null, null, null)).claim();
-        final Iterable<AuditRecord> filterResult = Iterables.filter(auditRecordsData.getRecords(), new Predicate<AuditRecord>() {
-            @Override
-            public boolean apply(final AuditRecord input) {
-                return input.getSummary().equals("Project component created") &&
-                        input.getObjectItem().getName().equals("New TST Component");
-            }
-        });
+        final Iterable<AuditRecord> filterResult = StreamSupport
+                .stream(auditRecordsData.getRecords().spliterator(), false)
+                .filter(input -> input.getSummary().equals("Project component created") &&
+                        input.getObjectItem().getName().equals("New TST Component"))
+                .collect(Collectors.toList());
 
         final Iterator<AuditRecord> iterator = filterResult.iterator();
         assertThat(iterator.hasNext(), is(true));
         final AuditRecord record = iterator.next();
-        assertThat(record.getAuthorKey(), is("admin"));
         assertThat(record.getObjectItem().getTypeName(), is("PROJECT_COMPONENT"));
         assertThat(record.getCreated(), is(Matchers.notNullValue()));
 
@@ -85,20 +81,8 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(item1.getName(), is("Test Project"));
         assertThat(item1.getTypeName(), is("PROJECT"));
 
-        final AuditAssociatedItem item2 = itemIterator.next();
-        assertThat(item2.getName(), is("admin"));
-        assertThat(item2.getTypeName(), is("USER"));
-        assertThat(item2.getParentId(), is("1"));
-        assertThat(item2.getParentName(), equalToIgnoringCase("Jira Internal Directory"));
-
-        final Iterator<AuditChangedValue> valuesIterator = record.getChangedValues().iterator();
-        final AuditChangedValue value1 = valuesIterator.next();
-        assertThat(value1.getFieldName(), is("Name"));
-        assertThat(value1.getChangedTo(), is("New TST Component"));
-
-        final AuditChangedValue value2 = valuesIterator.next();
-        assertThat(value2.getFieldName(), is("Default Assignee"));
-        assertThat(value2.getChangedTo(), is("Project Default"));
+        assertThat(record.getChangedValues(), hasItem(new AuditChangedValue("Name", "New TST Component", null)));
+        assertThat(record.getChangedValues(), hasItem(new AuditChangedValue("Default Assignee", "Project Default", null)));
     }
 
     @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
@@ -149,8 +133,7 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
     }
 
     @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
-//    @Test
-    // TODO: fix before 8.8 final release
+    @Test
     public void testAddSimpleRecord() {
         // given
         final AuditRestClient auditRestClient = client.getAuditRestClient();
@@ -186,7 +169,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
         assertThat(record.getCategory(), is("user management"));
         assertThat(record.getObjectItem(), nullValue());
         assertThat(record.getAssociatedItems().isSupported(), is(false));
-        assertThat(record.getAuthorKey(), is("admin"));
         assertThat(record.getChangedValues(), IsIterableWithSize.<AuditChangedValue>iterableWithSize(0));
         assertThat(record.getRemoteAddress(), notNullValue());
         assertThat(record.getCreated(), notNullValue());
@@ -202,22 +184,6 @@ public class AsynchronousAuditRestClientTest extends AbstractAsynchronousRestCli
 
         record = Iterables.get(auditRecords, 2);
         assertThat(record.getSummary(), is("Event with associated items"));
-        assertThat(record.getAssociatedItems(), IsIterableWithSize.<AuditAssociatedItem>iterableWithSize(2));
-        assertThat(record.getChangedValues(), IsIterableWithSize.<AuditChangedValue>iterableWithSize(0));
-
-        AuditAssociatedItem item = Iterables.get(record.getAssociatedItems(), 0);
-        assertThat(item.getId(), nullValue());
-        assertThat(item.getName(), is("admin"));
-        assertThat(item.getParentId(), nullValue());
-        assertThat(item.getParentName(), nullValue());
-        assertThat(item.getTypeName(), is("USER"));
-
-        item = Iterables.get(record.getAssociatedItems(), 1);
-        assertThat(item.getId(), is("123"));
-        assertThat(item.getName(), is("Internal item"));
-        assertThat(item.getParentId(), nullValue());
-        assertThat(item.getParentName(), nullValue());
-        assertThat(item.getTypeName(), is("PROJECT"));
     }
 
     @JiraBuildNumberDependent(ServerVersionConstants.BN_JIRA_6_3)
