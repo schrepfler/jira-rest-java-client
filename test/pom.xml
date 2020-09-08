@@ -82,133 +82,116 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>jira-5.0</id>
+            <id>jira-post-7.2</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
-            <properties>
-                <jira.version>5.0.7</jira.version>
-                <jira.data.version>${jira.version}</jira.data.version>
-                <jira.test-lib.version>${jira.version}</jira.test-lib.version>
-                <testkit.version>5.0.24</testkit.version>
-            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.atlassian.jira</groupId>
-                    <artifactId>jira-func-tests</artifactId>
+                    <artifactId>jira-func-tests-legacy</artifactId>
                     <version>${jira.test-lib.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>com.sun.jersey</groupId>
-                            <artifactId>jersey-server</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.sun.jersey.contribs</groupId>
-                            <artifactId>jersey-apache-client</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.jms</groupId>
-                            <artifactId>jms</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.google.collections</groupId>
-                            <artifactId>google-collections</artifactId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
             </dependencies>
         </profile>
         <profile>
-            <id>jira-5.1</id>
+            <id>jira-cloud</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <jira.version>5.1.7</jira.version>
-                <jira.data.version>${jira.version}</jira.data.version>
-                <jira.test-lib.version>${jira.version}</jira.test-lib.version>
-                <testkit.version>5.0.24</testkit.version>
+                <jira.version>1001.0.0-QR20160727011801</jira.version>
+                <amps.version>5.1.18</amps.version>
+                <testkit.version>1000.1.7</testkit.version>
+                <postgres.docker.image>docker.atl-paas.net/jira-cloud/postgres-ci:9.5</postgres.docker.image>
+                <postgres.docker.wait.log.regex>database system is ready to accept connections</postgres.docker.wait.log.regex>
+                <postgres.docker.wait.timeout>600000</postgres.docker.wait.timeout>
             </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.atlassian.jira</groupId>
-                    <artifactId>jira-func-tests</artifactId>
+                    <artifactId>jira-func-tests-legacy</artifactId>
                     <version>${jira.test-lib.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>com.sun.jersey</groupId>
-                            <artifactId>jersey-server</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.sun.jersey.contribs</groupId>
-                            <artifactId>jersey-apache-client</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.jms</groupId>
-                            <artifactId>jms</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.google.collections</groupId>
-                            <artifactId>google-collections</artifactId>
-                        </exclusion>
-                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>9.4.1208</version>
                 </dependency>
             </dependencies>
-        </profile>
-        <profile>
-            <id>jira-5.2</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jira.version>5.2.8</jira.version>
-                <jira.data.version>${jira.version}</jira.data.version>
-                <jira.test-lib.version>${jira.version}</jira.test-lib.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>jira-6.0</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jira.version>6.0.8</jira.version>
-                <jira.data.version>${jira.version}</jira.data.version>
-                <jira.test-lib.version>${jira.version}</jira.test-lib.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>jira-6.1</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jira.version>6.1.7</jira.version>
-                <jira.data.version>${jira.version}</jira.data.version>
-                <jira.test-lib.version>${jira.version}</jira.test-lib.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>jira-6.2</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jira.version>6.2</jira.version>
-                <jira.data.version>${jira.version}</jira.data.version>
-                <jira.test-lib.version>${jira.version}</jira.test-lib.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>jira-6.3</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jira.version>6.3-SNAPSHOT</jira.version>
-                <jira.data.version>${jira.version}</jira.data.version>
-                <jira.test-lib.version>${jira.version}</jira.test-lib.version>
-            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>maven-jira-plugin</artifactId>
+                        <version>${amps.version}</version>
+                        <configuration>
+                            <libArtifacts>
+                                <libArtifact>
+                                    <groupId>org.postgresql</groupId>
+                                    <artifactId>postgresql</artifactId>
+                                    <version>9.4.1208</version>
+                                </libArtifact>
+                            </libArtifacts>
+
+                            <systemPropertyVariables>
+                                <PG_DB_ROLE>jira</PG_DB_ROLE>
+                                <PG_DB_HOST>${docker.host.address}</PG_DB_HOST>
+                                <PG_DB_NAME>jira</PG_DB_NAME>
+                                <PG_DB_PASSWORD>jira</PG_DB_PASSWORD>
+                                <PG_DB_PORT>${database.port}</PG_DB_PORT>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.14.2</version>
+                        <configuration>
+                            <autoPull>always</autoPull>
+                            <images>
+                                <image>
+                                    <alias>postgres-db</alias>
+                                    <name>${postgres.docker.image}</name>
+                                    <run>
+                                        <ports>
+                                            <port>database.port:5432</port>
+                                        </ports>
+                                        <wait>
+                                            <log>${postgres.docker.wait.log.regex}</log>
+                                            <time>${postgres.docker.wait.timeout}</time>
+                                        </wait>
+                                        <log>
+                                            <prefix>postgres</prefix>
+                                            <date>default</date>
+                                            <color>cyan</color>
+                                        </log>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>start</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>releaseProfile</id>
