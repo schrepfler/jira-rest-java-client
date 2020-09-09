@@ -132,6 +132,7 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <version>2.4.2</version>
                     <configuration>
+                        <arguments>-DskipTests</arguments>
                         <tagNameFormat>jira-rest-java-client-@{project.version}</tagNameFormat>
                     </configuration>
                     <dependencies>
