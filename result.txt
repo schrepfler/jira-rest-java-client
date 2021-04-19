@@ -1,0 +1,370 @@
+SourceClear scanning engine ready
+Running the Maven scanner
+COMPILE> [MVNVM] Using maven: 3.5.2
+COMPILE> [INFO] Error stacktraces are turned on.
+COMPILE> [INFO] Scanning for projects...
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Reactor Build Order:
+COMPILE> [INFO] 
+COMPILE> [INFO] JIRA REST Java Client
+COMPILE> [INFO] JIRA REST Java Client - Public API
+COMPILE> [INFO] JIRA REST Java Client - Implementation
+COMPILE> [INFO] JIRA REST Java Client - Application Stub
+COMPILE> [INFO] JIRA REST Java Client - Tests
+COMPILE> [INFO] 
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Building JIRA REST Java Client 5.2.3-SNAPSHOT
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] 
+COMPILE> [INFO] --- artifactory-staging-maven-plugin:1.0.3:staging (staging) @ jira-rest-java-client-parent ---
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:copy-resources (copy-license) @ jira-rest-java-client-parent ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] Copying 0 resource
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (enforce-build-environment) @ jira-rest-java-client-parent ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (ban-milestones-and-release-candidates) @ jira-rest-java-client-parent ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- srcclr-maven-plugin:3.1.21:scan (default-cli) @ jira-rest-java-client-parent ---
+COMPILE> [INFO] 
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Building JIRA REST Java Client - Public API 5.2.3-SNAPSHOT
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] 
+COMPILE> [INFO] --- artifactory-staging-maven-plugin:1.0.3:staging (staging) @ jira-rest-java-client-api ---
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:copy-resources (copy-license) @ jira-rest-java-client-api ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] Copying 0 resource
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ jira-rest-java-client-api ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] skip non existing resourceDirectory /home/mciesielski2/Workspace/work/jira-rest-java-client/api/src/main/resources
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-compiler-plugin:3.7.0:compile (default-compile) @ jira-rest-java-client-api ---
+COMPILE> [INFO] Nothing to compile - all classes are up to date
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (enforce-build-environment) @ jira-rest-java-client-api ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (ban-milestones-and-release-candidates) @ jira-rest-java-client-api ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- srcclr-maven-plugin:3.1.21:scan (default-cli) @ jira-rest-java-client-api ---
+COMPILE> [INFO] 
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Building JIRA REST Java Client - Implementation 5.2.3-SNAPSHOT
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] 
+COMPILE> [INFO] --- artifactory-staging-maven-plugin:1.0.3:staging (staging) @ jira-rest-java-client-core ---
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:copy-resources (copy-license) @ jira-rest-java-client-core ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] Copying 0 resource
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ jira-rest-java-client-core ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] skip non existing resourceDirectory /home/mciesielski2/Workspace/work/jira-rest-java-client/core/src/main/resources
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-compiler-plugin:3.7.0:compile (default-compile) @ jira-rest-java-client-core ---
+COMPILE> [INFO] Nothing to compile - all classes are up to date
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (enforce-build-environment) @ jira-rest-java-client-core ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (ban-milestones-and-release-candidates) @ jira-rest-java-client-core ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- srcclr-maven-plugin:3.1.21:scan (default-cli) @ jira-rest-java-client-core ---
+COMPILE> [INFO] 
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Building JIRA REST Java Client - Application Stub 5.2.3-SNAPSHOT
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] 
+COMPILE> [INFO] --- artifactory-staging-maven-plugin:1.0.3:staging (staging) @ jira-rest-java-client-app ---
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:copy-resources (copy-license) @ jira-rest-java-client-app ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] Copying 0 resource
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ jira-rest-java-client-app ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] Copying 1 resource
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-compiler-plugin:3.7.0:compile (default-compile) @ jira-rest-java-client-app ---
+COMPILE> [INFO] Nothing to compile - all classes are up to date
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (enforce-build-environment) @ jira-rest-java-client-app ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (ban-milestones-and-release-candidates) @ jira-rest-java-client-app ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- srcclr-maven-plugin:3.1.21:scan (default-cli) @ jira-rest-java-client-app ---
+COMPILE> [INFO] 
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Building JIRA REST Java Client - Tests 5.2.3-SNAPSHOT
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] 
+COMPILE> [INFO] --- artifactory-staging-maven-plugin:1.0.3:staging (staging) @ jira-rest-java-client-test ---
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:copy-resources (copy-license) @ jira-rest-java-client-test ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] Copying 0 resource
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ jira-rest-java-client-test ---
+COMPILE> [INFO] Using 'UTF-8' encoding to copy filtered resources.
+COMPILE> [INFO] skip non existing resourceDirectory /home/mciesielski2/Workspace/work/jira-rest-java-client/test/src/main/resources
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-compiler-plugin:3.7.0:compile (default-compile) @ jira-rest-java-client-test ---
+COMPILE> [INFO] Nothing to compile - all classes are up to date
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (enforce-build-environment) @ jira-rest-java-client-test ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- maven-enforcer-plugin:3.0.0-M1:enforce (ban-milestones-and-release-candidates) @ jira-rest-java-client-test ---
+COMPILE> [INFO] Skipping Rule Enforcement.
+COMPILE> [INFO] 
+COMPILE> [INFO] --- srcclr-maven-plugin:3.1.21:scan (default-cli) @ jira-rest-java-client-test ---
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Reactor Summary:
+COMPILE> [INFO] 
+COMPILE> [INFO] JIRA REST Java Client .............................. SUCCESS [  0.748 s]
+COMPILE> [INFO] JIRA REST Java Client - Public API ................. SUCCESS [  0.120 s]
+COMPILE> [INFO] JIRA REST Java Client - Implementation ............. SUCCESS [  0.073 s]
+COMPILE> [INFO] JIRA REST Java Client - Application Stub ........... SUCCESS [  0.031 s]
+COMPILE> [INFO] JIRA REST Java Client - Tests ...................... SUCCESS [  1.260 s]
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] BUILD SUCCESS
+COMPILE> [INFO] ------------------------------------------------------------------------
+COMPILE> [INFO] Total time: 3.045 s
+COMPILE> [INFO] Finished at: 2021-04-20T13:27:08+02:00
+COMPILE> [INFO] Final Memory: 59M/488M
+COMPILE> [INFO] ------------------------------------------------------------------------
+Scanning completed
+Found 18107 lines of code
+Processing results...
+Processing results complete
+
+Summary Report
+Scan ID                                        67496b2e-f952-45c9-8943-deb6a80a746d
+Scan Date & Time                               Apr 20 2021 01:27PM CEST
+Account type                                   ENTERPRISE
+Scan engine                                    3.7.16 (latest 3.7.16)
+Analysis time                                  11 seconds
+User                                           mciesielski2
+Project                                        /home/mciesielski2/Workspace/work/jira-rest-java-client
+Package Manager(s)                             Maven
+
+Open-Source Libraries
+Total Libraries                                202
+Direct Libraries                               15
+Transitive Libraries                           195
+Vulnerable Libraries                           30
+Third Party Code                               99.6%
+
+Security
+With Vulnerable Methods                        0
+High Risk Vulnerabilities                      20
+Medium Risk Vulnerabilities                    64
+Low Risk Vulnerabilities                       4
+
+Vulnerabilities - Public Data
+CVE-2017-7658                                  High Risk       HTTP Request Smuggling                                                          Jetty :: Server Core 7.6.1.v20120215
+CVE-2017-7657                                  High Risk       Request Smuggling                                                               Jetty :: Server Core 7.6.1.v20120215
+CVE-2016-1000027                               High Risk       Remote Code Execution (RCE)                                                     Spring Web 4.2.5.RELEASE
+CVE-2018-8013                                  High Risk       Information Disclosure                                                          batik-dom 1.9
+CVE-2007-5614                                  High Risk       Session Hijacking                                                               Jetty Server 6.0.2
+CVE-2009-4611                                  High Risk       Command Injection                                                               Jetty Server 6.0.2
+CVE-2021-21346                                 High Risk       Remote Code Execution (RCE)                                                     XStream Core 1.4.9
+CVE-2020-26217                                 High Risk       Remote Code Execution (RCE)                                                     XStream Core 1.4.9
+CVE-2021-21350                                 High Risk       Arbitrary Code Execution                                                        XStream Core 1.4.9
+CVE-2021-21344                                 High Risk       Arbitrary Code Execution                                                        XStream Core 1.4.9
+CVE-2021-21348                                 High Risk       Regular Expression Denial Of Service (ReDos)                                    XStream Core 1.4.9
+CVE-2007-4575                                  High Risk       Remote Code Execution (RCE)                                                     HSQLDB 1.8.0.5
+CVE-2019-10086                                 High Risk       Authorization Bypass                                                            Apache Commons BeanUtils 1.6.1
+CVE-2014-0114                                  High Risk       Arbitrary Code Execution Through The Class Parameter Passed To The GetClass     Apache Commons BeanUtils 1.6.1
+CVE-2017-7657                                  High Risk       Request Smuggling                                                               Jetty :: Http Utility 7.6.1.v20120215
+CVE-2017-7658                                  High Risk       HTTP Request Smuggling                                                          Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+CVE-2017-7657                                  High Risk       Request Smuggling                                                               Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+CVE-2021-28165                                 High Risk       Denial Of Service (DoS)                                                         Jetty :: IO Utility 7.6.1.v20120215
+CVE-2013-4002                                  High Risk       Denial Of Service (DoS)                                                         Xerces2-j 2.9.1
+CVE-2012-0881                                  High Risk       Denial Of Service (DoS)                                                         Xerces2-j 2.9.1
+CVE-2018-10054                                 Medium Risk     Arbitrary Code Execution                                                        H2 Database Engine 1.4.185
+CVE-2018-14335                                 Medium Risk     Information Disclosure                                                          H2 Database Engine 1.4.185
+CVE-2009-1523                                  Medium Risk     Directory Traversal                                                             Jetty Utilities 6.0.2
+CVE-2011-4461                                  Medium Risk     Denial Of Service (DoS) CPU Consumption                                         Jetty Utilities 6.0.2
+CVE-2009-1524                                  Medium Risk     Cross-Site Scripting (XSS)                                                      Jetty Utilities 6.0.2
+CVE-2018-11771                                 Medium Risk     Denial Of Service (DoS)                                                         Apache Commons Compress 1.8.1
+CVE-2019-3795                                  Medium Risk     Insecure Randomness                                                             spring-security-core 3.1.7.RELEASE
+CVE-2020-5408                                  Medium Risk     Information Disclosure                                                          spring-security-core 3.1.7.RELEASE
+CVE-2016-1000338                               Medium Risk     Partial Signature Validation                                                    Bouncy Castle Provider 1.50
+CVE-2015-7940                                  Medium Risk     Private Key Disclosure Via Invalid Curve Attack                                 Bouncy Castle Provider 1.50
+CVE-2016-2183                                  Medium Risk     Sweet32 Attack                                                                  Bouncy Castle Provider 1.50
+CVE-2016-1000352                               Medium Risk     Unsafe Encryption Scheme                                                        Bouncy Castle Provider 1.50
+CVE-2016-1000346                               Medium Risk     Partial Key Validation                                                          Bouncy Castle Provider 1.50
+CVE-2016-1000345                               Medium Risk     Padding Oracle Attack                                                           Bouncy Castle Provider 1.50
+CVE-2016-1000344                               Medium Risk     Unsafe Encryption Scheme                                                        Bouncy Castle Provider 1.50
+CVE-2016-1000343                               Medium Risk     Weak Encryption Key                                                             Bouncy Castle Provider 1.50
+CVE-2016-1000342                               Medium Risk     Partial Signature Validation                                                    Bouncy Castle Provider 1.50
+CVE-2017-13098                                 Medium Risk     ROBOT Attack                                                                    Bouncy Castle Provider 1.50
+CVE-2016-1000341                               Medium Risk     Information Diclosure                                                           Bouncy Castle Provider 1.50
+CVE-2015-6644                                  Medium Risk     Information Disclosure                                                          Bouncy Castle Provider 1.50
+CVE-2016-1000340                               Medium Risk     Carry Propagation                                                               Bouncy Castle Provider 1.50
+CVE-2016-1000339                               Medium Risk     Side Channel Leakage                                                            Bouncy Castle Provider 1.50
+CVE-2020-13956                                 Medium Risk     Validation Bypass                                                               Apache HttpClient 4.5.3
+CVE-2017-7656                                  Medium Risk     HTTP Request Smuggling                                                          Jetty :: Server Core 7.6.1.v20120215
+CVE-2019-10247                                 Medium Risk     Information Disclosure                                                          Jetty :: Server Core 7.6.1.v20120215
+CVE-2018-15756                                 Medium Risk     Denial Of Service (DoS)                                                         Spring Web 4.2.5.RELEASE
+CVE-2018-11039                                 Medium Risk     Cross-Site Tracing (XST)                                                        Spring Web 4.2.5.RELEASE
+CVE-2009-4610                                  Medium Risk     Cross-Site Scripting (XSS)                                                      Jetty Server 6.0.2
+CVE-2007-5615                                  Medium Risk     CRLF Injection                                                                  Jetty Server 6.0.2
+CVE-2009-1523                                  Medium Risk     Directory Traversal                                                             Jetty Server 6.0.2
+CVE-2009-4609                                  Medium Risk     Information Disclosure                                                          Jetty Server 6.0.2
+CVE-2011-4461                                  Medium Risk     Denial Of Service (DoS) CPU Consumption                                         Jetty Server 6.0.2
+CVE-2009-1524                                  Medium Risk     Cross-Site Scripting (XSS)                                                      Jetty Server 6.0.2
+CVE-2007-5613                                  Medium Risk     Cross-Site Scripting (XSS)                                                      Jetty Server 6.0.2
+CVE-2020-11988                                 Medium Risk     XML External Entity (XXE)                                                       Apache XML Graphics Commons 2.2
+CVE-2021-21343                                 Medium Risk     Arbitrary File Deletion                                                         XStream Core 1.4.9
+CVE-2021-21349                                 Medium Risk     Server-Side Request Forgery (SSRF)                                              XStream Core 1.4.9
+CVE-2020-26258                                 Medium Risk     Remote Code Execution (RCE)                                                     XStream Core 1.4.9
+CVE-2020-26259                                 Medium Risk     Arbitrary File Deletion                                                         XStream Core 1.4.9
+CVE-2017-7957                                  Medium Risk     Denial Of Service (DoS)                                                         XStream Core 1.4.9
+CVE-2021-21345                                 Medium Risk     Arbitrary Code Execution                                                        XStream Core 1.4.9
+CVE-2021-21351                                 Medium Risk     Remote Code Execution                                                           XStream Core 1.4.9
+CVE-2021-21341                                 Medium Risk     Denial Of Service (DoS)                                                         XStream Core 1.4.9
+CVE-2021-21342                                 Medium Risk     Server-Side Request Forgery (SSRF)                                              XStream Core 1.4.9
+CVE-2021-21345                                 Medium Risk     Remote Code Execution                                                           XStream Core 1.4.9
+CVE-2011-4461                                  Medium Risk     Denial Of Service (DoS) CPU Consumption                                         Jetty :: Utility Servlets and Filters 7.6.1.v20120215
+CVE-2019-10241                                 Medium Risk     Cross-site Scripting (XSS)                                                      Jetty :: Utilities 7.6.1.v20120215
+CVE-2017-9735                                  Medium Risk     Timing Attack                                                                   Jetty :: Utilities 7.6.1.v20120215
+CVE-2011-4461                                  Medium Risk     Denial Of Service (DoS) CPU Consumption                                         Jetty :: Utilities 7.6.1.v20120215
+CVE-2018-1272                                  Medium Risk     Privilege Escalation Through Multipart Content Pollution                        Spring Core 4.2.5.RELEASE
+CVE-2017-7656                                  Medium Risk     HTTP Request Smuggling                                                          Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+CVE-2011-4461                                  Medium Risk     Denial Of Service (DoS) CPU Consumption                                         Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+CVE-2018-10237                                 Medium Risk     Denial Of Service (DoS)                                                         Guava: Google Core Libraries for Java 18.0
+CVE-2017-18640                                 Medium Risk     Denial Of Service (DoS)                                                         SnakeYAML 1.15
+CVE-2018-2799                                  Medium Risk     Denial Of Service (DoS)                                                         Xerces2-j 2.9.1
+CVE-2012-5817                                  Medium Risk     Man In The Middle (MitM) Attackers To Spoof SSL Servers                         XFire Core 1.2.6
+CVE-2017-9735                                  Medium Risk     Timing Attack                                                                   Jetty :: Security 7.6.1.v20120215
+CVE-2020-5421                                  Low Risk        Reflected File Download (RFD) Attack                                            Spring Web 4.2.5.RELEASE
+CVE-2020-8908                                  Low Risk        Information Disclosure                                                          Guava: Google Core Libraries for Java 26.0-jre
+CVE-2020-8908                                  Low Risk        Information Disclosure                                                          Guava: Google Core Libraries for Java 18.0
+CVE-2020-1945                                  Low Risk        Insecure Temporary Directory                                                    Apache Ant Core 1.7.1
+
+Vulnerabilities - Premium Data
+NO-CVE                                         Medium Risk     Timing Attack Due To Password Comparison                                        spring-security-core 3.1.7.RELEASE
+NO-CVE                                         Medium Risk     Hash Collision                                                                  Bouncy Castle Provider 1.50
+NO-CVE                                         Medium Risk     Insecure Input Validation                                                       Apache Commons Codec 1.9
+NO-CVE                                         Medium Risk     Denial Of Service (DoS) Infinite Loop                                           jsoup Java HTML Parser 1.8.3
+NO-CVE                                         Medium Risk     Denial Of Service (DoS)                                                         XStream Core 1.4.9
+NO-CVE                                         Medium Risk     Remote Code Execution (RCE) Via Java Object Deserialization                     Apache Commons IO 2.1
+NO-CVE                                         Medium Risk     Denial Of Service (DoS)                                                         Jackson-core 2.7.9
+
+Licenses
+Unique Library Licenses                        25
+Libraries Using GPL                            11
+Libraries With High Risk License               20
+Libraries With Medium Risk License             45
+Libraries With Low Risk License                163
+Libraries With Multiple Licenses               34
+Libraries With Unassessable License            0
+Libraries With Unrecognizable License          17
+
+Issues
+Issue ID    Issue Type          Severity    Description                                                                                   Library Name & Version In Use
+68934604    Vulnerability       5.3         NO-CVE: Denial Of Service (DoS)                                                               Jackson-core 2.7.9
+68934605    Vulnerability       5.9         CVE-2018-10237: Denial Of Service (DoS)                                                       Guava: Google Core Libraries for Java 18.0
+68934606    Vulnerability       3.3         CVE-2020-8908: Information Disclosure                                                         Guava: Google Core Libraries for Java 18.0
+68934607    Vulnerability       3.3         CVE-2020-8908: Information Disclosure                                                         Guava: Google Core Libraries for Java 26.0-jre
+68934608    Vulnerability       8.8         CVE-2018-10054: Arbitrary Code Execution                                                      H2 Database Engine 1.4.185
+68934609    Vulnerability       6.5         CVE-2018-14335: Information Disclosure                                                        H2 Database Engine 1.4.185
+68934610    Vulnerability       9.9         CVE-2021-21345: Arbitrary Code Execution                                                      XStream Core 1.4.9
+68934611    Vulnerability       9.9         CVE-2021-21345: Remote Code Execution                                                         XStream Core 1.4.9
+68934612    Vulnerability       9.8         CVE-2021-21350: Arbitrary Code Execution                                                      XStream Core 1.4.9
+68934613    Vulnerability       9.8         CVE-2021-21346: Remote Code Execution (RCE)                                                   XStream Core 1.4.9
+68934614    Vulnerability       9.8         CVE-2021-21344: Arbitrary Code Execution                                                      XStream Core 1.4.9
+68934615    Vulnerability       9.1         CVE-2021-21351: Remote Code Execution                                                         XStream Core 1.4.9
+68934616    Vulnerability       9.1         CVE-2021-21342: Server-Side Request Forgery (SSRF)                                            XStream Core 1.4.9
+68934617    Vulnerability       8.8         CVE-2020-26217: Remote Code Execution (RCE)                                                   XStream Core 1.4.9
+68934618    Vulnerability       8.6         CVE-2021-21349: Server-Side Request Forgery (SSRF)                                            XStream Core 1.4.9
+68934619    Vulnerability       7.7         CVE-2020-26258: Remote Code Execution (RCE)                                                   XStream Core 1.4.9
+68934620    Vulnerability       7.5         CVE-2021-21341: Denial Of Service (DoS)                                                       XStream Core 1.4.9
+68934621    Vulnerability       7.5         CVE-2021-21343: Arbitrary File Deletion                                                       XStream Core 1.4.9
+68934622    Vulnerability       7.5         CVE-2017-7957: Denial Of Service (DoS)                                                        XStream Core 1.4.9
+68934623    Vulnerability       7.5         CVE-2021-21348: Regular Expression Denial Of Service (ReDos)                                  XStream Core 1.4.9
+68934624    Vulnerability       6.8         CVE-2020-26259: Arbitrary File Deletion                                                       XStream Core 1.4.9
+68934625    Vulnerability       3.7         NO-CVE: Denial Of Service (DoS)                                                               XStream Core 1.4.9
+68934626    Vulnerability       7.3         CVE-2019-10086: Authorization Bypass                                                          Apache Commons BeanUtils 1.6.1
+68934627    Vulnerability       7.3         CVE-2014-0114: Arbitrary Code Execution Through The Class Parameter Passed To The GetClass    Apache Commons BeanUtils 1.6.1
+68934628    Vulnerability       5.3         NO-CVE: Insecure Input Validation                                                             Apache Commons Codec 1.9
+68934629    Vulnerability       5.6         NO-CVE: Remote Code Execution (RCE) Via Java Object Deserialization                           Apache Commons IO 2.1
+68934630    Vulnerability       9.0         CVE-2007-4575: Remote Code Execution (RCE)                                                    HSQLDB 1.8.0.5
+68934632    Vulnerability       6.3         CVE-2020-1945: Insecure Temporary Directory                                                   Apache Ant Core 1.7.1
+68934633    Vulnerability       5.5         CVE-2018-11771: Denial Of Service (DoS)                                                       Apache Commons Compress 1.8.1
+68934634    Vulnerability       5.3         CVE-2020-13956: Validation Bypass                                                             Apache HttpClient 4.5.3
+68935485    Vulnerability       9.8         CVE-2018-8013: Information Disclosure                                                         batik-dom 1.9
+68935486    Vulnerability       8.2         CVE-2020-11988: XML External Entity (XXE)                                                     Apache XML Graphics Commons 2.2
+68935487    Vulnerability       7.5         CVE-2016-1000342: Partial Signature Validation                                                Bouncy Castle Provider 1.50
+68935488    Vulnerability       7.5         CVE-2016-1000340: Carry Propagation                                                           Bouncy Castle Provider 1.50
+68935489    Vulnerability       7.5         CVE-2016-2183: Sweet32 Attack                                                                 Bouncy Castle Provider 1.50
+68935490    Vulnerability       7.5         CVE-2016-1000338: Partial Signature Validation                                                Bouncy Castle Provider 1.50
+68935491    Vulnerability       7.5         CVE-2016-1000343: Weak Encryption Key                                                         Bouncy Castle Provider 1.50
+68935492    Vulnerability       7.4         CVE-2016-1000352: Unsafe Encryption Scheme                                                    Bouncy Castle Provider 1.50
+68935493    Vulnerability       7.4         CVE-2016-1000344: Unsafe Encryption Scheme                                                    Bouncy Castle Provider 1.50
+68935494    Vulnerability       5.9         CVE-2016-1000341: Information Diclosure                                                       Bouncy Castle Provider 1.50
+68935495    Vulnerability       5.9         CVE-2016-1000345: Padding Oracle Attack                                                       Bouncy Castle Provider 1.50
+68935496    Vulnerability       5.9         CVE-2017-13098: ROBOT Attack                                                                  Bouncy Castle Provider 1.50
+68935497    Vulnerability       5.3         CVE-2016-1000339: Side Channel Leakage                                                        Bouncy Castle Provider 1.50
+68935498    Vulnerability       5.3         CVE-2015-7940: Private Key Disclosure Via Invalid Curve Attack                                Bouncy Castle Provider 1.50
+68935499    Vulnerability       5.3         NO-CVE: Hash Collision                                                                        Bouncy Castle Provider 1.50
+68935500    Vulnerability       3.7         CVE-2016-1000346: Partial Key Validation                                                      Bouncy Castle Provider 1.50
+68935501    Vulnerability       3.3         CVE-2015-6644: Information Disclosure                                                         Bouncy Castle Provider 1.50
+68935502    Vulnerability       4.8         CVE-2012-5817: Man In The Middle (MitM) Attackers To Spoof SSL Servers                        XFire Core 1.2.6
+68935503    Vulnerability       9.8         CVE-2017-7658: HTTP Request Smuggling                                                         Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68935504    Vulnerability       9.8         CVE-2017-7657: Request Smuggling                                                              Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68935505    Vulnerability       7.5         CVE-2017-7656: HTTP Request Smuggling                                                         Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68935506    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68935507    Vulnerability       9.8         CVE-2017-7657: Request Smuggling                                                              Jetty :: Http Utility 7.6.1.v20120215
+68935508    Vulnerability       7.5         CVE-2021-28165: Denial Of Service (DoS)                                                       Jetty :: IO Utility 7.6.1.v20120215
+68935509    Vulnerability       7.5         CVE-2017-9735: Timing Attack                                                                  Jetty :: Security 7.6.1.v20120215
+68935510    Vulnerability       9.8         CVE-2017-7657: Request Smuggling                                                              Jetty :: Server Core 7.6.1.v20120215
+68935511    Vulnerability       9.8         CVE-2017-7658: HTTP Request Smuggling                                                         Jetty :: Server Core 7.6.1.v20120215
+68935512    Vulnerability       7.5         CVE-2017-7656: HTTP Request Smuggling                                                         Jetty :: Server Core 7.6.1.v20120215
+68935513    Vulnerability       5.3         CVE-2019-10247: Information Disclosure                                                        Jetty :: Server Core 7.6.1.v20120215
+68935514    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty :: Utility Servlets and Filters 7.6.1.v20120215
+68935515    Vulnerability       7.5         CVE-2017-9735: Timing Attack                                                                  Jetty :: Utilities 7.6.1.v20120215
+68935516    Vulnerability       6.1         CVE-2019-10241: Cross-site Scripting (XSS)                                                    Jetty :: Utilities 7.6.1.v20120215
+68935517    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty :: Utilities 7.6.1.v20120215
+68935518    Vulnerability       5.3         NO-CVE: Denial of Service (DoS) Infinite Loop                                                 jsoup Java HTML Parser 1.8.3
+68935519    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty Utilities 6.0.2
+68935520    Vulnerability       4.7         CVE-2009-1524: Cross-Site Scripting (XSS)                                                     Jetty Utilities 6.0.2
+68935521    Vulnerability       4.7         CVE-2009-1523: Directory Traversal                                                            Jetty Utilities 6.0.2
+68935522    Vulnerability       7.3         CVE-2007-5614: Session Hijacking                                                              Jetty Server 6.0.2
+68935523    Vulnerability       5.5         CVE-2009-4611: Command Injection                                                              Jetty Server 6.0.2
+68935524    Vulnerability       5.4         CVE-2007-5613: Cross-Site Scripting (XSS)                                                     Jetty Server 6.0.2
+68935525    Vulnerability       5.3         CVE-2007-5615: CRLF Injection                                                                 Jetty Server 6.0.2
+68935526    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty Server 6.0.2
+68935527    Vulnerability       5.3         CVE-2009-4609: Information Disclosure                                                         Jetty Server 6.0.2
+68935528    Vulnerability       4.7         CVE-2009-1524: Cross-Site Scripting (XSS)                                                     Jetty Server 6.0.2
+68935529    Vulnerability       4.7         CVE-2009-1523: Directory Traversal                                                            Jetty Server 6.0.2
+68935530    Vulnerability       4.4         CVE-2009-4610: Cross-Site Scripting (XSS)                                                     Jetty Server 6.0.2
+68935531    Vulnerability       6.5         CVE-2020-5408: Information Disclosure                                                         spring-security-core 3.1.7.RELEASE
+68935532    Vulnerability       5.3         CVE-2019-3795: Insecure Randomness                                                            spring-security-core 3.1.7.RELEASE
+68935533    Vulnerability       5.3         NO-CVE: Timing Attack Due To Password Comparison                                              spring-security-core 3.1.7.RELEASE
+68935534    Vulnerability       7.5         CVE-2018-1272: Privilege Escalation Through Multipart Content Pollution                       Spring Core 4.2.5.RELEASE
+68935535    Vulnerability       9.8         CVE-2016-1000027: Remote Code Execution (RCE)                                                 Spring Web 4.2.5.RELEASE
+68935536    Vulnerability       7.5         CVE-2018-15756: Denial Of Service (DoS)                                                       Spring Web 4.2.5.RELEASE
+68935537    Vulnerability       6.5         CVE-2020-5421: Reflected File Download (RFD) Attack                                           Spring Web 4.2.5.RELEASE
+68935538    Vulnerability       5.9         CVE-2018-11039: Cross-Site Tracing (XST)                                                      Spring Web 4.2.5.RELEASE
+68935539    Vulnerability       7.5         CVE-2017-18640: Denial Of Service (DoS)                                                       SnakeYAML 1.15
+68935540    Vulnerability       7.5         CVE-2012-0881: Denial Of Service (DoS)                                                        Xerces2-j 2.9.1
+68935541    Vulnerability       5.9         CVE-2013-4002: Denial Of Service (DoS)                                                        Xerces2-j 2.9.1
+68935542    Vulnerability       5.3         CVE-2018-2799: Denial Of Service (DoS)                                                        Xerces2-j 2.9.1
+
+
+Full Report Details                            https://sca.analysiscenter.veracode.com/teams/6YYCddV/scans/25061619
+
