@@ -1,0 +1,90 @@
+68967073    Vulnerability       5.3         NO-CVE: Denial Of Service (DoS)                                                               Jackson-core 2.7.9
+68967074    Vulnerability       5.9         CVE-2018-10237: Denial Of Service (DoS)                                                       Guava: Google Core Libraries for Java 18.0
+68967075    Vulnerability       3.3         CVE-2020-8908: Information Disclosure                                                         Guava: Google Core Libraries for Java 18.0
+68967076    Vulnerability       3.3         CVE-2020-8908: Information Disclosure                                                         Guava: Google Core Libraries for Java 26.0-jre
+68967077    Vulnerability       8.8         CVE-2018-10054: Arbitrary Code Execution                                                      H2 Database Engine 1.4.185
+68967078    Vulnerability       6.5         CVE-2018-14335: Information Disclosure                                                        H2 Database Engine 1.4.185
+68967079    Vulnerability       9.9         CVE-2021-21345: Arbitrary Code Execution                                                      XStream Core 1.4.9
+68967080    Vulnerability       9.9         CVE-2021-21345: Remote Code Execution                                                         XStream Core 1.4.9
+68967081    Vulnerability       9.8         CVE-2021-21346: Remote Code Execution (RCE)                                                   XStream Core 1.4.9
+68967082    Vulnerability       9.8         CVE-2021-21344: Arbitrary Code Execution                                                      XStream Core 1.4.9
+68967083    Vulnerability       9.8         CVE-2021-21350: Arbitrary Code Execution                                                      XStream Core 1.4.9
+68967084    Vulnerability       9.1         CVE-2021-21351: Remote Code Execution                                                         XStream Core 1.4.9
+68967735    Vulnerability       9.1         CVE-2021-21342: Server-Side Request Forgery (SSRF)                                            XStream Core 1.4.9
+68967736    Vulnerability       8.8         CVE-2020-26217: Remote Code Execution (RCE)                                                   XStream Core 1.4.9
+68967737    Vulnerability       8.6         CVE-2021-21349: Server-Side Request Forgery (SSRF)                                            XStream Core 1.4.9
+68967738    Vulnerability       7.7         CVE-2020-26258: Remote Code Execution (RCE)                                                   XStream Core 1.4.9
+68967739    Vulnerability       7.5         CVE-2017-7957: Denial Of Service (DoS)                                                        XStream Core 1.4.9
+68967740    Vulnerability       7.5         CVE-2021-21348: Regular Expression Denial Of Service (ReDos)                                  XStream Core 1.4.9
+68967741    Vulnerability       7.5         CVE-2021-21343: Arbitrary File Deletion                                                       XStream Core 1.4.9
+68967742    Vulnerability       7.5         CVE-2021-21341: Denial Of Service (DoS)                                                       XStream Core 1.4.9
+68967743    Vulnerability       6.8         CVE-2020-26259: Arbitrary File Deletion                                                       XStream Core 1.4.9
+68967744    Vulnerability       3.7         NO-CVE: Denial Of Service (DoS)                                                               XStream Core 1.4.9
+68967745    Vulnerability       7.3         CVE-2014-0114: Arbitrary Code Execution Through The Class Parameter Passed To The GetClass    Apache Commons BeanUtils 1.6.1
+68967746    Vulnerability       7.3         CVE-2019-10086: Authorization Bypass                                                          Apache Commons BeanUtils 1.6.1
+68967747    Vulnerability       5.3         NO-CVE: Insecure Input Validation                                                             Apache Commons Codec 1.9
+68967748    Vulnerability       5.6         NO-CVE: Remote Code Execution (RCE) Via Java Object Deserialization                           Apache Commons IO 2.1
+68967749    Vulnerability       7.5         CVE-2018-1000632: XML External Entity (XXE)                                                   dom4j 1.4
+68967750    Vulnerability       6.5         NO-CVE: XML External Entity (XXE) Injection Through Insecure Defaults                         dom4j 1.4
+68967751    Vulnerability       9.0         CVE-2007-4575: Remote Code Execution (RCE)                                                    HSQLDB 1.8.0.5
+68967752    Vulnerability       5.5         CVE-2020-15250: Information Disclosure                                                        JUnit 4.12
+68967753    Vulnerability       9.8         CVE-2019-17571: Arbitrary Code Execution                                                      Apache Log4j 1.2.17
+68967754    Vulnerability       6.3         CVE-2020-1945: Insecure Temporary Directory                                                   Apache Ant Core 1.7.1
+68967755    Vulnerability       5.5         CVE-2018-11771: Denial Of Service (DoS)                                                       Apache Commons Compress 1.8.1
+68967756    Vulnerability       5.3         CVE-2020-13956: Validation Bypass                                                             Apache HttpClient 4.5.3
+68967757    Vulnerability       9.8         CVE-2018-8013: Information Disclosure                                                         batik-dom 1.9
+68967758    Vulnerability       8.2         CVE-2020-11988: XML External Entity (XXE)                                                     Apache XML Graphics Commons 2.2
+68967759    Vulnerability       7.5         CVE-2016-1000338: Partial Signature Validation                                                Bouncy Castle Provider 1.50
+68967760    Vulnerability       7.5         CVE-2016-1000342: Partial Signature Validation                                                Bouncy Castle Provider 1.50
+68967761    Vulnerability       7.5         CVE-2016-1000343: Weak Encryption Key                                                         Bouncy Castle Provider 1.50
+68967762    Vulnerability       7.5         CVE-2016-2183: Sweet32 Attack                                                                 Bouncy Castle Provider 1.50
+68967763    Vulnerability       7.5         CVE-2016-1000340: Carry Propagation                                                           Bouncy Castle Provider 1.50
+68967764    Vulnerability       7.4         CVE-2016-1000352: Unsafe Encryption Scheme                                                    Bouncy Castle Provider 1.50
+68967765    Vulnerability       7.4         CVE-2016-1000344: Unsafe Encryption Scheme                                                    Bouncy Castle Provider 1.50
+68967766    Vulnerability       5.9         CVE-2016-1000341: Information Diclosure                                                       Bouncy Castle Provider 1.50
+68967767    Vulnerability       5.9         CVE-2016-1000345: Padding Oracle Attack                                                       Bouncy Castle Provider 1.50
+68967768    Vulnerability       5.9         CVE-2017-13098: ROBOT Attack                                                                  Bouncy Castle Provider 1.50
+68967769    Vulnerability       5.3         CVE-2016-1000339: Side Channel Leakage                                                        Bouncy Castle Provider 1.50
+68967770    Vulnerability       5.3         NO-CVE: Hash Collision                                                                        Bouncy Castle Provider 1.50
+68967771    Vulnerability       5.3         CVE-2015-7940: Private Key Disclosure Via Invalid Curve Attack                                Bouncy Castle Provider 1.50
+68967772    Vulnerability       3.7         CVE-2016-1000346: Partial Key Validation                                                      Bouncy Castle Provider 1.50
+68967773    Vulnerability       3.3         CVE-2015-6644: Information Disclosure                                                         Bouncy Castle Provider 1.50
+68967774    Vulnerability       4.8         CVE-2012-5817: Man In The Middle (MitM) Attackers To Spoof SSL Servers                        XFire Core 1.2.6
+68967775    Vulnerability       9.8         CVE-2017-7658: HTTP Request Smuggling                                                         Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68967776    Vulnerability       9.8         CVE-2017-7657: Request Smuggling                                                              Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68967777    Vulnerability       7.5         CVE-2017-7656: HTTP Request Smuggling                                                         Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68967778    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty :: Asynchronous HTTP Client 7.6.1.v20120215
+68967779    Vulnerability       9.8         CVE-2017-7657: Request Smuggling                                                              Jetty :: Http Utility 7.6.1.v20120215
+68967780    Vulnerability       7.5         CVE-2021-28165: Denial Of Service (DoS)                                                       Jetty :: IO Utility 7.6.1.v20120215
+68967781    Vulnerability       7.5         CVE-2017-9735: Timing Attack                                                                  Jetty :: Security 7.6.1.v20120215
+68967782    Vulnerability       9.8         CVE-2017-7657: Request Smuggling                                                              Jetty :: Server Core 7.6.1.v20120215
+68967783    Vulnerability       9.8         CVE-2017-7658: HTTP Request Smuggling                                                         Jetty :: Server Core 7.6.1.v20120215
+68967784    Vulnerability       7.5         CVE-2017-7656: HTTP Request Smuggling                                                         Jetty :: Server Core 7.6.1.v20120215
+68967785    Vulnerability       5.3         CVE-2019-10247: Information Disclosure                                                        Jetty :: Server Core 7.6.1.v20120215
+68967786    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty :: Utility Servlets and Filters 7.6.1.v20120215
+68967787    Vulnerability       7.5         CVE-2017-9735: Timing Attack                                                                  Jetty :: Utilities 7.6.1.v20120215
+68967788    Vulnerability       6.1         CVE-2019-10241: Cross-site Scripting (XSS)                                                    Jetty :: Utilities 7.6.1.v20120215
+68967789    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty :: Utilities 7.6.1.v20120215
+68967790    Vulnerability       5.3         NO-CVE: Denial of Service (DoS) Infinite Loop                                                 jsoup Java HTML Parser 1.8.3
+68967791    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty Utilities 6.0.2
+68967792    Vulnerability       4.7         CVE-2009-1523: Directory Traversal                                                            Jetty Utilities 6.0.2
+68967793    Vulnerability       4.7         CVE-2009-1524: Cross-Site Scripting (XSS)                                                     Jetty Utilities 6.0.2
+68967794    Vulnerability       7.3         CVE-2007-5614: Session Hijacking                                                              Jetty Server 6.0.2
+68967795    Vulnerability       5.5         CVE-2009-4611: Command Injection                                                              Jetty Server 6.0.2
+68967796    Vulnerability       5.4         CVE-2007-5613: Cross-Site Scripting (XSS)                                                     Jetty Server 6.0.2
+68967797    Vulnerability       5.3         CVE-2007-5615: CRLF Injection                                                                 Jetty Server 6.0.2
+68967798    Vulnerability       5.3         CVE-2009-4609: Information Disclosure                                                         Jetty Server 6.0.2
+68967799    Vulnerability       5.3         CVE-2011-4461: Denial Of Service (DoS) CPU Consumption                                        Jetty Server 6.0.2
+68967800    Vulnerability       4.7         CVE-2009-1524: Cross-Site Scripting (XSS)                                                     Jetty Server 6.0.2
+68967801    Vulnerability       4.7         CVE-2009-1523: Directory Traversal                                                            Jetty Server 6.0.2
+68967802    Vulnerability       4.4         CVE-2009-4610: Cross-Site Scripting (XSS)                                                     Jetty Server 6.0.2
+68967803    Vulnerability       6.5         CVE-2020-5408: Information Disclosure                                                         spring-security-core 3.1.7.RELEASE
+68967804    Vulnerability       5.3         NO-CVE: Timing Attack Due To Password Comparison                                              spring-security-core 3.1.7.RELEASE
+68967805    Vulnerability       5.3         CVE-2019-3795: Insecure Randomness                                                            spring-security-core 3.1.7.RELEASE
+68967806    Vulnerability       8.6         CVE-2015-5211: Reflected File Download (RFD) Attack                                           Spring Web 4.1.7.RELEASE
+68967807    Vulnerability       6.5         CVE-2020-5421: Reflected File Download (RFD) Attack                                           Spring Web 4.1.7.RELEASE
+68967808    Vulnerability       5.9         CVE-2018-11039: Cross-Site Tracing (XST)                                                      Spring Web 4.1.7.RELEASE
+68967809    Vulnerability       7.5         CVE-2017-18640: Denial Of Service (DoS)                                                       SnakeYAML 1.15
+68967810    Vulnerability       7.5         CVE-2012-0881: Denial Of Service (DoS)                                                        Xerces2-j 2.9.1
+68967811    Vulnerability       5.9         CVE-2013-4002: Denial Of Service (DoS)                                                        Xerces2-j 2.9.1
+68967812    Vulnerability       5.3         CVE-2018-2799: Denial Of Service (DoS)                                                        Xerces2-j 2.9.1
