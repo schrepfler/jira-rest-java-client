@@ -21,17 +21,16 @@ import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.nimblefunctests.annotation.LongCondition;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
 import com.atlassian.jira.rest.client.TestUtil;
-import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptionsBuilder;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Attachment;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
-import com.atlassian.jira.rest.client.api.domain.CimIssueType;
-import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.Page;
 import com.atlassian.jira.rest.client.api.domain.Transition;
 import com.atlassian.jira.rest.client.api.domain.input.AttachmentInput;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
@@ -72,6 +71,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.NUMERIC_CUSTOMFIELD_ID;
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.NUMERIC_CUSTOMFIELD_TYPE;
@@ -81,7 +81,6 @@ import static com.atlassian.jira.rest.client.IntegrationTestUtil.TEXT_CUSTOMFIEL
 import static com.atlassian.jira.rest.client.IntegrationTestUtil.USER2;
 import static com.atlassian.jira.rest.client.TestUtil.assertErrorCode;
 import static com.atlassian.jira.rest.client.TestUtil.assertExpectedErrorCollection;
-import static com.atlassian.jira.rest.client.api.domain.EntityHelper.findEntityByName;
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_4_3;
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static com.atlassian.jira.rest.client.internal.json.TestConstants.ADMIN_PASSWORD;
@@ -1015,21 +1014,21 @@ public class AsynchronousIssueRestClientTest extends AbstractAsynchronousRestCli
     private BasicIssue addSubtaskToIssue(final Issue issue) {
         // collect CreateIssueMetadata for project with key TST
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys(issue.getProject().getKey())
-                        .withExpandedIssueTypesFields().build()).claim();
 
-        // select project and issue
-        assertEquals(1, Iterables.size(metadataProjects));
-        final CimProject project = metadataProjects.iterator().next();
-        final CimIssueType issueType = findEntityByName(project.getIssueTypes(), "Sub-task");
+        final String projectKey = issue.getProject().getKey();
+
+        final Page<IssueType> issueTypePage = issueClient.getCreateIssueMetaProjectIssueTypes(projectKey, 0L, 100).claim();
+        final String issueTypeName = "Sub-task";
+        final IssueType subTaskIssueType = StreamSupport.stream(issueTypePage.getValues().spliterator(), false).filter(it -> issueTypeName.equals(it.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Issue type with name: " + issueTypeName + " not found."));
 
         // build issue input
         final String summary = "Some subtask";
         final String description = "Some description for substask";
 
         // prepare IssueInput
-        final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(project, issueType, summary)
+        final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(projectKey, subTaskIssueType.getId(), summary)
                 .setDescription(description)
                 .setFieldValue("parent", ComplexIssueInputFieldValue.with("key", issue.getKey()));
 
