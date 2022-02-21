@@ -18,22 +18,21 @@ package it;
 
 import com.atlassian.jira.nimblefunctests.annotation.JiraBuildNumberDependent;
 import com.atlassian.jira.rest.client.IntegrationTestUtil;
-import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptionsBuilder;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.BasicPriority;
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.BulkOperationResult;
 import com.atlassian.jira.rest.client.api.domain.CimFieldInfo;
-import com.atlassian.jira.rest.client.api.domain.CimIssueType;
-import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.atlassian.jira.rest.client.api.domain.CustomFieldOption;
 import com.atlassian.jira.rest.client.api.domain.EntityHelper;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueFieldId;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.Page;
 import com.atlassian.jira.rest.client.api.domain.Subtask;
 import com.atlassian.jira.rest.client.api.domain.TimeTracking;
 import com.atlassian.jira.rest.client.api.domain.User;
@@ -71,10 +70,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
-import static com.atlassian.jira.rest.client.api.domain.EntityHelper.findEntityByName;
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_5;
 import static com.atlassian.jira.rest.client.internal.ServerVersionConstants.BN_JIRA_6;
 import static com.google.common.collect.Iterables.toArray;
@@ -111,22 +109,32 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
     public void testCreateIssue() throws JSONException {
         // collect CreateIssueMetadata for project with key TST
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build()).claim();
+        final String projectKey = "TST";
+        final Page<IssueType> issueTypePage = issueClient.getCreateIssueMetaProjectIssueTypes(projectKey, 0L, 100).claim();
 
-        // select project and issue
-        assertEquals(1, Iterables.size(metadataProjects));
-        final CimProject project = metadataProjects.iterator().next();
-        final CimIssueType issueType = findEntityByName(project.getIssueTypes(), "Bug");
+        final IssueType bugIssueType = StreamSupport.stream(issueTypePage.getValues().spliterator(), false)
+                        .filter(issueType -> "Bug".equals(issueType.getName()))
+                        .findFirst()
+                        .orElseThrow(() -> new AssertionError("Issue type with name Bug not found"));
+
+        final Page<CimFieldInfo> cimFieldInfoPage = issueClient.getCreateIssueMetaFields(projectKey, "" + bugIssueType.getId(), 0L, 100).claim();
 
         // grab the first component
-        final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForComponents = StreamSupport.stream(cimFieldInfoPage.getValues().spliterator(), false)
+                        .filter(f -> IssueFieldId.COMPONENTS_FIELD.id.equals(f.getSchema().getSystem()))
+                        .findFirst()
+                        .orElseThrow(() -> new AssertionError("Field not found: " + IssueFieldId.COMPONENTS_FIELD.id))
+                        .getAllowedValues();
         assertNotNull(allowedValuesForComponents);
         assertTrue(allowedValuesForComponents.iterator().hasNext());
         final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
 
         // grab the first priority
-        final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForPriority = StreamSupport.stream(cimFieldInfoPage.getValues().spliterator(), false)
+                .filter(f -> IssueFieldId.PRIORITY_FIELD.id.equals(f.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Field not found: " + IssueFieldId.PRIORITY_FIELD.id))
+                .getAllowedValues();
         assertNotNull(allowedValuesForPriority);
         assertTrue(allowedValuesForPriority.iterator().hasNext());
         final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
@@ -142,7 +150,7 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         // prepare IssueInput
         final String multiUserCustomFieldId = "customfield_10031";
         final ImmutableList<BasicUser> multiUserCustomFieldValues = ImmutableList.of(IntegrationTestUtil.USER1, IntegrationTestUtil.USER2);
-        final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(project, issueType, summary)
+        final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(projectKey, bugIssueType.getId(), summary)
                 .setDescription(description)
                 .setAssignee(assignee)
                 .setAffectedVersionsNames(affectedVersionsNames)
@@ -161,8 +169,8 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         assertNotNull(createdIssue);
 
         assertEquals(basicCreatedIssue.getKey(), createdIssue.getKey());
-        assertEquals(project.getKey(), createdIssue.getProject().getKey());
-        assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+        assertEquals(projectKey, createdIssue.getProject().getKey());
+        assertEquals(bugIssueType.getId(), createdIssue.getIssueType().getId());
         assertEquals(summary, createdIssue.getSummary());
         assertEquals(description, createdIssue.getDescription());
 
@@ -203,27 +211,38 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
                 toArray(EntityHelper.toNamesList(multiUserCustomFieldValues), String.class)));
     }
 
+
     @JiraBuildNumberDependent(BN_JIRA_5)
     @Test
     public void testCreateSubtask() {
         // collect CreateIssueMetadata for project with key TST
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build()).claim();
+        final String projectKey = "TST";
 
-        // select project and issue
-        assertEquals(1, Iterables.size(metadataProjects));
-        final CimProject project = metadataProjects.iterator().next();
-        final CimIssueType issueType = findEntityByName(project.getIssueTypes(), "Sub-task");
+        final Page<IssueType> issueTypePage = issueClient.getCreateIssueMetaProjectIssueTypes(projectKey, 0L, 100).claim();
+        final String issueTypeName = "Sub-task";
+        final IssueType subTaskIssueType = StreamSupport.stream(issueTypePage.getValues().spliterator(), false).filter(it -> issueTypeName.equals(it.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Issue type with name: " + issueTypeName + " not found."));
+
+        final Page<CimFieldInfo> fieldInfoPage = issueClient.getCreateIssueMetaFields(projectKey, "" + subTaskIssueType.getId(), 0L, 100).claim();
 
         // grab the first component
-        final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForComponents = StreamSupport.stream(fieldInfoPage.getValues().spliterator(), false)
+                .filter(cimFieldInfo -> IssueFieldId.COMPONENTS_FIELD.id.equals(cimFieldInfo.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Not found: " + IssueFieldId.COMPONENTS_FIELD))
+                .getAllowedValues();
         assertNotNull(allowedValuesForComponents);
         assertTrue(allowedValuesForComponents.iterator().hasNext());
         final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
 
         // grab the first priority
-        final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForPriority = StreamSupport.stream(fieldInfoPage.getValues().spliterator(), false)
+                .filter(cimFieldInfo -> IssueFieldId.PRIORITY_FIELD.id.equals(cimFieldInfo.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Not found: " + IssueFieldId.PRIORITY_FIELD))
+                .getAllowedValues();
         assertNotNull(allowedValuesForPriority);
         assertTrue(allowedValuesForPriority.iterator().hasNext());
         final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
@@ -237,7 +256,7 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         final ArrayList<String> fixVersionsNames = Lists.newArrayList("1.1");
 
         // prepare IssueInput
-        final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(project, issueType, summary)
+        final IssueInputBuilder issueInputBuilder = new IssueInputBuilder(projectKey, subTaskIssueType.getId(), summary)
                 .setDescription(description)
                 .setAssignee(assignee)
                 .setAffectedVersionsNames(affectedVersionsNames)
@@ -256,8 +275,8 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         assertNotNull(createdIssue);
 
         assertEquals(basicCreatedIssue.getKey(), createdIssue.getKey());
-        assertEquals(project.getKey(), createdIssue.getProject().getKey());
-        assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+        assertEquals(projectKey, createdIssue.getProject().getKey());
+        assertEquals(subTaskIssueType.getId(), createdIssue.getIssueType().getId());
         assertEquals(summary, createdIssue.getSummary());
         assertEquals(description, createdIssue.getDescription());
 
@@ -288,22 +307,33 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
     public void testCreateManySubtasksInGivenOrder() throws NoSuchFieldException, IllegalAccessException {
         // collect CreateIssueMetadata for project with key TST
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build()).claim();
+        final String projectKey = "TST";
 
         // select project and issue
-        assertEquals(1, Iterables.size(metadataProjects));
-        final CimProject project = metadataProjects.iterator().next();
-        final CimIssueType issueType = findEntityByName(project.getIssueTypes(), "Sub-task");
+        final Page<IssueType> issueTypePage = issueClient.getCreateIssueMetaProjectIssueTypes(projectKey, 0L, 100).claim();
+        final IssueType subTaskIssueType = StreamSupport.stream(issueTypePage.getValues().spliterator(), false)
+                .filter(issueType -> "Sub-task".equals(issueType.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Issue type with name Sub-task not found"));
+
+        final Page<CimFieldInfo> fieldInfoPage = issueClient.getCreateIssueMetaFields(projectKey, "" + subTaskIssueType.getId(), 0L, 100).claim();
 
         // grab the first component
-        final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForComponents = StreamSupport.stream(fieldInfoPage.getValues().spliterator(), false)
+                .filter(cimFieldInfo -> IssueFieldId.COMPONENTS_FIELD.id.equals(cimFieldInfo.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Not found: " + IssueFieldId.COMPONENTS_FIELD))
+                .getAllowedValues();
         assertNotNull(allowedValuesForComponents);
         assertTrue(allowedValuesForComponents.iterator().hasNext());
         final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
 
         // grab the first priority
-        final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForPriority = StreamSupport.stream(fieldInfoPage.getValues().spliterator(), false)
+                .filter(cimFieldInfo -> IssueFieldId.PRIORITY_FIELD.id.equals(cimFieldInfo.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Not found: " + IssueFieldId.PRIORITY_FIELD))
+                .getAllowedValues();
         assertNotNull(allowedValuesForPriority);
         assertTrue(allowedValuesForPriority.iterator().hasNext());
         final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
@@ -322,7 +352,7 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         for (final String summary : summaries) {
 
             final IssueInputBuilder issueInputBuilder =
-                    new IssueInputBuilder(project, issueType, summary)
+                    new IssueInputBuilder(projectKey, subTaskIssueType.getId(), summary)
                             .setDescription(description)
                             .setAssignee(assignee)
                             .setAffectedVersionsNames(affectedVersionsNames)
@@ -368,8 +398,8 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
             assertNotNull(createdIssue);
 
             assertEquals(basicIssue.getKey(), createdIssue.getKey());
-            assertEquals(project.getKey(), createdIssue.getProject().getKey());
-            assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+            assertEquals(projectKey, createdIssue.getProject().getKey());
+            assertEquals(subTaskIssueType.getId(), createdIssue.getIssueType().getId());
             assertTrue(summaries.contains(createdIssue.getSummary()));
             assertEquals(description, createdIssue.getDescription());
 
@@ -387,22 +417,34 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
     public void testCreateManySubtasksInGivenOrderWithSomeFailing() throws NoSuchFieldException, IllegalAccessException {
         // collect CreateIssueMetadata for project with key TST
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build()).claim();
+        final String projectKey = "TST";
+        assertNotNull(client.getProjectClient().getProject(projectKey));
 
         // select project and issue
-        assertEquals(1, Iterables.size(metadataProjects));
-        final CimProject project = metadataProjects.iterator().next();
-        final CimIssueType issueType = findEntityByName(project.getIssueTypes(), "Sub-task");
+        final Page<IssueType> issueTypePage = issueClient.getCreateIssueMetaProjectIssueTypes(projectKey, 0L, 100).claim();
+        final IssueType subTaskIssueType = StreamSupport.stream(issueTypePage.getValues().spliterator(), false)
+                .filter(issueType -> "Sub-task".equals(issueType.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Issue type with name Sub-task not found"));
+
+        final Page<CimFieldInfo> fieldInfoPage = issueClient.getCreateIssueMetaFields(projectKey, "" + subTaskIssueType.getId(), 0L, 100).claim();
 
         // grab the first component
-        final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForComponents = StreamSupport.stream(fieldInfoPage.getValues().spliterator(), false)
+                .filter(cimFieldInfo -> IssueFieldId.COMPONENTS_FIELD.id.equals(cimFieldInfo.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Not found: " + IssueFieldId.COMPONENTS_FIELD))
+                .getAllowedValues();
         assertNotNull(allowedValuesForComponents);
         assertTrue(allowedValuesForComponents.iterator().hasNext());
         final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
 
         // grab the first priority
-        final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForPriority = StreamSupport.stream(fieldInfoPage.getValues().spliterator(), false)
+                .filter(cimFieldInfo -> IssueFieldId.PRIORITY_FIELD.id.equals(cimFieldInfo.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Not found: " + IssueFieldId.PRIORITY_FIELD))
+                .getAllowedValues();
         assertNotNull(allowedValuesForPriority);
         assertTrue(allowedValuesForPriority.iterator().hasNext());
         final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
@@ -425,14 +467,14 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         final List<IssueInput> issuesToCreate = Lists.newArrayList();
         // prepare IssueInput
         for (final String summary : summaries) {
-            String currentProjectKey = project.getKey();
+            String currentProjectKey = projectKey;
             //last issue to create will have a non existing project - to simulate creation error
             if (summariesWithError.contains(summary)) {
                 currentProjectKey = "FAKE_KEY";
             }
 
             final IssueInputBuilder issueInputBuilder =
-                    new IssueInputBuilder(currentProjectKey, issueType.getId(), summary)
+                    new IssueInputBuilder(currentProjectKey, subTaskIssueType.getId(), summary)
                             .setDescription(description)
                             .setAssignee(assignee)
                             .setAffectedVersionsNames(affectedVersionsNames)
@@ -478,8 +520,8 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
             assertNotNull(createdIssue);
 
             assertEquals(basicIssue.getKey(), createdIssue.getKey());
-            assertEquals(project.getKey(), createdIssue.getProject().getKey());
-            assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+            assertEquals(projectKey, createdIssue.getProject().getKey());
+            assertEquals(subTaskIssueType.getId(), createdIssue.getIssueType().getId());
             assertEquals(description, createdIssue.getDescription());
 
             final BasicUser actualAssignee = createdIssue.getAssignee();
@@ -498,22 +540,35 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
     public void testCreateManySubtasksInGivenOrderWithAllFailing() throws NoSuchFieldException, IllegalAccessException {
         // collect CreateIssueMetadata for project with key TST
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build()).claim();
 
-        // select project and issue
-        assertEquals(1, Iterables.size(metadataProjects));
-        final CimProject project = metadataProjects.iterator().next();
-        final CimIssueType issueType = findEntityByName(project.getIssueTypes(), "Sub-task");
+        final String projectKey = "TST";
+        final Page<IssueType> issueTypePage = issueClient.getCreateIssueMetaProjectIssueTypes(projectKey, 0L, 100).claim();
+
+        final IssueType subTaskIssueType = StreamSupport.stream(issueTypePage.getValues().spliterator(), false)
+                .filter(issueType -> "Sub-task".equals(issueType.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Issue type with name Sub-task not found"));
+
+        final Page<CimFieldInfo> cimFieldInfoPage = issueClient.getCreateIssueMetaFields(projectKey, "" + subTaskIssueType.getId(), 0L, 100).claim();
 
         // grab the first component
-        final Iterable<Object> allowedValuesForComponents = issueType.getField(IssueFieldId.COMPONENTS_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForComponents = StreamSupport.stream(cimFieldInfoPage.getValues().spliterator(), false)
+                .filter(f -> IssueFieldId.COMPONENTS_FIELD.id.equals(f.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Field not found: " + IssueFieldId.COMPONENTS_FIELD.id))
+                .getAllowedValues();
+
         assertNotNull(allowedValuesForComponents);
         assertTrue(allowedValuesForComponents.iterator().hasNext());
         final BasicComponent component = (BasicComponent) allowedValuesForComponents.iterator().next();
 
         // grab the first priority
-        final Iterable<Object> allowedValuesForPriority = issueType.getField(IssueFieldId.PRIORITY_FIELD).getAllowedValues();
+        final Iterable<Object> allowedValuesForPriority = StreamSupport.stream(cimFieldInfoPage.getValues().spliterator(), false)
+                .filter(f -> IssueFieldId.PRIORITY_FIELD.id.equals(f.getSchema().getSystem()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Field not found: " + IssueFieldId.PRIORITY_FIELD.id))
+                .getAllowedValues();
+
         assertNotNull(allowedValuesForPriority);
         assertTrue(allowedValuesForPriority.iterator().hasNext());
         final BasicPriority priority = (BasicPriority) allowedValuesForPriority.iterator().next();
@@ -533,14 +588,14 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         final List<IssueInput> issuesToCreate = Lists.newArrayList();
         // prepare IssueInput
         for (final String summary : summaries) {
-            String currentProjectKey = project.getKey();
+            String currentProjectKey = projectKey;
             //last issue to create will have a non existing project - to simulate creation error
             if (summariesWithError.contains(summary)) {
                 currentProjectKey = "FAKE_KEY";
             }
 
             final IssueInputBuilder issueInputBuilder =
-                    new IssueInputBuilder(currentProjectKey, issueType.getId(), summary)
+                    new IssueInputBuilder(currentProjectKey, subTaskIssueType.getId(), summary)
                             .setDescription(description)
                             .setAssignee(assignee)
                             .setAffectedVersionsNames(affectedVersionsNames)
@@ -572,19 +627,19 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
     public void testCreateIssueWithOnlyRequiredFields() {
         // collect CreateIssueMetadata for project with key TST
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withProjectKeys("TST").withExpandedIssueTypesFields().build()).claim();
+        final String projectKey = "TST";
+        final Page<IssueType> issueTypePage = issueClient.getCreateIssueMetaProjectIssueTypes(projectKey, 0L, 100).claim();
 
-        // select project and issue
-        assertEquals(1, Iterables.size(metadataProjects));
-        final CimProject project = metadataProjects.iterator().next();
-        final CimIssueType issueType = findEntityByName(project.getIssueTypes(), "Bug");
+        final IssueType bugIssueType = StreamSupport.stream(issueTypePage.getValues().spliterator(), false)
+                .filter(issueType -> "Bug".equals(issueType.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Issue type with name Bug not found"));
 
         // build issue input
         final String summary = "My new issue!";
 
         // create
-        final IssueInput issueInput = new IssueInputBuilder(project, issueType, summary).build();
+        final IssueInput issueInput = new IssueInputBuilder(projectKey, bugIssueType.getId(), summary).build();
         final BasicIssue basicCreatedIssue = issueClient.createIssue(issueInput).claim();
         assertNotNull(basicCreatedIssue.getKey());
 
@@ -593,8 +648,8 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         assertNotNull(createdIssue);
 
         assertEquals(basicCreatedIssue.getKey(), createdIssue.getKey());
-        assertEquals(project.getKey(), createdIssue.getProject().getKey());
-        assertEquals(issueType.getId(), createdIssue.getIssueType().getId());
+        assertEquals(projectKey, createdIssue.getProject().getKey());
+        assertEquals(bugIssueType.getId(), createdIssue.getIssueType().getId());
         assertEquals(summary, createdIssue.getSummary());
     }
 
@@ -782,28 +837,41 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
     @Test
     public void testCreateMetaShouldReturnIssueTypeInFieldsListEvenIfIssueTypeIsNotOnCreateIssueScreen() {
         final IssueRestClient issueClient = client.getIssueClient();
-        final Iterable<CimProject> cimProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withExpandedIssueTypesFields().build()).claim();
+        final Iterable<BasicProject> projects = client.getProjectClient().getAllProjects().claim();
 
-        final CimProject testProject = findEntityByName(cimProjects, "Project With Create Issue Screen Without Issue Type");
-        assertThat(testProject.getIssueTypes(), IsIterableWithSize.<CimIssueType>iterableWithSize(greaterThanOrEqualTo(5)));
-        for (CimIssueType cimIssueType : testProject.getIssueTypes()) {
-            final CimFieldInfo issueType = cimIssueType.getField(IssueFieldId.ISSUE_TYPE_FIELD);
+        final BasicProject testProject = StreamSupport.stream(projects.spliterator(), false)
+                .filter(p -> "Project With Create Issue Screen Without Issue Type".equals(p.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Project not found."));
+        assertNotNull(testProject);
+
+        final Page<IssueType> issueTypePage = client.getIssueClient().getCreateIssueMetaProjectIssueTypes(testProject.getKey(), 0L, 100).claim();
+
+        assertThat(issueTypePage.getValues(), IsIterableWithSize.iterableWithSize(greaterThanOrEqualTo(5)));
+
+        for (final IssueType issueType : issueTypePage.getValues()) {
+            final Page<CimFieldInfo> fieldInfoPage = client.getIssueClient().getCreateIssueMetaFields(testProject.getKey(), "" + issueType.getId(), 0L, 100).claim();
+
+            final CimFieldInfo fieldInfo = StreamSupport.stream(fieldInfoPage.getValues().spliterator(), false)
+                    .filter(it -> IssueFieldId.ISSUE_TYPE_FIELD.id.equals(it.getSchema().getSystem()))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("field not found: " + IssueFieldId.ISSUE_TYPE_FIELD));
+
             final String assertMessageIssueTypeNotPresent = String.format(
                     "Issue type is missing for project %s (%s) and issue type %s (%s)!",
-                    testProject.getName(), testProject.getKey(), cimIssueType.getName(), cimIssueType.getId());
+                    testProject.getName(), testProject.getKey(), issueType.getName(), issueType.getId());
             assertNotNull(assertMessageIssueTypeNotPresent, issueType);
 
             // check the allowed values
-            final Iterable<Object> allowedValues = issueType.getAllowedValues();
+            final Iterable<Object> allowedValues = fieldInfo.getAllowedValues();
             final String assertMessageAllowedValuesSizeNotMatch = String.format(
                     "We expected exactly one allowed value - the issue type %s (%s) for project  %s (%s)",
-                    testProject.getName(), testProject.getKey(), cimIssueType.getName(), cimIssueType.getId());
+                    testProject.getName(), testProject.getKey(), issueType.getName(), issueType.getId());
             assertEquals(assertMessageAllowedValuesSizeNotMatch, 1, Iterables.size(allowedValues));
 
             //noinspection unchecked
             final IssueType firstAllowedValue = (IssueType) Iterables.getOnlyElement(allowedValues);
-            assertEquals(firstAllowedValue.getId(), cimIssueType.getId());
+            assertEquals(firstAllowedValue.getId(), issueType.getId());
         }
     }
 
@@ -813,38 +881,43 @@ public class AsynchronousIssueRestClientCreateIssueTest extends AbstractAsynchro
         final IssueRestClient issueClient = client.getIssueClient();
 
         // get project list with fields expanded
-        final Iterable<CimProject> metadataProjects = issueClient.getCreateIssueMetadata(
-                new GetCreateIssueMetadataOptionsBuilder().withExpandedIssueTypesFields().build()).claim();
-        log.log("Available projects: ");
-        for (CimProject p : metadataProjects) {
-            log.log(MessageFormat.format("\t* [{0}] {1}", p.getKey(), p.getName()));
-        }
-        log.log("");
-        assertTrue("There is no project to select!", metadataProjects.iterator().hasNext());
+        final Iterable<BasicProject> projects = client.getProjectClient().getAllProjects().claim();
+        assertTrue("There is no project to select!", projects.iterator().hasNext());
 
         // select project
-        final CimProject project = metadataProjects.iterator().next();
-        log.log(MessageFormat.format("Selected project: [{0}] {1}\n", project.getKey(), project.getName()));
+        final BasicProject basicProject = projects.iterator().next();
+        log.log(MessageFormat.format("Selected project: [{0}] {1}\n", basicProject.getKey(), basicProject.getName()));
 
         // select issue type
         log.log("Available issue types for selected project:");
-        for (CimIssueType t : project.getIssueTypes()) {
-            log.log(MessageFormat.format("\t* [{0}] {1}", t.getId(), t.getName()));
+        final Page<IssueType> issueTypePage = client.getIssueClient().getCreateIssueMetaProjectIssueTypes(basicProject.getKey(), 0L, 100).claim();
+
+        for (final IssueType issueType : issueTypePage.getValues()) {
+            log.log(MessageFormat.format("\t* [{0}] {1}", issueType.getId(), issueType.getName()));
         }
         log.log("");
 
-        final CimIssueType issueType = project.getIssueTypes().iterator().next();
+
+        final IssueType issueType = issueTypePage.getValues().iterator().next();
         log.log(MessageFormat.format("Selected issue type: [{0}] {1}\n", issueType.getId(), issueType.getName()));
 
-        final IssueInputBuilder builder = new IssueInputBuilder(project.getKey(), issueType.getId());
+        final IssueInputBuilder builder = new IssueInputBuilder(basicProject.getKey(), issueType.getId());
+
+        final Page<CimFieldInfo> cimFieldInfoPage = issueClient.getCreateIssueMetaFields(basicProject.getKey(), "" + issueType.getId(), 0L, 100).claim();
 
         // fill fields
         log.log("Filling fields:");
-        for (Map.Entry<String, CimFieldInfo> entry : issueType.getFields().entrySet()) {
-            final CimFieldInfo fieldInfo = entry.getValue();
+        for (CimFieldInfo fieldInfo : cimFieldInfoPage.getValues()) {
             final String fieldCustomType = fieldInfo.getSchema().getCustom();
             final String fieldType = fieldInfo.getSchema().getType();
-            final String fieldId = fieldInfo.getId();
+            final String fieldId;
+
+            if (fieldInfo.getSchema() != null && fieldInfo.getSchema().getSystem() != null) {
+                fieldId = fieldInfo.getSchema().getSystem();
+            } else {
+                fieldId = "customfield_" + fieldInfo.getSchema().getCustomId();
+            }
+            assertNotNull("filedId null", fieldId);
 
             if ("project".equals(fieldId) || "issuetype".equals(fieldId)) {
                 // this field was already set by IssueInputBuilder constructor - skip it
