@@ -43,7 +43,7 @@
     </issueManagement>
 
     <properties>
-        <platform.version>5.2.1</platform.version>
+        <platform.version>5.2.9</platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jira.version>8.18.0-QR-20210527053111</jira.version>
         <jira.data.version>${jira.version}</jira.data.version>
