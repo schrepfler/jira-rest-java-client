@@ -26,3 +26,4 @@ mvn jira:debug -Ddocker.host.address=<Docker-machine Ip> -Ddatabase.port=5434
 
 you can find your docker machine ip when running docker quickstart.
 
+CI: https://server-gdn-bamboo.internal.atlassian.com/browse/PLUGINS-JRJCTWO
