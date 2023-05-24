@@ -11,7 +11,7 @@
 
     <groupId>com.atlassian.jira</groupId>
     <artifactId>jira-rest-java-client-parent</artifactId>
-    <version>5.2.5-SNAPSHOT</version>
+    <version>5.2.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>JIRA REST Java Client</name>
@@ -59,6 +59,8 @@
         <guava.version>30.1.1-jre</guava.version>
         <jackson.version>1.9.13-atlassian-4</jackson.version>
         <commons.codec.version>1.15</commons.codec.version>
+        <jacoco.version>0.8.9</jacoco.version>
+        <atlassian.drs.version>1.5.13</atlassian.drs.version>
     </properties>
 
     <dependencyManagement>
@@ -174,6 +176,35 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>com.atlassian.drs</groupId>
+                <artifactId>dependency-report-maven-plugin</artifactId>
+                <version>${atlassian.drs.version}</version>
+                <configuration>
+                    <project>jira-rest-java-client</project>
+                    <unitTestCodeCoveragePaths>${project.build.directory}/jacoco.exec</unitTestCodeCoveragePaths>
+                    <integrationTestCodeCoveragePaths>${project.build.directory}/jacoco-it.exec</integrationTestCodeCoveragePaths>
+                    <gracefulFailure>true</gracefulFailure>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <reporting>
         <plugins>
