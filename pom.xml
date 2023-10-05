@@ -53,7 +53,7 @@
         <joda.time.version>2.9.9</joda.time.version>
         <atlassian.httpclient.version>2.1.5</atlassian.httpclient.version>
         <httpcore.version>4.4.8</httpcore.version>
-        <amps.version>6.3.22-fc341f3d2</amps.version>
+        <amps.version>8.11.0</amps.version>
         <testkit.version>8.1.5</testkit.version>
         <atlassian.util.concurrent>4.0.1</atlassian.util.concurrent>
         <guava.version>32.0.1-jre</guava.version>
