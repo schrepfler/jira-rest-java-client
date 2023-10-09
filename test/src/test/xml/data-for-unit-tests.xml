@@ -1662,7 +1662,7 @@ Examples: 4d, 5h 30m, 60m and 3w.]]></value>
     <OSPropertyString id="10593" value="true"/>
     <OSPropertyString id="10602" value="admin"/>
     <OSPropertyString id="10603" value="admin.notifications.task.custom.fields"/>
-    <OSPropertyText id="10022" value="AAABBA0ODAoPeNptj1FPgzAUhd/7K5r4jGmZmkDSBwaNogMWYM4svtTuOmtGR27L4v69bOiL8ek+nJzvO/dqDVuaDDvKbim/i2cs5iGVTUtDxiKSgdNoem8OVjzmdUKl9YA9GgevMU0PXQeojdrTBvAISMqhewOs3lcO0ImAkxRBnduZ8iBCNosCHgaMk0+D6nphNFgHcmsuAlm2sl7WeSOnWGlvjiA8DkAKZUazVVaD/OoNniZgFEUj7QyscKescReZSPxeOWeUJdOuPBPz+6gNXlbPN8HTZvMQzBlfk0aWogXnx0t+t/wL/wnbUw+l6kCkVVHIOs2TBVkOqD+Ug78PfgPSNG6BMC0CFBZN4P8f7FRdIKPx3oWYkJwGfM9tAhUAllLN8BrljKaWmkSeRtRCiwHCZ7g=X02dd"/>
+    <OSPropertyText id="10022" value="AAAB7w0ODAoPeNplUl2TmjAUfc+vyEzfnEECdml1hgcEFNoFXATtbu1DxFuNq4FNwrr21zcrOu20T5nJnXPu+bgfJoLhrFKYONgiI9sZ3Tl4mhTYJvYAPcN5AUKymruWQ8gn8nkwsFDaHtcgsp+l1DPXsJBfc0UrldIjuHTLGd38Ys9o1opqRyUEVIFrk8HQsGyDWOieVcAlFOcGLgg/S5Iw92Pv/jYK3xomzhfczLJJdFsQJpQd/towB/EKIg7c8XRYGN/KxUfj69NTZIyJtUSHjiuicucmPvEnD35Cdl7Ubi1z6EBq3RVq6kTxYpmd5qe4nLyVC3JS5MFbxifzZbj3uW1Oov350Vu5aM8E7d/kbZh6jyRMizCf5fE8RL1eL80KY5LlxizPgtIv4iw1ynmoB64vQFvZ4PUZqx3gKwsOeVVvQOBG1HvQDXzfKdWsRqa5rftUHaiUjPJ+VR/NqxUDOsSPPg5qzGuFN0wqwdatAs3MJFY1rlqp6qMupo90WlwBp7z6P1Gty89DrwgDY/z4LvJPqld9OtaSP/P6xDvzGkx90ITCVaIFNA9TtwCp9IsysaWcSXqJxbtpRxfj+uvfC7j6uZ2WjQKQlWDNBf4lzj2djd7TCCZhNcJ+fdSGKkYPuGu8E6QPgr1CJ+Y3cTrsbDAsAhRjkOGJndY4uARK8hgGYDhBIfGl6wIUGrth9hButpt4OVVCGotoNNNeCUM=X02nf"/>
     <OSPropertyText id="10481">
         <value><![CDATA[http://www.atlassian.com/*
 ]]></value>
